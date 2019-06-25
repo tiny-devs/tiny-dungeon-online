@@ -1,1 +1,1 @@
-# tiny
+# Super Tiny Multiplayer Terminal Game
