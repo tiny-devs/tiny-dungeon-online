@@ -12,11 +12,9 @@ socket.on('connect', function () {
         console.log(msg);
     });
 
-    while (true) {
-        rl.question('> ', (nome) => {
-            socket.send('Jogador: ' + nome + ' entrou na dungeon.');
-            rl.close();
-        });
-    }
+    rl.question('> ', (nome) => {
+        socket.send('Jogador: ' + nome + ' entrou na dungeon.');
+        rl.close();
+    });
 });  
 
