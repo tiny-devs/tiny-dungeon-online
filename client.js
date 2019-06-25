@@ -13,6 +13,7 @@ function init(url) {
     var socket = require('socket.io-client')(url);
 
     socket.on('connect', function () {
+        console.log('connected! type your name:');
 
         socket.on('message', function (msg) {
             console.log(msg);
@@ -21,7 +22,7 @@ function init(url) {
         loop ();
 
         function loop () {
-            rl.question('> ', (message) => {
+            rl.question('', (message) => {
                 socket.send(message);
                 loop();
             });
