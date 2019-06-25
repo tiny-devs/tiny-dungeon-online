@@ -2,7 +2,7 @@ var port = process.env.PORT || 8084;
 var io = require('socket.io').listen(port);
 var x=0;
 var y=0;
-console.log('tiny-server> server is running...');
+console.log('tiny-server> server is running on port ' + port + '...');
 io.sockets.on('connection', function (socket) {
     
 	socket.on('message', function (e) {
