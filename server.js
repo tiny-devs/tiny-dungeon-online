@@ -1,6 +1,8 @@
+const colors = require('colors');
 const port = process.env.PORT || 8084;
 const io = require('socket.io').listen(port);
-const serverPrefix = 'tiny-server>';
+const serverPrefix = 'tiny-server>'.green;
+let playerPrefix = '';
 let formattedMessage = '';
 let players = [];
 
@@ -12,12 +14,15 @@ io.sockets.on('connection', (socket) => {
 	socket.on('message', (e) => {
 		if (getPlayerName(socket.id) == '') {
 			setPlayerName(socket.id, e);
-			formattedMessage = `${serverPrefix} Welcome ${e}`;
+			formattedMessage = `${serverPrefix} Welcome ${e}\n${serverPrefix} Players online:`;
 			io.sockets.emit('message', formattedMessage);
+			io.sockets.emit('message', getPlayersOnline());
 			console.log(formattedMessage);
+			console.log(getPlayersOnline());
 		}
 		else {
-			formattedMessage = getPlayerName(socket.id) + '> ' + e;
+			playerPrefix = `${getPlayerName(socket.id)}>`
+			formattedMessage = `${playerPrefix.blue} ${e}`;
 			console.log(formattedMessage);
 
 			socket.broadcast.emit('message', formattedMessage);
@@ -31,6 +36,14 @@ io.sockets.on('connection', (socket) => {
 		removePlayer(socket.id);
 	});
 });
+
+function getPlayersOnline() {
+	let playersNames = [];
+	players.forEach((player) => {
+		playersNames.push(player.name);
+	})
+	return playersNames.join(', ');
+}
 
 function getPlayerName(playerId) {
 	let playerIndex = players.map(p => p.id).indexOf(playerId);

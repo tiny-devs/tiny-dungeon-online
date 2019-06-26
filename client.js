@@ -1,3 +1,4 @@
+const colors = require('colors');
 const readline = require('readline');
 
 const rl = readline.createInterface({
@@ -13,7 +14,7 @@ function init(url) {
     const socket = require('socket.io-client')(url);
 
     socket.on('connect', () => {
-        console.log('connected! type your name:');
+        console.log('connected! type your name:'.green);
 
         socket.on('message', function (msg) {
             console.log(msg);
@@ -27,6 +28,11 @@ function init(url) {
                 loop();
             });
         }
+    });
+
+    socket.on('disconnect', () => {
+        console.log('connection interrupted, please run the client again'.red);
+        socket.close();
     });
 }
   
