@@ -1,30 +1,33 @@
-var port = process.env.PORT || 8084;
-var io = require('socket.io').listen(port);
-var players = [];
-var serverPrefix = 'tiny-server> ';
+const port = process.env.PORT || 8084;
+const io = require('socket.io').listen(port);
+const serverPrefix = 'tiny-server>';
+let formattedMessage = '';
+let players = [];
 
-console.log(serverPrefix + 'server is running on port ' + port + '...');
+console.log(`${serverPrefix} server is running on port ${port}...`);
 
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', (socket) => {
 	players.push({ name: '', id: socket.id});
 
-	socket.on('message', function (e) {
+	socket.on('message', (e) => {
 		if (getPlayerName(socket.id) == '') {
 			setPlayerName(socket.id, e);
-			let welcomeMessage = serverPrefix + 'Welcome, ' + e;
-			io.sockets.emit('message', welcomeMessage);
-			console.log(welcomeMessage);
+			formattedMessage = `${serverPrefix} Welcome ${e}`;
+			io.sockets.emit('message', formattedMessage);
+			console.log(formattedMessage);
 		}
 		else {
-			let formattedMessage = getPlayerName(socket.id) + '> ' + e;
+			formattedMessage = getPlayerName(socket.id) + '> ' + e;
 			console.log(formattedMessage);
 
-			io.sockets.emit('message', formattedMessage);
+			socket.broadcast.emit('message', formattedMessage);
 		}
 	});
 	
-	socket.on('disconnected', function () {
-		console.log(serverPrefix + getPlayerName(playerId) + ' disconnected!');
+	socket.on('disconnect', () => {
+		formattedMessage = `${serverPrefix} ${getPlayerName(socket.id)} disconnected!`;
+		io.sockets.emit('message', formattedMessage);
+		console.log(formattedMessage);
 		removePlayer(socket.id);
 	});
 });

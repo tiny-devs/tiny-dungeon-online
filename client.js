@@ -10,9 +10,9 @@ rl.question('> Type URL to connect: ', (url) => {
 });
 
 function init(url) {
-    var socket = require('socket.io-client')(url);
+    const socket = require('socket.io-client')(url);
 
-    socket.on('connect', function () {
+    socket.on('connect', () => {
         console.log('connected! type your name:');
 
         socket.on('message', function (msg) {
