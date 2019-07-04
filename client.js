@@ -1,19 +1,29 @@
 const colors = require('colors');
 const readline = require('readline');
+let connectedToUrl = false;
 
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
 });
 
-rl.question('> Type URL to connect: ', (url) => {
-    init(url);
-});
+function questionUrl() {
+    rl.question('> Type URL to connect: ', (url) => {
+        init(url);
+        setTimeout(() => {
+            if (!connectedToUrl) {
+                console.log(`Failed to connect to ${url}.\n`);
+                questionUrl();
+            }
+        }, 7000);
+    });
+}
 
 function init(url) {
     const socket = require('socket.io-client')(url);
 
     socket.on('connect', () => {
+        connectedToUrl = true;
         console.log('connected! type your name:'.green);
 
         socket.on('message', function (msg) {
@@ -35,5 +45,5 @@ function init(url) {
         socket.close();
     });
 }
-  
 
+questionUrl();
