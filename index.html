@@ -14,31 +14,12 @@
     </style>
   </head>
   <body>
-    <ul id="messages"></ul>
-    <form action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
-    </form>
+  <div id="game">
+    <canvas id="canvas" width="200" height="200"></canvas>
+    <p id="health"></p>
+    <p id="power"></p>
+  </div>
     <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var socket = io();
-
-        function checkKey(e) {
-            
-            if (e.keyCode == '38') {
-                socket.emit('walk-command', 'move up');
-            }
-            else if (e.keyCode == '40') {
-                socket.emit('walk-command', 'move down');
-            }
-            else if (e.keyCode == '37') {
-                socket.emit('walk-command', 'move left');
-            }
-            else if (e.keyCode == '39') {
-                socket.emit('walk-command', 'move right');
-            }
-        }
-
-        document.onkeydown = checkKey;
-    </script>
+    <script src="/js/client.js"></script>
   </body>
 </html>
