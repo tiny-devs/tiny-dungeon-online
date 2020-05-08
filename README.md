@@ -7,11 +7,8 @@ Install all necessaries packages
 `npm install`
 
 Run the game server
-`node server.js`
+`node index.js`
 
-Run the game client
-`node client.js`
-
-Use URL to connect: `http://localhost:8084`
+Use URL to connect: `http://localhost:3000`
 
 Enjoy
