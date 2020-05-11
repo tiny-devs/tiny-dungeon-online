@@ -1,5 +1,14 @@
 var socket = io();
 
+function getRandomColor() {
+    var letters = '0123456789ABCDEF';
+    var color = '#';
+    for (var i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+  
 function checkKey(e) {
 
     if (e.keyCode == '38') {
@@ -93,13 +102,14 @@ class Player {
         this.health = 100;
         this.power = 0;
         this.maxPower = 3;
+        this.color = getRandomColor();
     }
 
     draw() {
         if ((this.x >= 0 && this.x < this.game.boardRows) && (this.y >= 0 && this.y < this.game.boardColumns)) {
             this.game.ctx.beginPath();
             this.game.ctx.rect(this.x * this.game.cellWidth, this.y * this.game.cellHeight, this.game.cellWidth, this.game.cellHeight);
-            this.game.ctx.fillStyle = "green";
+            this.game.ctx.fillStyle = this.color;
             this.game.ctx.fill();
             this.game.ctx.stroke();
         }
