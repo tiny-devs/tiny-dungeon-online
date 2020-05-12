@@ -10,6 +10,8 @@ app.get('/', (req, res) => {
 });
 
 var players = [];
+var boardRows = 7;
+var boardColumns = 7;
 
 io.on('connection', (socket) => {
     console.log('a player connected');
@@ -30,16 +32,24 @@ io.on('connection', (socket) => {
 
         switch (msg.key) {
             case 'right':
-                player.x++;
+                if (player.x + 1 < boardRows) {
+                    player.x++;
+                }
                 break;
             case 'down':
-                player.y++;
+                if (player.y + 1 < boardColumns) {
+                    player.y++;
+                }
                 break;
             case 'left':
-                player.x--;
+                if (player.x - 1 >= 0) {
+                    player.x--;
+                }
                 break;
             case 'up':
-                player.y--;
+                if (player.y - 1 >= 0) {
+                    player.y--;
+                }
                 break;
         }
 
