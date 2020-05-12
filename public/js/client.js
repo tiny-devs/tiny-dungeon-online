@@ -1,5 +1,33 @@
 var socket = io();
 
+var textDisplay = document.getElementById("text-display");
+var playerNameInput = document.getElementById("player-name");
+var confirmBtn = document.getElementById("confirm-btn")
+var canvasElement = document.getElementById("canvas");
+var playerListElement = document.getElementById("player-list");
+var playerList = [];
+
+canvasElement.style.display="none";
+confirmBtn.onclick = function() { onConfirmName() };
+
+var moveCommand = {
+    playerName: "",
+    key: ""
+};
+
+function onConfirmName() {
+    var playerName = playerNameInput.value;
+
+    if (playerName) {
+        console.log(playerName);
+        moveCommand.playerName = playerName;
+        canvasElement.style.display="block";
+        playerNameInput.style.display="none";
+        confirmBtn.style.display="none";
+        textDisplay.style.display="none";
+    }
+}
+
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
     var color = '#';
@@ -7,18 +35,22 @@ function getRandomColor() {
       color += letters[Math.floor(Math.random() * 16)];
     }
     return color;
-  }
+}
   
 function checkKey(e) {
 
     if (e.keyCode == '38') {
-        socket.emit('walk-command', 'up');
+        moveCommand.key = 'up';
+        socket.emit('walk-command', moveCommand);
     } else if (e.keyCode == '40') {
-        socket.emit('walk-command', 'down');
+        moveCommand.key = 'down';
+        socket.emit('walk-command', moveCommand);
     } else if (e.keyCode == '37') {
-        socket.emit('walk-command', 'left');
+        moveCommand.key = 'left';
+        socket.emit('walk-command', moveCommand);
     } else if (e.keyCode == '39') {
-        socket.emit('walk-command', 'right');
+        moveCommand.key = 'right';
+        socket.emit('walk-command', moveCommand);
     }
 }
 
@@ -43,11 +75,6 @@ class Game {
         this.traps = [];
         this.board.draw();
         this.player.draw();
-
-        this.showHealth = document.getElementById("health");
-        this.showHealth.innerHTML = `Health: ${this.player.health}`;
-        this.showPower = document.getElementById("power");
-        this.showPower.innerHTML = `Power: ${this.player.power}/${this.player.maxPower}`;
     }
 
     placeTrap() {
@@ -63,11 +90,6 @@ class Game {
         this.board.draw();
         this.player.reset();
         this.traps.splice(0, this.traps.length);
-
-        this.showHealth = document.getElementById("health");
-        this.showHealth.innerHTML = `Health: ${this.player.health}`;
-        this.showPower = document.getElementById("power");
-        this.showPower.innerHTML = `Power: ${this.player.power}/${this.player.maxPower}`;
 
         this.showGame.style.display = "block";
         this.showGameOver.style.display = "none";
@@ -203,14 +225,21 @@ const game = new Game(gameConfigs);
 
 socket.on('walk-command', function(msg) {
 
+    if (!playerList.includes(msg.playerName)) {
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode(msg.playerName));
+        playerListElement.appendChild(li);
+        playerList.push(msg.playerName);
+    }
+
     game.ctx.clearRect(0, 0, game.c.width, game.c.height);
     game.board.draw();
     game.traps.forEach((trap) => {
         trap.draw();
     });
 
-    console.log(msg);
-    switch (msg) {
+    console.log(msg.key);
+    switch (msg.key) {
         case 'right':
             game.player.moveRight();
             break;
