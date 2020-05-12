@@ -1,5 +1,6 @@
 # Tiny Dungeon Online - TDO &middot; ![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)
 A Tiny Minimalistic Online RPG Game 🎲
+(Play now)[https://tiny-dungeon-online.herokuapp.com/]
 
 ## Getting started
 
@@ -12,3 +13,4 @@ Run the game server
 Use URL to connect: `http://localhost:3000`
 
 Enjoy
+
