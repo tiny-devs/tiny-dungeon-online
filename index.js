@@ -17,8 +17,15 @@ io.on('connection', (socket) => {
     console.log('a player connected');
 
     socket.on('player-login', (player) => {
-        console.log(player.name + ' make login')
+        if (player.name == 'reset') {
+            players = [];
+            return;
+        }
+
+        console.log(player.name + ' make login');
+
         players.push({
+            id: socket.id,
             name: player.name,
             color: player.color,
             x: 0,
@@ -60,7 +67,8 @@ io.on('connection', (socket) => {
     });
 
     socket.on('disconnect', () => {
-        console.log('user disconnected');
+        players = players.filter(player => player.id != socket.id);
+        console.log('player [' + socket.id + '] disconnected ');
     });
 });
 

@@ -56,7 +56,6 @@ class Game {
 
         this.board = new Board(this)
         this.players = [];
-        this.traps = [];
         this.board.draw();
     }
 
@@ -108,9 +107,6 @@ socket.on('players', function(players) {
 
     game.ctx.clearRect(0, 0, game.c.width, game.c.height);
     game.board.draw();
-    game.traps.forEach((trap) => {
-        trap.draw();
-    });
 
     players.forEach(player => {
         var li = document.createElement("li");
