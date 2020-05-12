@@ -11,22 +11,10 @@ canvasElement.style.display="none";
 confirmBtn.onclick = function() { onConfirmName() };
 
 var moveCommand = {
-    playerName: "",
+    name: "",
     key: ""
 };
-
-function onConfirmName() {
-    var playerName = playerNameInput.value;
-
-    if (playerName) {
-        console.log(playerName);
-        moveCommand.playerName = playerName;
-        canvasElement.style.display="block";
-        playerNameInput.style.display="none";
-        confirmBtn.style.display="none";
-        textDisplay.style.display="none";
-    }
-}
+var playerName = "";
 
 function getRandomColor() {
     var letters = '0123456789ABCDEF';
@@ -40,17 +28,13 @@ function getRandomColor() {
 function checkKey(e) {
 
     if (e.keyCode == '38') {
-        moveCommand.key = 'up';
-        socket.emit('walk-command', moveCommand);
+        socket.emit('walk-command', { name: playerName, key: 'up' });
     } else if (e.keyCode == '40') {
-        moveCommand.key = 'down';
-        socket.emit('walk-command', moveCommand);
+        socket.emit('walk-command', { name: playerName, key: 'down' });
     } else if (e.keyCode == '37') {
-        moveCommand.key = 'left';
-        socket.emit('walk-command', moveCommand);
+        socket.emit('walk-command', { name: playerName, key: 'left' });
     } else if (e.keyCode == '39') {
-        moveCommand.key = 'right';
-        socket.emit('walk-command', moveCommand);
+        socket.emit('walk-command', { name: playerName, key: 'right' });
     }
 }
 
@@ -71,12 +55,9 @@ class Game {
         this.cellHeight = this.height / this.boardColumns;
 
         this.board = new Board(this)
-        this.player1 = new Player(this);
-        this.player2 = new Player(this);
+        this.players = [];
         this.traps = [];
         this.board.draw();
-        this.player1.draw();
-        this.player2.draw();
     }
 
     restart() {
@@ -110,105 +91,6 @@ class Board {
     }
 }
 
-class Player {
-    constructor(game) {
-        this.game = game;
-
-        this.x = 0;
-        this.y = 0;
-        this.health = 100;
-        this.power = 0;
-        this.maxPower = 3;
-        this.color = getRandomColor();
-    }
-
-    draw() {
-        if ((this.x >= 0 && this.x < this.game.boardRows) && (this.y >= 0 && this.y < this.game.boardColumns)) {
-            this.game.ctx.beginPath();
-            this.game.ctx.rect(this.x * this.game.cellWidth, this.y * this.game.cellHeight, this.game.cellWidth, this.game.cellHeight);
-            this.game.ctx.fillStyle = this.color;
-            this.game.ctx.fill();
-            this.game.ctx.stroke();
-        }
-    }
-
-    moveUp() {
-        if (this.y - 1 >= 0) {
-            this.y -= 1;
-            this.addPower();
-            this.checkTrapsCollision();
-        }
-        this.draw();
-    }
-
-    moveDown() {
-        if (this.y + 1 < this.game.boardColumns) {
-            this.y += 1;
-            this.addPower();
-            this.checkTrapsCollision();
-        }
-        this.draw();
-    }
-
-    moveLeft() {
-        if (this.x - 1 >= 0) {
-            this.x -= 1;
-            this.addPower();
-            this.checkTrapsCollision();
-        }
-        this.draw();
-    }
-
-    moveRight() {
-        if (this.x + 1 < this.game.boardRows) {
-            this.x += 1;
-            this.addPower();
-            this.checkTrapsCollision();
-        }
-        this.draw();
-    }
-
-    addPower() {
-        if (this.power + 1 <= this.maxPower) {
-            this.power += 1;
-        }
-    }
-
-    checkTrapsCollision() {
-        this.game.traps.forEach((trap) => {
-            if ((this.x == trap.x) && (this.y == trap.y)) {
-                this.health -= trap.damage;
-            }
-        });
-    }
-
-    reset() {
-        this.x = 0;
-        this.y = 0;
-        this.health = 100;
-        this.power = 0;
-        this.draw();
-    }
-}
-
-class Trap {
-    constructor(game) {
-        this.game = game;
-
-        this.x = this.game.player.x;
-        this.y = this.game.player.y;
-        this.damage = 10;
-    }
-
-    draw() {
-        this.game.ctx.beginPath();
-        this.game.ctx.rect(this.x * this.game.cellWidth, this.y * this.game.cellHeight, this.game.cellWidth, this.game.cellHeight);
-        this.game.ctx.fillStyle = "purple";
-        this.game.ctx.fill();
-        this.game.ctx.stroke();
-    }
-}
-
 let gameConfigs = {
     width: 300,
     height: 300,
@@ -233,14 +115,25 @@ socket.on('players', function(players) {
     players.forEach(player => {
         var li = document.createElement("li");
         li.appendChild(document.createTextNode(player.name));
+        li.style.color = player.color;
         playerListElement.appendChild(li);
+
+        game.ctx.beginPath();
+        game.ctx.rect(player.x * game.cellWidth, player.y * game.cellHeight, game.cellWidth, game.cellHeight);
+        game.ctx.fillStyle = player.color;
+        game.ctx.fill();
+        game.ctx.stroke();
     });
-
-    game.player1.x = players[0].x;
-    game.player1.y = players[0].y;
-    game.player2.x = players[1].x;
-    game.player2.y = players[1].y;
-
-    game.player1.draw();
-    game.player2.draw();
 });
+
+function onConfirmName() {
+    playerName = playerNameInput.value;
+
+    if (playerName) {
+        socket.emit('player-login', { name: playerName, color: getRandomColor()} );
+        canvasElement.style.display="block";
+        playerNameInput.style.display="none";
+        confirmBtn.style.display="none";
+        textDisplay.style.display="none";
+    }
+}

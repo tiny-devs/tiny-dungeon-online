@@ -16,20 +16,21 @@ var boardColumns = 7;
 io.on('connection', (socket) => {
     console.log('a player connected');
 
+    socket.on('player-login', (player) => {
+        console.log(player.name + ' make login')
+        players.push({
+            name: player.name,
+            color: player.color,
+            x: 0,
+            y: 0
+        });
+    });
+
     socket.on('walk-command', (msg) => {
+        var player = players.filter(player => player.name == msg.name)[0];
 
-        var player = players.filter(player => player.name == msg.playerName)[0];
-        console.log(player);
-        if (!player) {
-            players.push({
-                name: msg.playerName,
-                x: 0,
-                y: 0
-            });
-        }
-
-        player = players.filter(player => player.name == msg.playerName)[0];
-
+        if (!player) return;
+        console.log(msg);
         switch (msg.key) {
             case 'right':
                 if (player.x + 1 < boardRows) {
@@ -54,7 +55,7 @@ io.on('connection', (socket) => {
         }
 
         // TODO: Check player identity
-        console.log('walk-command:' + msg);
+        //console.log('walk-command:' + msg);
         io.emit('players', players); // broadcast
     });
 
