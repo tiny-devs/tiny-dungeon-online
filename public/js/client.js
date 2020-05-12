@@ -71,24 +71,19 @@ class Game {
         this.cellHeight = this.height / this.boardColumns;
 
         this.board = new Board(this)
-        this.player = new Player(this);
+        this.player1 = new Player(this);
+        this.player2 = new Player(this);
         this.traps = [];
         this.board.draw();
-        this.player.draw();
-    }
-
-    placeTrap() {
-        if (this.player.power == this.player.maxPower) {
-            this.player.power = 0;
-            this.traps.push(new Trap(this));
-            this.traps[this.traps.length - 1].draw();
-        }
+        this.player1.draw();
+        this.player2.draw();
     }
 
     restart() {
         this.ctx.clearRect(0, 0, this.c.width, this.c.height);
         this.board.draw();
-        this.player.reset();
+        this.player1.reset();
+        this.player2.reset();
         this.traps.splice(0, this.traps.length);
 
         this.showGame.style.display = "block";
@@ -223,13 +218,10 @@ let gameConfigs = {
 
 const game = new Game(gameConfigs);
 
-socket.on('walk-command', function(msg) {
+socket.on('players', function(players) {
 
-    if (!playerList.includes(msg.playerName)) {
-        var li = document.createElement("li");
-        li.appendChild(document.createTextNode(msg.playerName));
-        playerListElement.appendChild(li);
-        playerList.push(msg.playerName);
+    while(playerListElement.firstChild ){
+        playerListElement.removeChild(playerListElement.firstChild);
     }
 
     game.ctx.clearRect(0, 0, game.c.width, game.c.height);
@@ -238,20 +230,17 @@ socket.on('walk-command', function(msg) {
         trap.draw();
     });
 
-    console.log(msg.key);
-    switch (msg.key) {
-        case 'right':
-            game.player.moveRight();
-            break;
-        case 'down':
-            game.player.moveDown();
-            break;
-        case 'left':
-            game.player.moveLeft();
-            break;
-        case 'up':
-            game.player.moveUp();
-            break;
-    }
-    game.player.draw();
+    players.forEach(player => {
+        var li = document.createElement("li");
+        li.appendChild(document.createTextNode(player.name));
+        playerListElement.appendChild(li);
+    });
+
+    game.player1.x = players[0].x;
+    game.player1.y = players[0].y;
+    game.player2.x = players[1].x;
+    game.player2.y = players[1].y;
+
+    game.player1.draw();
+    game.player2.draw();
 });
