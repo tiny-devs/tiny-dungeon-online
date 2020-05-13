@@ -4,6 +4,7 @@ var io = require('socket.io')(http);
 var express = require('express');
 var port = process.env.PORT || 3000;
 app.use(express.static('public'))
+var Player = require('./player');
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
@@ -24,20 +25,15 @@ io.on('connection', (socket) => {
 
         console.log(player.name + ' make login');
 
-        players.push({
-            id: socket.id,
-            name: player.name,
-            color: player.color,
-            x: 0,
-            y: 0
-        });
+        const newPlayer = new Player(socket.id, player.name, player.color, 0, 0);
+        players.push(newPlayer);
     });
 
     socket.on('walk-command', (msg) => {
         var player = players.filter(player => player.name == msg.name)[0];
 
         if (!player) return;
-        console.log(msg);
+ 
         switch (msg.key) {
             case 'right':
                 if (player.x + 1 < boardRows) {
