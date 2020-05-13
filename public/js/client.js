@@ -1,123 +1,77 @@
-var socket = io();
-
-var textDisplay = document.getElementById("text-display");
-var playerNameInput = document.getElementById("player-name");
-var confirmBtn = document.getElementById("confirm-btn")
-var canvasElement = document.getElementById("canvas");
-var playerListElement = document.getElementById("player-list");
-var playerList = [];
-
-canvasElement.style.display="none";
-confirmBtn.onclick = function() { onConfirmName() };
-
-var moveCommand = {
-    name: "",
-    key: ""
-};
-var playerName = "";
-
-function getRandomColor() {
-    var letters = '0123456789ABCDEF';
-    var color = '#';
-    for (var i = 0; i < 6; i++) {
-      color += letters[Math.floor(Math.random() * 16)];
-    }
-    return color;
-}
-  
-function checkKey(e) {
-
-    if (e.keyCode == '38') {
-        socket.emit('walk-command', { name: playerName, key: 'up' });
-    } else if (e.keyCode == '40') {
-        socket.emit('walk-command', { name: playerName, key: 'down' });
-    } else if (e.keyCode == '37') {
-        socket.emit('walk-command', { name: playerName, key: 'left' });
-    } else if (e.keyCode == '39') {
-        socket.emit('walk-command', { name: playerName, key: 'right' });
-    }
-}
-
-document.onkeydown = checkKey;
-
-class Game {
-    constructor(gameConfigs) {
-        this.showGame = document.getElementById("game");
-        this.c = document.getElementById("canvas");
-        this.ctx = this.c.getContext("2d");
-        this.width = gameConfigs.width;
-        this.height = gameConfigs.height;
-        this.boardRows = gameConfigs.boardRows;
-        this.boardColumns = gameConfigs.boardColumns;
-        this.ctx.canvas.width = this.width;
-        this.ctx.canvas.height = this.height;
-        this.cellWidth = this.width / this.boardRows;
-        this.cellHeight = this.height / this.boardColumns;
-
-        this.board = new Board(this)
-        this.players = [];
-        this.board.draw();
-    }
-}
-
-class Board {
+class Client {
     constructor(game) {
+        document.onkeydown = this.checkKey.bind(this);
+        this.playerListElement = document.getElementById("player-list");
+        this.textDisplay = document.getElementById("text-display");
+        this.playerNameInput = document.getElementById("player-name");
+        this.confirmBtn = document.getElementById("confirm-btn")
+        this.canvasElement = document.getElementById("canvas");
+        this.canvasElement.style.display="none";
+
         this.game = game;
+        this.socket = io();
+        this.playerName = '';
+        this.playerList = [];
+        this.confirmBtn.onclick = () => { this.onConfirmName() };
+        this.moveCommand = {
+            name: '',
+            key: ''
+        };
+
+        this.socket.on('players', (players) => {
+
+            while(this.playerListElement.firstChild ){
+                this.playerListElement.removeChild(this.playerListElement.firstChild);
+            }
+        
+            this.game.ctx.clearRect(0, 0, this.game.c.width, this.game.c.height);
+            this.game.board.draw();
+        
+            players.forEach(player => {
+                var li = document.createElement("li");
+                li.appendChild(document.createTextNode(player.name));
+                li.style.color = player.color;
+                this.playerListElement.appendChild(li);
+        
+                this.game.ctx.beginPath();
+                this.game.ctx.rect(player.x * this.game.cellWidth, player.y * this.game.cellHeight, this.game.cellWidth, this.game.cellHeight);
+                this.game.ctx.fillStyle = player.color;
+                this.game.ctx.fill();
+                this.game.ctx.stroke();
+            });
+        });
     }
 
-    draw() {
-        let i = 0;
-        let j = 0;
-        for (i = 0; i < this.game.boardRows; i++) {
-            for (j = 0; j < this.game.boardColumns; j++) {
-                this.game.ctx.beginPath();
-                this.game.ctx.rect(i * this.game.cellWidth, j * this.game.cellHeight, this.game.cellWidth, this.game.cellHeight);
-                this.game.ctx.stroke();
-            }
+    checkKey(e) {
+        if (e.keyCode == '38') {
+            this.socket.emit('walk-command', { name: this.playerName, key: 'up' });
+        } else if (e.keyCode == '40') {
+            this.socket.emit('walk-command', { name: this.playerName, key: 'down' });
+        } else if (e.keyCode == '37') {
+            this.socket.emit('walk-command', { name: this.playerName, key: 'left' });
+        } else if (e.keyCode == '39') {
+            this.socket.emit('walk-command', { name: this.playerName, key: 'right' });
         }
     }
-}
 
-let gameConfigs = {
-    width: 500,
-    height: 500,
-    boardRows: 7,
-    boardColumns: 7
-};
-
-const game = new Game(gameConfigs);
-
-socket.on('players', function(players) {
-
-    while(playerListElement.firstChild ){
-        playerListElement.removeChild(playerListElement.firstChild);
+    onConfirmName() {
+        this.playerName = this.playerNameInput.value;
+    
+        if (this.playerName) {
+            this.socket.emit('player-login', { name: this.playerName, color: this.getRandomColor()} );
+            this.canvasElement.style.display="block";
+            this.playerNameInput.style.display="none";
+            this.confirmBtn.style.display="none";
+            this.textDisplay.style.display="none";
+        }
     }
 
-    game.ctx.clearRect(0, 0, game.c.width, game.c.height);
-    game.board.draw();
-
-    players.forEach(player => {
-        var li = document.createElement("li");
-        li.appendChild(document.createTextNode(player.name));
-        li.style.color = player.color;
-        playerListElement.appendChild(li);
-
-        game.ctx.beginPath();
-        game.ctx.rect(player.x * game.cellWidth, player.y * game.cellHeight, game.cellWidth, game.cellHeight);
-        game.ctx.fillStyle = player.color;
-        game.ctx.fill();
-        game.ctx.stroke();
-    });
-});
-
-function onConfirmName() {
-    playerName = playerNameInput.value;
-
-    if (playerName) {
-        socket.emit('player-login', { name: playerName, color: getRandomColor()} );
-        canvasElement.style.display="block";
-        playerNameInput.style.display="none";
-        confirmBtn.style.display="none";
-        textDisplay.style.display="none";
+    getRandomColor() {
+        var letters = '0123456789ABCDEF';
+        var color = '#';
+        for (var i = 0; i < 6; i++) {
+          color += letters[Math.floor(Math.random() * 16)];
+        }
+        return color;
     }
 }
