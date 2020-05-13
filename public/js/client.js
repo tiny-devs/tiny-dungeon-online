@@ -58,18 +58,6 @@ class Game {
         this.players = [];
         this.board.draw();
     }
-
-    restart() {
-        this.ctx.clearRect(0, 0, this.c.width, this.c.height);
-        this.board.draw();
-        this.player1.reset();
-        this.player2.reset();
-        this.traps.splice(0, this.traps.length);
-
-        this.showGame.style.display = "block";
-        this.showGameOver.style.display = "none";
-        this.showGameWin.style.display = "none";
-    }
 }
 
 class Board {
@@ -91,8 +79,8 @@ class Board {
 }
 
 let gameConfigs = {
-    width: 300,
-    height: 300,
+    width: 500,
+    height: 500,
     boardRows: 7,
     boardColumns: 7
 };
