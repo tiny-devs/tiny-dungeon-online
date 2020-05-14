@@ -43,13 +43,13 @@ class Client {
     }
 
     checkKey(e) {
-        if (e.keyCode == '38') {
+        if (e.keyCode == '38' || e.keyCode == '87') {
             this.socket.emit('walk-command', { name: this.playerName, key: 'up' });
-        } else if (e.keyCode == '40') {
+        } else if (e.keyCode == '40' || e.keyCode == '83') {
             this.socket.emit('walk-command', { name: this.playerName, key: 'down' });
-        } else if (e.keyCode == '37') {
+        } else if (e.keyCode == '37' || e.keyCode == '65') {
             this.socket.emit('walk-command', { name: this.playerName, key: 'left' });
-        } else if (e.keyCode == '39') {
+        } else if (e.keyCode == '39' || e.keyCode == '68') {
             this.socket.emit('walk-command', { name: this.playerName, key: 'right' });
         }
     }
