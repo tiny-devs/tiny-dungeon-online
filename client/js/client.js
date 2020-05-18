@@ -92,7 +92,7 @@ class Client {
         this.playerName = this.playerNameInput.value;
     
         if (this.playerName) {
-            this.ws = new WebSocket(`ws://${window.location.host}/ws`);
+            this.ws = new WebSocket(`wss://${window.location.host}/ws`);
             this.initWebSocket();
         }
     }
