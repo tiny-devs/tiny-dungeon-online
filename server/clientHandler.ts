@@ -21,9 +21,9 @@ export class ClientHandler {
     }
   }
 
-  private broadcast(message: string, senderId?: string): void {
+  private broadcastPlayerConnection(playerId: string): void {
     for (const player of this.players.values()) {
-      player.clientWs.send(senderId ? `[${senderId}]: ${message}` : message)
+      player.clientWs.send(JSON.stringify({command: 'player-login', data: `> player with the id ${playerId} is connected`}))
     }
   }
 
@@ -37,7 +37,7 @@ export class ClientHandler {
     const player = new Player(playerId, '', '', 0, 0, ws)
 
     this.players.push(player)
-    this.broadcast(JSON.stringify({command: 'player-login', data: `> player with the id ${playerId} is connected`}))
+    this.broadcastPlayerConnection(playerId)
   
     for await (const event of ws) {
       const eventDataString = event as string
@@ -47,7 +47,7 @@ export class ClientHandler {
         if (index > -1) {
           this.players.splice(index, 1)
         }
-        this.broadcast(JSON.stringify({command: 'player-login', data: `> player with the id ${playerId} is disconnected`}))
+        this.broadcastPlayerConnection(playerId)
         break
       }
 
