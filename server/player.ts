@@ -1,13 +1,25 @@
-class Player {
-    constructor(id, name, color, x, y) {
+export class Player {
+    public id: string;
+    public name: string;
+    public color: string;
+    public x: number;
+    public y: number;
+    public clientWs: any;
+
+    constructor(id: string,
+        name: string,
+        color: string,
+        x: number, y: number,
+        clientWs: any) {
         this.id = id;
         this.name = name;
         this.color = color;
         this.x = x;
         this.y = y;
+        this.clientWs = clientWs;
     }
 
-    move(key, boardRows, boardColumns) {
+    public move(key: string, boardRows: number, boardColumns: number) {
         switch (key) {
             case 'right':
                 if (this.x + 1 < boardRows) {
@@ -32,5 +44,3 @@ class Player {
         }
     }
 }
-
-module.exports = Player;

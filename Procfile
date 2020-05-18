@@ -1,1 +1,1 @@
-web: node index.js
+web: deno run --allow-net=:${PORT} --cached-only --allow-read main.ts --port=${PORT}
