@@ -11,7 +11,7 @@ Other:
 [deno guide](https://deno.land/#installation)
 
 Run the game server  
-`deno run --allow-net=:3000 --cached-only --allow-read main.ts --port=3000`
+`deno run --allow-net=:3000 --allow-read main.ts --port=3000`
 
 Use URL to connect: `http://localhost:3000`
 
