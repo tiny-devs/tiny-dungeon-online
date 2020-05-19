@@ -15,15 +15,16 @@ export class ClientHandler {
 
   private broadcastPlayerMove(player: Player, direction: string): void {
     player.move(direction, this.boardRows, this.boardColumns)
+    const data = JSON.stringify(this.players);
 
     for (const player of this.players.values()) {
-      player.clientWs.send(JSON.stringify(this.players))
+      player.clientWs.send(data)
     }
   }
 
   private broadcastPlayerConnection(playerId: string): void {
     for (const player of this.players.values()) {
-      player.clientWs.send(JSON.stringify({command: 'player-login', data: `> player with the id ${playerId} is connected`}))
+      player.clientWs.send(`{"command": 'player-login', "data": "> player with the id ${playerId} is connected"}`)
     }
   }
 
