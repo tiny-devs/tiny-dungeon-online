@@ -17,13 +17,13 @@ export class ClientHandler {
     player.move(direction, this.boardRows, this.boardColumns)
     const data = JSON.stringify(this.players);
 
-    for (const player of this.players.values()) {
+    for (const player of this.players) {
       player.clientWs.send(data)
     }
   }
 
   private broadcastPlayerConnection(playerId: string): void {
-    for (const player of this.players.values()) {
+    for (const player of this.players) {
       player.clientWs.send(`{"command": 'player-login', "data": "> player with the id ${playerId} is connected"}`)
     }
   }
