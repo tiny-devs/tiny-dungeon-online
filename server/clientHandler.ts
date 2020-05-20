@@ -23,8 +23,14 @@ export class ClientHandler {
   }
 
   private broadcastPlayerConnection(playerId: string): void {
+    const data = JSON.stringify(this.players);
+
     for (const player of this.players) {
-      player.clientWs.send(`{"command": 'player-login', "data": "> player with the id ${playerId} is connected"}`)
+      player.clientWs.send(`{"command": "player-login",`+
+      `"message": "> player with the id ${playerId} is connected",`+
+      `"boardRows":"${this.boardRows}",`+
+      `"boardColumns":"${this.boardColumns}",`+
+      `"players":${data}}`)
     }
   }
 
@@ -38,7 +44,6 @@ export class ClientHandler {
     const player = new Player(playerId, '', '', 0, 0, ws)
 
     this.players.push(player)
-    this.broadcastPlayerConnection(playerId)
   
     for await (const event of ws) {
       const eventDataString = event as string
@@ -62,6 +67,7 @@ export class ClientHandler {
           case 'player-login':
             player.name = eventData.name
             player.color = eventData.color
+            this.broadcastPlayerConnection(playerId)
             break
           case 'ping':
             this.pong(player)

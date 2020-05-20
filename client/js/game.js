@@ -5,8 +5,8 @@ class Game {
         this.ctx = this.c.getContext("2d");
         this.width = gameConfigs.width;
         this.height = gameConfigs.height;
-        this.boardRows = gameConfigs.boardRows;
-        this.boardColumns = gameConfigs.boardColumns;
+        this.boardRows = 5;
+        this.boardColumns = 5;
         this.ctx.canvas.width = this.width;
         this.ctx.canvas.height = this.height;
         this.cellWidth = this.width / this.boardRows;
@@ -17,6 +17,13 @@ class Game {
         this.board.draw();
 
         this.client = new Client(this);
+    }
+
+    applyServerRules(serverData) {
+        this.boardRows = serverData.boardRows;
+        this.boardColumns = serverData.boardColumns;
+        this.cellWidth = this.width / this.boardRows;
+        this.cellHeight = this.height / this.boardColumns;
     }
 }
 
@@ -41,8 +48,6 @@ class Board {
 let gameConfigs = {
     width: 500,
     height: 500,
-    boardRows: 7,
-    boardColumns: 7
 };
 
 const game = new Game(gameConfigs);

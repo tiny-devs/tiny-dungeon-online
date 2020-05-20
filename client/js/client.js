@@ -43,6 +43,13 @@ class Client {
 
             if (Array.isArray(receivedData)) {
                 this.updatePlayers(receivedData);
+            } else {
+                switch (receivedData.command) {
+                    case 'player-login':
+                        this.game.applyServerRules(receivedData);
+                        this.updatePlayers(receivedData.players);
+                        break
+                }
             }
 
         } catch(e) {
