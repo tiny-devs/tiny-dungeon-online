@@ -4,11 +4,7 @@ Play now (TODO: Deploy)
 
 ## Getting started
 
-Install Deno  
-Powershell:  
-`iwr https://deno.land/x/install/install.ps1 -useb | iex`  
-Other:  
-[deno guide](https://deno.land/#installation)
+Install Deno: [installation guide](https://deno.land/manual/getting_started/installation)  
 
 Run the game server  
 `deno run --allow-net=:3000 --allow-read main.ts --port=3000`
@@ -16,3 +12,5 @@ Run the game server
 Use URL to connect: `http://localhost:3000`
 
 Enjoy
+
+⚙️ [Test version](https://tiny-dungeon-online-test.herokuapp.com/) based on `dev` branch
