@@ -101,6 +101,7 @@ class Client {
     
             this.game.ctx.beginPath();
             
+            const playerSize = 8;
             const playerMatrix = [
                 [ 0, 0, 0, 0, 0, 0, 0, 0],
                 [ 0, 0, 0, 1, 1, 0, 0, 0],
@@ -113,14 +114,14 @@ class Client {
             ];
 
             // Draw Player
-            for (let column = 0; column < 8; column++) {
-                for (let line = 0; line < 8; line++) {
+            for (let column = 0; column < playerSize; column++) {
+                for (let line = 0; line < playerSize; line++) {
                     const draw = playerMatrix[line][column];
                     if (draw) {
                         this.game.ctx.fillStyle = player.color;
-                        const startX = (column * this.game.cellWidth / 8) + (player.x * this.game.cellWidth);
-                        const startY = (line * this.game.cellHeight / 8) + (player.y * this.game.cellHeight);
-                        this.game.ctx.fillRect(startX, startY, this.game.cellWidth / 8, this.game.cellHeight / 8);
+                        const startX = (column * this.game.cellWidth / playerSize) + (player.x * this.game.cellWidth);
+                        const startY = (line * this.game.cellHeight / playerSize) + (player.y * this.game.cellHeight);
+                        this.game.ctx.fillRect(startX, startY, this.game.cellWidth / playerSize, this.game.cellHeight / playerSize);
                     } 
                 }
             }
