@@ -66,7 +66,6 @@ class Client {
     }
 
     updatePlayer(data) {
-        console.log(this.players)
         for(const player of this.players) {
             if (player.id == data.id) {
                 player.x = data.x;
