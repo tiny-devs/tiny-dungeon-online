@@ -100,9 +100,31 @@ class Client {
             this.playerListElement.appendChild(li);
     
             this.game.ctx.beginPath();
-            this.game.ctx.rect(player.x * this.game.cellWidth, player.y * this.game.cellHeight, this.game.cellWidth, this.game.cellHeight);
-            this.game.ctx.fillStyle = player.color;
-            this.game.ctx.fill();
+            
+            const playerMatrix = [
+                [ 0, 0, 0, 0, 0, 0, 0, 0],
+                [ 0, 0, 0, 1, 1, 0, 0, 0],
+                [ 0, 0, 0, 1, 1, 0, 0, 0],
+                [ 0, 0, 1, 1, 1, 1, 0, 0],
+                [ 0, 1, 0, 1, 1, 0, 1, 0],
+                [ 0, 0, 0, 1, 1, 0, 0, 0],
+                [ 0, 0, 1, 0, 0, 1, 0, 0],
+                [ 0, 0, 1, 0, 0, 1, 0, 0]
+            ];
+
+            // Draw Player
+            for (let column = 0; column < 8; column++) {
+                for (let line = 0; line < 8; line++) {
+                    const draw = playerMatrix[line][column];
+                    if (draw) {
+                        this.game.ctx.fillStyle = player.color;
+                        const startX = (column * this.game.cellWidth / 8) + (player.x * this.game.cellWidth);
+                        const startY = (line * this.game.cellHeight / 8) + (player.y * this.game.cellHeight);
+                        this.game.ctx.fillRect(startX, startY, this.game.cellWidth / 8, this.game.cellHeight / 8);
+                    } 
+                }
+            }
+
             this.game.ctx.stroke();
         });
     }
