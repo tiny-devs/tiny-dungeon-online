@@ -14,6 +14,7 @@ class Client {
         this.pingEvent = ["ping", Uint8Array];
         this.playerName = '';
         this.playerList = [];
+        this.players = [];
         this.confirmBtn.onclick = () => { this.onConfirmName() };
         this.moveCommand = {
             name: '',
@@ -40,16 +41,15 @@ class Client {
         const data = event.data;
         try {
             const receivedData = JSON.parse(data);
-
-            if (Array.isArray(receivedData)) {
-                this.updatePlayers(receivedData);
-            } else {
-                switch (receivedData.command) {
-                    case 'player-login':
-                        this.game.applyServerRules(receivedData);
-                        this.updatePlayers(receivedData.players);
-                        break
-                }
+            
+            switch (receivedData.command) {
+                case 'player-login':
+                    this.game.applyServerRules(receivedData);
+                    this.initPlayers(receivedData.players);
+                    break
+                case 'player-move':
+                    this.updatePlayer(receivedData);
+                    break
             }
 
         } catch(e) {
@@ -59,7 +59,24 @@ class Client {
         }
     }
 
-    updatePlayers(players) {
+    initPlayers(players) {
+        this.players.splice(0, this.players.length);
+        this.players = players;
+        this.drawEntities();
+    }
+
+    updatePlayer(data) {
+        console.log(this.players)
+        for(const player of this.players) {
+            if (player.id == data.id) {
+                player.x = data.x;
+                player.y = data.y;
+            }
+        }
+        this.drawEntities()
+    }
+
+    drawEntities(players) {
         while(this.playerListElement.firstChild ){
             this.playerListElement.removeChild(this.playerListElement.firstChild);
         }
@@ -67,7 +84,7 @@ class Client {
         this.game.ctx.clearRect(0, 0, this.game.c.width, this.game.c.height);
         this.game.board.draw();
     
-        players.forEach(player => {
+        this.players.forEach(player => {
             var li = document.createElement("li");
             li.appendChild(document.createTextNode(player.name));
             li.style.color = player.color;

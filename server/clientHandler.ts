@@ -13,12 +13,14 @@ export class ClientHandler {
     this.boardColumns = serverConfigs.boardColumns
   }
 
-  private broadcastPlayerMove(player: Player, direction: string): void {
-    player.move(direction, this.boardRows, this.boardColumns)
-    const data = JSON.stringify(this.players);
+  private broadcastPlayerMove(playerMoved: Player, direction: string): void {
+    playerMoved.move(direction, this.boardRows, this.boardColumns)
 
     for (const player of this.players) {
-      player.clientWs.send(data)
+      player.clientWs.send(`{"command": "player-move",`+
+      `"id": "${playerMoved.id}",`+
+      `"x":"${playerMoved.x}",`+
+      `"y":"${playerMoved.y}"}`)
     }
   }
 
