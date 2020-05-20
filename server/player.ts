@@ -1,4 +1,4 @@
-import { Direction } from './Enums/Direction.ts'
+import { Direction } from './Enums.ts'
 
 export class Player {
     public id: string;

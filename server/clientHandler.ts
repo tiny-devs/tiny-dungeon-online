@@ -1,8 +1,7 @@
 import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std/ws/mod.ts'
 import { v4 } from 'https://deno.land/std/uuid/mod.ts'
 import { Player } from './player.ts'
-import { Direction } from './Enums/Direction.ts'
-import { Command } from './Enums/Command.ts'
+import { Command, Direction } from './Enums.ts'
 
 export class ClientHandler {
   private boardColumns: number = 5
