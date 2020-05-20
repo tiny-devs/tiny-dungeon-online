@@ -1,3 +1,5 @@
+import { Direction } from './Enums.ts'
+
 export class Player {
     public id: string;
     public name: string;
@@ -19,24 +21,24 @@ export class Player {
         this.clientWs = clientWs;
     }
 
-    public move(key: string, boardRows: number, boardColumns: number) {
+    public move(key: Direction, boardRows: number, boardColumns: number) {
         switch (key) {
-            case 'right':
+            case Direction.Right:
                 if (this.x + 1 < boardRows) {
                     this.x++;
                 }
                 break;
-            case 'down':
+            case Direction.Down:
                 if (this.y + 1 < boardColumns) {
                     this.y++;
                 }
                 break;
-            case 'left':
+            case Direction.Left:
                 if (this.x - 1 >= 0) {
                     this.x--;
                 }
                 break;
-            case 'up':
+            case Direction.Up:
                 if (this.y - 1 >= 0) {
                     this.y--;
                 }

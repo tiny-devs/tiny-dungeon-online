@@ -1,6 +1,7 @@
 import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std/ws/mod.ts'
 import { v4 } from 'https://deno.land/std/uuid/mod.ts'
 import { Player } from './player.ts'
+import { Command, Direction } from './Enums.ts'
 
 export class ClientHandler {
   private boardColumns: number = 5
@@ -13,11 +14,11 @@ export class ClientHandler {
     this.boardColumns = serverConfigs.boardColumns
   }
 
-  private broadcastPlayerMove(playerMoved: Player, direction: string): void {
+  private broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
     playerMoved.move(direction, this.boardRows, this.boardColumns)
 
     for (const player of this.players) {
-      player.clientWs.send(`{"command": "player-move",`+
+      player.clientWs.send(`{"command": ${Command.Move},`+
       `"id": "${playerMoved.id}",`+
       `"x":"${playerMoved.x}",`+
       `"y":"${playerMoved.y}"}`)
@@ -28,7 +29,7 @@ export class ClientHandler {
     const data = JSON.stringify(this.players);
 
     for (const player of this.players) {
-      player.clientWs.send(`{"command": "player-login",`+
+      player.clientWs.send(`{"command": ${Command.Login},`+
       `"message": "> player with the id ${playerId} is connected",`+
       `"boardRows":"${this.boardRows}",`+
       `"boardColumns":"${this.boardColumns}",`+
@@ -61,17 +62,16 @@ export class ClientHandler {
 
       try {
         const eventData = JSON.parse(eventDataString)
-        
         switch (eventData.command) {
-          case 'walk-command':
+          case Command.Move:
             this.broadcastPlayerMove(player, eventData.key)
             break
-          case 'player-login':
+          case Command.Login:
             player.name = eventData.name
             player.color = eventData.color
             this.broadcastPlayerConnection(playerId)
             break
-          case 'ping':
+          case Command.Ping:
             this.pong(player)
             break
         }

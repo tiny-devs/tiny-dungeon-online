@@ -1,3 +1,17 @@
+const Direction = {
+    "Up": 1,
+    "Down": 2,
+    "Left": 3,
+    "Right": 4
+}
+
+const Command = {
+    "Login": 1,
+    "Move": 2,
+    "Ping": 3,
+    "Pong": 4
+}
+
 class Client {
     constructor(game) {
         document.onkeydown = this.checkKey.bind(this);
@@ -16,10 +30,6 @@ class Client {
         this.playerList = [];
         this.players = [];
         this.confirmBtn.onclick = () => { this.onConfirmName() };
-        this.moveCommand = {
-            name: '',
-            key: ''
-        };
     }
 
     initWebSocket() {
@@ -28,7 +38,7 @@ class Client {
     }
 
     successfulConection() {
-        this.ws.send(JSON.stringify({command: 'player-login', name: this.playerName, color: this.getRandomColor()}));
+        this.ws.send(JSON.stringify({command: Command.Login, name: this.playerName, color: this.getRandomColor()}));
         this.canvasElement.style.display="block";
         this.playerNameInput.style.display="none";
         this.confirmBtn.style.display="none";
@@ -43,11 +53,11 @@ class Client {
             const receivedData = JSON.parse(data);
             
             switch (receivedData.command) {
-                case 'player-login':
+                case Command.Login:
                     this.game.applyServerRules(receivedData);
                     this.initPlayers(receivedData.players);
                     break
-                case 'player-move':
+                case Command.Move:
                     this.updatePlayer(receivedData);
                     break
             }
@@ -75,14 +85,14 @@ class Client {
         this.drawEntities()
     }
 
-    drawEntities(players) {
+    drawEntities() {
         while(this.playerListElement.firstChild ){
             this.playerListElement.removeChild(this.playerListElement.firstChild);
         }
     
         this.game.ctx.clearRect(0, 0, this.game.c.width, this.game.c.height);
         this.game.board.draw();
-    
+
         this.players.forEach(player => {
             var li = document.createElement("li");
             li.appendChild(document.createTextNode(player.name));
@@ -100,13 +110,13 @@ class Client {
     checkKey(e) {
         if (this.loggedIn) {
             if (e.keyCode == '38' || e.keyCode == '87') {
-                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: 'up' }));
+                this.ws.send(JSON.stringify({command: Command.Move, name: this.playerName, key: Direction.Up }));
             } else if (e.keyCode == '40' || e.keyCode == '83') {
-                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: 'down' }));
+                this.ws.send(JSON.stringify({command: Command.Move, name: this.playerName, key: Direction.Down }));
             } else if (e.keyCode == '37' || e.keyCode == '65') {
-                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: 'left' }));
+                this.ws.send(JSON.stringify({command: Command.Move, name: this.playerName, key: Direction.Left }));
             } else if (e.keyCode == '39' || e.keyCode == '68') {
-                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: 'right' }));
+                this.ws.send(JSON.stringify({command: Command.Move, name: this.playerName, key: Direction.Right }));
             }
         }
     }
@@ -134,7 +144,7 @@ class Client {
     }
 
     pingPong() {
-        this.ws.send(JSON.stringify({command: 'ping', name: this.pingEvent}));
+        this.ws.send(JSON.stringify({command: Command.Ping, name: this.pingEvent}));
         
         setTimeout(() => {
             this.pingPong();
