@@ -1,6 +1,7 @@
 import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std/ws/mod.ts'
 import { v4 } from 'https://deno.land/std/uuid/mod.ts'
 import { Player } from './player.ts'
+import { Direction } from './Enums/Direction.ts'
 
 export class ClientHandler {
   private boardColumns: number = 5
@@ -13,7 +14,7 @@ export class ClientHandler {
     this.boardColumns = serverConfigs.boardColumns
   }
 
-  private broadcastPlayerMove(playerMoved: Player, direction: string): void {
+  private broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
     playerMoved.move(direction, this.boardRows, this.boardColumns)
 
     for (const player of this.players) {

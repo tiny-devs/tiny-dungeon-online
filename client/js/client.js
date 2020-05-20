@@ -1,3 +1,10 @@
+const Direction = {
+    "Up": 1,
+    "Down": 2,
+    "Left": 3,
+    "Right": 4
+}
+
 class Client {
     constructor(game) {
         document.onkeydown = this.checkKey.bind(this);
@@ -16,10 +23,6 @@ class Client {
         this.playerList = [];
         this.players = [];
         this.confirmBtn.onclick = () => { this.onConfirmName() };
-        this.moveCommand = {
-            name: '',
-            key: ''
-        };
     }
 
     initWebSocket() {
@@ -100,13 +103,15 @@ class Client {
     checkKey(e) {
         if (this.loggedIn) {
             if (e.keyCode == '38' || e.keyCode == '87') {
-                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: 'up' }));
+                var x = JSON.stringify({command: 'walk-command', name: this.playerName, key: Direction.Up })
+                console.log(x);
+                this.ws.send(x);
             } else if (e.keyCode == '40' || e.keyCode == '83') {
-                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: 'down' }));
+                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: Direction.Down }));
             } else if (e.keyCode == '37' || e.keyCode == '65') {
-                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: 'left' }));
+                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: Direction.Left }));
             } else if (e.keyCode == '39' || e.keyCode == '68') {
-                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: 'right' }));
+                this.ws.send(JSON.stringify({command: 'walk-command', name: this.playerName, key: Direction.Right }));
             }
         }
     }
