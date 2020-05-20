@@ -13,4 +13,4 @@ Use URL to connect: `http://localhost:3000`
 
 Enjoy
 
-⚙️ [Test version](https://tiny-dungeon-online-test.herokuapp.com/) based on `dev` branch
+⚙️ [Test version](https://tiny-dungeon-online-dev.herokuapp.com/) based on `dev` branch
