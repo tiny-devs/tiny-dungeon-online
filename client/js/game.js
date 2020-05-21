@@ -25,6 +25,13 @@ class Game {
         this.cellWidth = this.width / this.boardRows;
         this.cellHeight = this.height / this.boardColumns;
     }
+
+    addPlayers(players) {
+        this.players.splice(0, this.players.length);
+        for(const player of players) {
+            this.players.push(new Player(this, player));
+        }
+    }
 }
 
 class Board {
@@ -42,6 +49,56 @@ class Board {
                 this.game.ctx.stroke();
             }
         }
+    }
+}
+
+class Player {
+    constructor(game, playerData) {
+        this.game = game;
+
+        this.x = playerData.x;
+        this.y = playerData.y;
+        this.color = playerData.color;
+        this.name = playerData.name;
+        this.id = playerData.id;
+        this.playerSize = 8;
+        this.playerMatrix = this.definePlayerShape();
+    }
+
+    definePlayerShape() {
+        return [
+            [ 0, 0, 0, 0, 0, 0, 0, 0],
+            [ 0, 0, 0, 1, 1, 0, 0, 0],
+            [ 0, 0, 0, 1, 1, 0, 0, 0],
+            [ 0, 0, 1, 1, 1, 1, 0, 0],
+            [ 0, 1, 0, 1, 1, 0, 1, 0],
+            [ 0, 0, 0, 1, 1, 0, 0, 0],
+            [ 0, 0, 1, 0, 0, 1, 0, 0],
+            [ 0, 0, 1, 0, 0, 1, 0, 0]
+        ];
+    }
+
+    draw() {
+        this.game.ctx.beginPath();
+
+        for (let column = 0; column < this.playerSize; column++) {
+            for (let line = 0; line < this.playerSize; line++) {
+                const draw = this.playerMatrix[line][column];
+                if (draw) {
+                    this.game.ctx.fillStyle = this.color;
+                    const startX = (column * this.game.cellWidth / this.playerSize) + (this.x * this.game.cellWidth);
+                    const startY = (line * this.game.cellHeight / this.playerSize) + (this.y * this.game.cellHeight);
+                    this.game.ctx.fillRect(startX, startY, this.game.cellWidth / this.playerSize, this.game.cellHeight / this.playerSize);
+                } 
+            }
+        }
+
+        this.game.ctx.stroke();
+    }
+
+    move(x, y) {
+        this.x = x;
+        this.y = y;
     }
 }
 
