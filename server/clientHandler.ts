@@ -30,7 +30,7 @@ export class ClientHandler {
 
     for (const player of this.players) {
       player.clientWs.send(`{"command": ${Command.Login},`+
-      `"message": "> player with the id ${playerId} is connected",`+
+      `"connected": "${playerId}",`+
       `"boardRows":"${this.boardRows}",`+
       `"boardColumns":"${this.boardColumns}",`+
       `"players":${data}}`)

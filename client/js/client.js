@@ -25,10 +25,8 @@ class Client {
         this.game = game;
         this.ws = null;
         this.loggedIn = false;
-        this.pingEvent = ["ping", Uint8Array];
         this.playerName = '';
         this.playerList = [];
-        this.players = [];
         this.confirmBtn.onclick = () => { this.onConfirmName() };
     }
 
@@ -70,19 +68,17 @@ class Client {
     }
 
     initPlayers(players) {
-        this.players.splice(0, this.players.length);
-        this.players = players;
+        this.game.addPlayers(players);
         this.drawEntities();
     }
 
     updatePlayer(data) {
-        for(const player of this.players) {
+        for(const player of this.game.players) {
             if (player.id == data.id) {
-                player.x = data.x;
-                player.y = data.y;
+                player.move(data.x, data.y);
             }
         }
-        this.drawEntities()
+        this.drawEntities();
     }
 
     drawEntities() {
@@ -93,40 +89,13 @@ class Client {
         this.game.ctx.clearRect(0, 0, this.game.c.width, this.game.c.height);
         this.game.board.draw();
 
-        this.players.forEach(player => {
+        this.game.players.forEach(player => {
             var li = document.createElement("li");
             li.appendChild(document.createTextNode(player.name));
             li.style.color = player.color;
             this.playerListElement.appendChild(li);
-    
-            this.game.ctx.beginPath();
-            
-            const playerSize = 8;
-            const playerMatrix = [
-                [ 0, 0, 0, 0, 0, 0, 0, 0],
-                [ 0, 0, 0, 1, 1, 0, 0, 0],
-                [ 0, 0, 0, 1, 1, 0, 0, 0],
-                [ 0, 0, 1, 1, 1, 1, 0, 0],
-                [ 0, 1, 0, 1, 1, 0, 1, 0],
-                [ 0, 0, 0, 1, 1, 0, 0, 0],
-                [ 0, 0, 1, 0, 0, 1, 0, 0],
-                [ 0, 0, 1, 0, 0, 1, 0, 0]
-            ];
 
-            // Draw Player
-            for (let column = 0; column < playerSize; column++) {
-                for (let line = 0; line < playerSize; line++) {
-                    const draw = playerMatrix[line][column];
-                    if (draw) {
-                        this.game.ctx.fillStyle = player.color;
-                        const startX = (column * this.game.cellWidth / playerSize) + (player.x * this.game.cellWidth);
-                        const startY = (line * this.game.cellHeight / playerSize) + (player.y * this.game.cellHeight);
-                        this.game.ctx.fillRect(startX, startY, this.game.cellWidth / playerSize, this.game.cellHeight / playerSize);
-                    } 
-                }
-            }
-
-            this.game.ctx.stroke();
+            player.draw();
         });
     }
 
@@ -167,10 +136,10 @@ class Client {
     }
 
     pingPong() {
-        this.ws.send(JSON.stringify({command: Command.Ping, name: this.pingEvent}));
+        this.ws.send(`{"command": ${Command.Ping}}`);
         
         setTimeout(() => {
             this.pingPong();
-        }, 10000)
+        }, 20000)
     }
 }
