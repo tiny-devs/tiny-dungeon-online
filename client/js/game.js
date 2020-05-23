@@ -20,8 +20,8 @@ class Game {
     }
 
     applyServerRules(serverData) {
-        this.boardRows = serverData.boardRows;
-        this.boardColumns = serverData.boardColumns;
+        this.boardRows = serverData[2];
+        this.boardColumns = serverData[3];
         this.cellWidth = this.width / this.boardRows;
         this.cellHeight = this.height / this.boardColumns;
     }

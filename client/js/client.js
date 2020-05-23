@@ -36,7 +36,7 @@ class Client {
     }
 
     successfulConection() {
-        this.ws.send(JSON.stringify({command: Command.Login, name: this.playerName, color: this.getRandomColor()}));
+        this.ws.send(`${Command.Login},${this.playerName},${this.getRandomColor()}`);
         this.canvasElement.style.display="block";
         this.playerNameInput.style.display="none";
         this.confirmBtn.style.display="none";
@@ -48,12 +48,12 @@ class Client {
     onReceiveMessage(event) {
         const data = event.data;
         try {
-            const receivedData = JSON.parse(data);
+            const receivedData = data.split(',');
             
-            switch (receivedData.command) {
+            switch (+receivedData[0]) {
                 case Command.Login:
                     this.game.applyServerRules(receivedData);
-                    this.initPlayers(receivedData.players);
+                    this.initPlayers(this.getPlayerListFromData(data));
                     break
                 case Command.Move:
                     this.updatePlayer(receivedData);
@@ -67,6 +67,25 @@ class Client {
         }
     }
 
+    // esse metodo nao vai ser necessario quando tivermos classes de packets e parsers
+    getPlayerListFromData(data) {
+        let listString = '';
+        let isList = false;
+
+        for (const c of data) {
+            if (c == '[') {
+                isList = true;
+            }
+            if (isList) {
+                listString = listString.concat(c);
+                if (c == ']') {
+                    isList = false;
+                }
+            }
+        }
+        return JSON.parse(listString);
+    }
+
     initPlayers(players) {
         this.game.addPlayers(players);
         this.drawEntities();
@@ -74,8 +93,8 @@ class Client {
 
     updatePlayer(data) {
         for(const player of this.game.players) {
-            if (player.id == data.id) {
-                player.move(data.x, data.y);
+            if (player.id == data[1]) {
+                player.move(data[2], data[3]);
             }
         }
         this.drawEntities();
@@ -102,13 +121,13 @@ class Client {
     checkKey(e) {
         if (this.loggedIn) {
             if (e.keyCode == '38' || e.keyCode == '87') {
-                this.ws.send(JSON.stringify({command: Command.Move, name: this.playerName, key: Direction.Up }));
+                this.ws.send(`${Command.Move},${Direction.Up}`);
             } else if (e.keyCode == '40' || e.keyCode == '83') {
-                this.ws.send(JSON.stringify({command: Command.Move, name: this.playerName, key: Direction.Down }));
+                this.ws.send(`${Command.Move},${Direction.Down}`);
             } else if (e.keyCode == '37' || e.keyCode == '65') {
-                this.ws.send(JSON.stringify({command: Command.Move, name: this.playerName, key: Direction.Left }));
+                this.ws.send(`${Command.Move},${Direction.Left}`);
             } else if (e.keyCode == '39' || e.keyCode == '68') {
-                this.ws.send(JSON.stringify({command: Command.Move, name: this.playerName, key: Direction.Right }));
+                this.ws.send(`${Command.Move},${Direction.Right}`);
             }
         }
     }
@@ -136,10 +155,10 @@ class Client {
     }
 
     pingPong() {
-        this.ws.send(`{"command": ${Command.Ping}}`);
+        this.ws.send(`${Command.Ping}`);
         
         setTimeout(() => {
             this.pingPong();
-        }, 20000)
+        }, 20000);
     }
 }
