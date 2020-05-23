@@ -18,28 +18,36 @@ export class ClientHandler {
     playerMoved.move(direction, this.boardRows, this.boardColumns)
 
     for (const player of this.players) {
-      player.clientWs.send(`{"command": ${Command.Move},`+
-      `"id": "${playerMoved.id}",`+
-      `"x":"${playerMoved.x}",`+
-      `"y":"${playerMoved.y}"}`)
+      player.clientWs.send(`${Command.Move},`+
+      `${playerMoved.id},`+
+      `${playerMoved.x},`+
+      `${playerMoved.y}`)
     }
   }
 
   private broadcastPlayerConnection(playerId: string): void {
-    const data = JSON.stringify(this.players);
+    const data = JSON.stringify(this.getAllPlayers())
 
     for (const player of this.players) {
-      player.clientWs.send(`{"command": ${Command.Login},`+
-      `"connected": "${playerId}",`+
-      `"boardRows":"${this.boardRows}",`+
-      `"boardColumns":"${this.boardColumns}",`+
-      `"players":${data}}`)
+      player.clientWs.send(`${Command.Login},`+
+      `${playerId},`+
+      `${this.boardRows},`+
+      `${this.boardColumns},`+
+      `${data}`)
     }
+  }
+
+  private getAllPlayers() {
+    let playersReturn = []
+    for (const player of this.players) {
+      playersReturn.push(player.getReturnData())
+    }
+    return playersReturn
   }
 
   private pong(player: Player): void {
     this.players.filter(p => p.name == player.name)[0];
-    player.clientWs?.send('pong');
+    player.clientWs?.send(`${Command.Pong}`);
   }
 
   public async handleClient(ws: WebSocket): Promise<void> {
@@ -61,14 +69,15 @@ export class ClientHandler {
       }
 
       try {
-        const eventData = JSON.parse(eventDataString)
-        switch (eventData.command) {
+        const eventData = eventDataString.split(',')
+
+        switch (+eventData[0]) {
           case Command.Move:
-            this.broadcastPlayerMove(player, eventData.key)
+            this.broadcastPlayerMove(player, +eventData[1])
             break
           case Command.Login:
-            player.name = eventData.name
-            player.color = eventData.color
+            player.name = eventData[1]
+            player.color = eventData[2]
             this.broadcastPlayerConnection(playerId)
             break
           case Command.Ping:

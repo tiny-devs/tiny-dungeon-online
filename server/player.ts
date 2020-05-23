@@ -45,4 +45,14 @@ export class Player {
                 break;
         }
     }
+
+    public getReturnData() {
+        return {
+            id: this.id,
+            name: this.name,
+            color: this.color,
+            x: this.x,
+            y: this.y
+        }
+    }
 }
