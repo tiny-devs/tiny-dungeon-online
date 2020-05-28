@@ -45,6 +45,16 @@ export class Server {
         })
       }
 
+      if (req.method === 'GET' && req.url === '/js/main.js') {
+        req.respond({
+          status: 200,
+          headers: new Headers({
+            'content-type': 'application/javascript',
+          }),
+          body: await Deno.open('./client/js/main.js'),
+        })
+      }
+
       if (req.method === 'GET' && req.url === '/ws') {
         if (acceptable(req)) {
           acceptWebSocket({

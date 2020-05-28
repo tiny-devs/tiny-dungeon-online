@@ -1,8 +1,8 @@
 class Game {
-    constructor(gameConfigs) {
-        this.showGame = document.getElementById("game");
-        this.c = document.getElementById("canvas");
-        this.ctx = this.c.getContext("2d");
+    constructor(gameConfigs, mainElements) {
+        this.c = document.getElementById('canvas');
+        this.ctx = this.c.getContext('2d');
+
         this.width = gameConfigs.width;
         this.height = gameConfigs.height;
         this.boardRows = 5;
@@ -16,7 +16,7 @@ class Game {
         this.players = [];
         this.board.draw();
 
-        this.client = new Client(this);
+        this.client = new Client(this, mainElements.clientConfigs, mainElements);
     }
 
     applyServerRules(serverData) {
@@ -62,7 +62,9 @@ class Player {
         this.name = playerData.name;
         this.id = playerData.id;
         this.playerSize = 8;
-        this.playerMatrix = this.definePlayerShape();
+        this.playerMatrix = playerData.matrix.map((arr) => {
+            return arr.slice();
+        });
     }
 
     definePlayerShape() {
@@ -101,10 +103,3 @@ class Player {
         this.y = y;
     }
 }
-
-let gameConfigs = {
-    width: 500,
-    height: 500,
-};
-
-const game = new Game(gameConfigs);

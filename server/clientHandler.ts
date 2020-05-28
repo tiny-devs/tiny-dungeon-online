@@ -69,7 +69,14 @@ export class ClientHandler {
       }
 
       try {
-        const eventData = eventDataString.split(',')
+        let rawDataString = eventDataString
+        let matrix = ''
+        if (eventDataString.includes(',[')) {
+          rawDataString = eventDataString.substr(0, eventDataString.indexOf(',['))
+          matrix = eventDataString.substr(eventDataString.indexOf('['), eventDataString.length)
+        }
+
+        const eventData = rawDataString.split(',')
 
         switch (+eventData[0]) {
           case Command.Move:
@@ -78,6 +85,7 @@ export class ClientHandler {
           case Command.Login:
             player.name = eventData[1]
             player.color = eventData[2]
+            player.matrix = JSON.parse(matrix)
             this.broadcastPlayerConnection(playerId)
             break
           case Command.Ping:
