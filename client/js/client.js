@@ -30,18 +30,35 @@ class Client {
         this.setupWebSocket();
     }
 
+    setupWebSocket() {
+        let socketProtocol = 'wss'
+        if (location.protocol !== 'https:') {
+            socketProtocol = 'ws'
+        }
+        this.ws = new WebSocket(`${socketProtocol}://${window.location.host}/ws`);
+        this.initWebSocket();
+    }
+
     initWebSocket() {
         this.ws.onopen = () => this.successfulConection();
         this.ws.addEventListener('message', this.onReceiveMessage.bind(this));
     }
 
     successfulConection() {
-        let playerMatrix = JSON.stringify(this.playerMatrix);
-        this.ws.send(`${Command.Login},${this.playerName},${this.getRandomColor()},${playerMatrix}`);
+        this.ws.send(this.getPlayerLoginData());
         this.gameScreen.style.display='block';
         this.loginScreen.style.display='none';
         this.loggedIn = true;
         this.pingPong();
+    }
+
+    getPlayerLoginData() {
+        let playerMatrix = JSON.stringify(this.playerMatrix);
+
+        return `${Command.Login},`+
+        `${this.playerName},`+
+        `${this.getRandomColor()},`+
+        `${playerMatrix}`;
     }
 
     onReceiveMessage(event) {
@@ -66,6 +83,7 @@ class Client {
         }
     }
 
+    //this will be much prettier when we have the parser, sorry
     getPlayerListFromData(data) {
         let rawDataString = data;
         let listString = '';
@@ -121,15 +139,6 @@ class Client {
                 this.ws.send(`${Command.Move},${Direction.Right}`);
             }
         }
-    }
-
-    setupWebSocket() {
-        let socketProtocol = 'wss'
-        if (location.protocol !== 'https:') {
-            socketProtocol = 'ws'
-        }
-        this.ws = new WebSocket(`${socketProtocol}://${window.location.host}/ws`);
-        this.initWebSocket();
     }
 
     getRandomColor() {

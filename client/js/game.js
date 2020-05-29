@@ -15,8 +15,6 @@ class Game {
         this.board = new Board(this)
         this.players = [];
         this.board.draw();
-
-        this.client = new Client(this, mainElements.clientConfigs, mainElements);
     }
 
     applyServerRules(serverData) {
@@ -65,19 +63,6 @@ class Player {
         this.playerMatrix = playerData.matrix.map((arr) => {
             return arr.slice();
         });
-    }
-
-    definePlayerShape() {
-        return [
-            [ 0, 0, 0, 0, 0, 0, 0, 0],
-            [ 0, 0, 0, 1, 1, 0, 0, 0],
-            [ 0, 0, 0, 1, 1, 0, 0, 0],
-            [ 0, 0, 1, 1, 1, 1, 0, 0],
-            [ 0, 1, 0, 1, 1, 0, 1, 0],
-            [ 0, 0, 0, 1, 1, 0, 0, 0],
-            [ 0, 0, 1, 0, 0, 1, 0, 0],
-            [ 0, 0, 1, 0, 0, 1, 0, 0]
-        ];
     }
 
     draw() {

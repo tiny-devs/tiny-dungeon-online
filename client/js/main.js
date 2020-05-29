@@ -6,18 +6,17 @@ class Main {
     this.confirmBtn = document.getElementById('confirm-btn')
     this.gameScreen = document.getElementById('game');
     this.gameScreen.style.display='none';
-
-    this.drawingGridWidth = gameConfigs.drawingGridWidth;
-    this.drawingGridHeight = gameConfigs.drawingGridHeight;
-    this.drawingGridRows = gameConfigs.drawingGridRows;
-    this.drawingGridColumns = gameConfigs.drawingGridColumns;
-    this.drawingGrid = new DrawingCanvas(this);
+    
+    this.drawingGrid = new DrawingCanvas(this, configs.drawingGrid);
 
     this.clientConfigs = {
       playerName: '',
       playerMatrix: []
     }
-    this.gameConfigs = configs;
+    this.gameConfigs = configs.game;
+
+    this.game = null;
+    this.client = null;
 
     this.confirmBtn.onclick = () => { this.onConfirmName() };
   }
@@ -30,15 +29,15 @@ class Main {
           return arr.slice();
         });
          
-        this.game = new Game(this.gameConfigs, this);
+        this.startGame();
       }
     }
   }
 
   hasDraw() {
     let hasAnyDraw = false;
-    for(let i=0; i < this.drawingGridRows; i++) {
-      for(let j=0; j < this.drawingGridColumns; j++) {
+    for(let i=0; i < this.drawingGrid.drawingGridRows; i++) {
+      for(let j=0; j < this.drawingGrid.drawingGridColumns; j++) {
         if (this.drawingGrid.drawingMatrix[i][j] == 1) {
           hasAnyDraw = true;
         }
@@ -46,10 +45,15 @@ class Main {
     }
     return hasAnyDraw;
   }
+
+  startGame() {
+    this.game = new Game(this.gameConfigs, this);
+    this.client = new Client(this.game, this.clientConfigs, this);
+  }
 }
 
 class DrawingCanvas {
-  constructor(main) {
+  constructor(main, configs) {
       this.main = main;
       this.c = document.getElementById('draw');
       this.c.onmousemove = this.mouseMove.bind(this);
@@ -57,10 +61,11 @@ class DrawingCanvas {
       this.c.onmouseup = this.mouseClick.bind(this);
       this.c.oncontextmenu = (e) => {return false;};
       this.ctx = this.c.getContext('2d');
-      this.width = this.main.drawingGridWidth;
-      this.height = this.main.drawingGridHeight;
-      this.drawingGridRows = this.main.drawingGridRows;
-      this.drawingGridColumns = this.main.drawingGridColumns;
+
+      this.width = configs.drawingGridWidth;
+      this.height = configs.drawingGridHeight;
+      this.drawingGridRows = configs.drawingGridRows;
+      this.drawingGridColumns = configs.drawingGridColumns;
       this.ctx.canvas.width  = this.width;
       this.ctx.canvas.height = this.height;
       this.cellWidth = this.width/this.drawingGridRows;
@@ -71,7 +76,6 @@ class DrawingCanvas {
       this.drawingMatrix = [];
       this.initDrawingMatrix();
       this.grid = new DrawingGrid(this);
-      this.draw(this.width/2, this.height/2);
   }
 
   initDrawingMatrix() {
@@ -155,12 +159,18 @@ class DrawingGrid {
 }
 
 let gameConfigs = {
-  width: 500,
-  height: 500,
-  drawingGridWidth: 150,
-  drawingGridHeight: 150,
-  drawingGridRows: 8,
-  drawingGridColumns: 8
+  game: {
+    width: 500,
+    height: 500,
+  },
+  drawingGrid: {
+    drawingGridWidth: 150,
+    drawingGridHeight: 150,
+    drawingGridRows: 8,
+    drawingGridColumns: 8,
+  },
 };
 
-const game = new Main(gameConfigs);
+window.onload = () => {
+  const game = new Main(gameConfigs);
+};
