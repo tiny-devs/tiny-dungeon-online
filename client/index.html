@@ -4,15 +4,24 @@
     <title>Tiny Dungeon Online - TDO</title>
   </head>
   <body>
-  <div id="game">
-    <p id="text-display">Enter your name:</p>
-    <input id="player-name"></input>
-    <button id="confirm-btn">Ok</button>
-    <canvas id="canvas" width="200" height="200"></canvas>
-    <p>Players Online:</p>
-    <ul id="player-list"></ul>
+  <div id="content">
+    <div id="login">
+      <p>Enter your name:</p>
+      <input id="player-name"></input>
+      <button id="confirm-btn">Ok</button>
+      <p>Draw yourself:</p>
+      <canvas id="draw" width="200" height="200"></canvas>
+      <br/>
+      <sub>left click: draw / right click: erase</sub>
+    </div>
+    <div id="game">
+      <canvas id="canvas" width="200" height="200"></canvas>
+      <p>Players Online:</p>
+      <ul id="player-list"></ul>
+    </div>
   </div>
-    <script src="js/client.js"></script>
-    <script src="js/game.js"></script>
+  <script src="js/client.js"></script>
+  <script src="js/game.js"></script>
+  <script src="js/main.js"></script>
   </body>
 </html>

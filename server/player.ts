@@ -6,6 +6,7 @@ export class Player {
     public color: string;
     public x: number;
     public y: number;
+    public matrix: number[][] = [];
     public clientWs: any;
 
     constructor(id: string,
@@ -52,7 +53,8 @@ export class Player {
             name: this.name,
             color: this.color,
             x: this.x,
-            y: this.y
+            y: this.y,
+            matrix: this.matrix
         }
     }
 }

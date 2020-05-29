@@ -13,36 +13,52 @@ const Command = {
 }
 
 class Client {
-    constructor(game) {
+    constructor(game, clientConfigs, mainElements) {
         document.onkeydown = this.checkKey.bind(this);
-        this.playerListElement = document.getElementById("player-list");
-        this.textDisplay = document.getElementById("text-display");
-        this.playerNameInput = document.getElementById("player-name");
-        this.confirmBtn = document.getElementById("confirm-btn")
-        this.canvasElement = document.getElementById("canvas");
-        this.canvasElement.style.display="none";
+        this.playerListElement = mainElements.playerListElement;
+        this.loginScreen = mainElements.loginScreen;
+        this.gameScreen = mainElements.gameScreen;
+        this.gameScreen.style.display='none';
 
         this.game = game;
         this.ws = null;
         this.loggedIn = false;
-        this.playerName = '';
+        this.playerName = clientConfigs.playerName;
+        this.playerMatrix = clientConfigs.playerMatrix;
         this.playerList = [];
-        this.confirmBtn.onclick = () => { this.onConfirmName() };
+
+        this.setupWebSocket();
+    }
+
+    setupWebSocket() {
+        let socketProtocol = 'wss'
+        if (location.protocol !== 'https:') {
+            socketProtocol = 'ws'
+        }
+        this.ws = new WebSocket(`${socketProtocol}://${window.location.host}/ws`);
+        this.initWebSocket();
     }
 
     initWebSocket() {
-        this.ws.onopen = () => this.successfulConection()
-        this.ws.addEventListener('message', this.onReceiveMessage.bind(this))
+        this.ws.onopen = () => this.successfulConection();
+        this.ws.addEventListener('message', this.onReceiveMessage.bind(this));
     }
 
     successfulConection() {
-        this.ws.send(`${Command.Login},${this.playerName},${this.getRandomColor()}`);
-        this.canvasElement.style.display="block";
-        this.playerNameInput.style.display="none";
-        this.confirmBtn.style.display="none";
-        this.textDisplay.style.display="none";
+        this.ws.send(this.getPlayerLoginData());
+        this.gameScreen.style.display='block';
+        this.loginScreen.style.display='none';
         this.loggedIn = true;
         this.pingPong();
+    }
+
+    getPlayerLoginData() {
+        let playerMatrix = JSON.stringify(this.playerMatrix);
+
+        return `${Command.Login},`+
+        `${this.playerName},`+
+        `${this.getRandomColor()},`+
+        `${playerMatrix}`;
     }
 
     onReceiveMessage(event) {
@@ -67,22 +83,15 @@ class Client {
         }
     }
 
-    // esse metodo nao vai ser necessario quando tivermos classes de packets e parsers
+    //this will be much prettier when we have the parser, sorry
     getPlayerListFromData(data) {
+        let rawDataString = data;
         let listString = '';
-        let isList = false;
-
-        for (const c of data) {
-            if (c == '[') {
-                isList = true;
-            }
-            if (isList) {
-                listString = listString.concat(c);
-                if (c == ']') {
-                    isList = false;
-                }
-            }
+        if (data.includes(',[')) {
+          rawDataString = data.substr(0, data.indexOf(',['));
+          listString = data.substr(data.indexOf('['), data.length);
         }
+        const eventData = rawDataString.split(',')
         return JSON.parse(listString);
     }
 
@@ -129,19 +138,6 @@ class Client {
             } else if (e.keyCode == '39' || e.keyCode == '68') {
                 this.ws.send(`${Command.Move},${Direction.Right}`);
             }
-        }
-    }
-
-    onConfirmName() {
-        this.playerName = this.playerNameInput.value;
-    
-        if (this.playerName) {
-            let socketProtocol = 'wss'
-            if (location.protocol !== 'https:') {
-                socketProtocol = 'ws'
-            }
-            this.ws = new WebSocket(`${socketProtocol}://${window.location.host}/ws`);
-            this.initWebSocket();
         }
     }
 
