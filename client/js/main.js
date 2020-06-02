@@ -3,9 +3,12 @@ class Main {
     this.playerListElement = document.getElementById('player-list');
     this.loginScreen = document.getElementById('login');
     this.playerNameInput = document.getElementById('player-name');
-    this.confirmBtn = document.getElementById('confirm-btn')
+    this.confirmBtn = document.getElementById('confirm-btn');
     this.gameScreen = document.getElementById('game');
     this.gameScreen.style.display='none';
+    this.layersParentElement = document.getElementById('layers');
+    this.layersParentElement.style.width = `${configs.game.width}px`;
+    this.layersParentElement.style.height = `${configs.game.height}px`;
     
     this.drawingGrid = new DrawingCanvas(this, configs.drawingGrid);
 

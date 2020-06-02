@@ -97,7 +97,7 @@ class Client {
 
     initPlayers(players) {
         this.game.addPlayers(players);
-        this.drawEntities();
+        this.drawSprites();
     }
 
     updatePlayer(data) {
@@ -106,16 +106,15 @@ class Client {
                 player.move(data[2], data[3]);
             }
         }
-        this.drawEntities();
+        this.drawSprites();
     }
 
-    drawEntities() {
-        while(this.playerListElement.firstChild ){
+    drawSprites() {
+        while(this.playerListElement.firstChild){
             this.playerListElement.removeChild(this.playerListElement.firstChild);
         }
     
-        this.game.ctx.clearRect(0, 0, this.game.c.width, this.game.c.height);
-        this.game.board.draw();
+        this.game.spritesLayer.clear();
 
         this.game.players.forEach(player => {
             const li = document.createElement("li");
