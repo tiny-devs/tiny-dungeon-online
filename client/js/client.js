@@ -15,7 +15,6 @@ const Command = {
 class Client {
     constructor(game, clientConfigs, mainElements) {
         document.onkeydown = this.checkKey.bind(this);
-        this.playerListElement = mainElements.playerListElement;
         this.loginScreen = mainElements.loginScreen;
         this.gameScreen = mainElements.gameScreen;
         this.gameScreen.style.display='none';
@@ -64,12 +63,12 @@ class Client {
     onReceiveMessage(event) {
         const data = event.data;
         try {
-            const receivedData = data.split(',');
-            
+            const receivedData = this.parseEventDataString(data);
+
             switch (+receivedData[0]) {
                 case Command.Login:
                     this.game.applyServerRules(receivedData);
-                    this.initPlayers(this.getPlayerListFromData(data));
+                    this.initPlayers(JSON.parse(receivedData[4]));
                     break
                 case Command.Move:
                     this.updatePlayer(receivedData);
@@ -83,48 +82,38 @@ class Client {
         }
     }
 
-    //this will be much prettier when we have the parser, sorry
-    getPlayerListFromData(data) {
-        let rawDataString = data;
-        let listString = '';
-        if (data.includes(',[')) {
-          rawDataString = data.substr(0, data.indexOf(',['));
-          listString = data.substr(data.indexOf('['), data.length);
+    parseEventDataString(eventDataString) {
+        let rawDataString = eventDataString;
+        let matrix = '';
+        if (eventDataString.includes(',[')) {
+            rawDataString = eventDataString.substr(0, eventDataString.indexOf(',['));
+            matrix = eventDataString.substr(eventDataString.indexOf('['), eventDataString.length);
         }
-        const eventData = rawDataString.split(',')
-        return JSON.parse(listString);
+
+        let eventData = rawDataString.split(',');
+        if (matrix !== '') {
+            eventData.push(matrix);
+        }
+
+        return eventData;
     }
 
     initPlayers(players) {
-        this.game.addPlayers(players);
-        this.drawEntities();
+        this.game.spritesLayer.addPlayers(players);
+        this.drawSprites();
     }
 
     updatePlayer(data) {
-        for(const player of this.game.players) {
+        for(const player of this.game.spritesLayer.players) {
             if (player.id == data[1]) {
                 player.move(data[2], data[3]);
             }
         }
-        this.drawEntities();
+        this.drawSprites();
     }
 
-    drawEntities() {
-        while(this.playerListElement.firstChild ){
-            this.playerListElement.removeChild(this.playerListElement.firstChild);
-        }
-    
-        this.game.ctx.clearRect(0, 0, this.game.c.width, this.game.c.height);
-        this.game.board.draw();
-
-        this.game.players.forEach(player => {
-            const li = document.createElement("li");
-            li.appendChild(document.createTextNode(player.name));
-            li.style.color = player.color;
-            this.playerListElement.appendChild(li);
-
-            player.draw();
-        });
+    drawSprites() {
+        this.game.spritesLayer.draw();
     }
 
     checkKey(e) {

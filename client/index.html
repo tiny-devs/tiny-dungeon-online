@@ -15,13 +15,23 @@
       <sub>left click: draw / right click: erase</sub>
     </div>
     <div id="game">
-      <canvas id="canvas" width="200" height="200"></canvas>
-      <p>Players Online:</p>
-      <ul id="player-list"></ul>
+      <div id="layers">
+        <canvas id="background-layer" width="200" height="200" class="canvas-layer"></canvas>
+        <canvas id="sprites-layer" width="200" height="200" class="canvas-layer"></canvas>
+      </div>
+      <div id="game-info">
+        <p>Players Online:</p>
+        <ul id="player-list"></ul>
+      </div>
     </div>
   </div>
   <script src="js/client.js"></script>
   <script src="js/game.js"></script>
   <script src="js/main.js"></script>
+  <style>
+    .canvas-layer {
+      position: absolute;
+    }
+  </style>
   </body>
 </html>
