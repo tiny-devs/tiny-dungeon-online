@@ -59,7 +59,9 @@ export class ClientHandler {
     }
 
     let eventData = rawDataString.split(',')
-    eventData.push(matrix)
+    if (matrix !== '') {
+      eventData.push(matrix)
+    }
 
     return eventData
   }

@@ -1,6 +1,5 @@
 class Main {
   constructor(configs) {
-    this.playerListElement = document.getElementById('player-list');
     this.loginScreen = document.getElementById('login');
     this.playerNameInput = document.getElementById('player-name');
     this.confirmBtn = document.getElementById('confirm-btn');
