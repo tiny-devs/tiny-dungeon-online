@@ -118,7 +118,9 @@ class Parser {
 
     parse(data) {
         try {
-            switch (+data[0]) {
+            const command = +data.split(',')[0];
+
+            switch (command) {
                 case Command.Login:
                     this.parseLogin(data);
                     break
