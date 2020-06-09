@@ -13,9 +13,9 @@ class Game {
         this.board = new Board(this, this.backgroundLayer);
     }
 
-    applyServerRules(serverData) {
-        this.boardRows = serverData[2];
-        this.boardColumns = serverData[3];
+    applyServerRules(serverRules) {
+        this.boardRows = serverRules.boardRows;
+        this.boardColumns = serverRules.boardColumns;
         this.cellWidth = this.width / this.boardRows;
         this.cellHeight = this.height / this.boardColumns;
 
