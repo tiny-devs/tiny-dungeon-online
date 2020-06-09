@@ -25,6 +25,7 @@ class Client {
         this.playerName = clientConfigs.playerName;
         this.playerMatrix = clientConfigs.playerMatrix;
         this.playerList = [];
+        this.parser = new Parser(this);
 
         this.setupWebSocket();
     }
@@ -62,51 +63,13 @@ class Client {
 
     onReceiveMessage(event) {
         const data = event.data;
-        try {
-            const receivedData = this.parseEventDataString(data);
-
-            switch (+receivedData[0]) {
-                case Command.Login:
-                    this.game.applyServerRules(receivedData);
-                    this.initPlayers(JSON.parse(receivedData[4]));
-                    break
-                case Command.Move:
-                    this.updatePlayer(receivedData);
-                    break
-            }
-
-        } catch(e) {
-            if(data != 'pong') {
-                console.log(e)
-            }
-        }
+        this.parser.parse(data);
     }
 
-    parseEventDataString(eventDataString) {
-        let rawDataString = eventDataString;
-        let matrix = '';
-        if (eventDataString.includes(',[')) {
-            rawDataString = eventDataString.substr(0, eventDataString.indexOf(',['));
-            matrix = eventDataString.substr(eventDataString.indexOf('['), eventDataString.length);
-        }
-
-        let eventData = rawDataString.split(',');
-        if (matrix !== '') {
-            eventData.push(matrix);
-        }
-
-        return eventData;
-    }
-
-    initPlayers(players) {
-        this.game.spritesLayer.addPlayers(players);
-        this.drawSprites();
-    }
-
-    updatePlayer(data) {
+    updatePlayer(moveData) {
         for(const player of this.game.spritesLayer.players) {
-            if (player.id == data[1]) {
-                player.move(data[2], data[3]);
+            if (player.id == moveData.playerId) {
+                player.move(moveData.x, moveData.y);
             }
         }
         this.drawSprites();
@@ -145,5 +108,82 @@ class Client {
         setTimeout(() => {
             this.pingPong();
         }, 20000);
+    }
+}
+
+class Parser {
+    constructor(client) {
+        this.client = client;
+    }
+
+    parse(data) {
+        try {
+            const command = +data.split(',')[0];
+
+            switch (command) {
+                case Command.Login:
+                    this.parseLogin(data);
+                    break
+                case Command.Move:
+                    this.parseMove(data);
+                    break
+            }
+
+        } catch(e) {
+            console.log(e)
+        }
+    }
+
+    parseLogin(data) {
+        const loginData = new ParseLogin(data);
+
+        this.client.game.applyServerRules(loginData.serverRules);
+        this.client.game.spritesLayer.addPlayers(loginData.players);
+        this.client.drawSprites();
+    }
+
+    parseMove(data) {
+        const moveData = new ParseMove(data);
+
+        this.client.updatePlayer(moveData);
+    }
+}
+
+class ParseLogin {
+    constructor(data) {
+        const loginData = this.parseString(data)
+
+        this.playerId = loginData[1];
+        this.serverRules = {
+            boardRows: loginData[2],
+            boardColumns: loginData[3]
+        }
+        this.players = JSON.parse(loginData[4]);
+    }
+
+    parseString(eventDataString) {
+        let rawDataString = eventDataString;
+        let matrix = '';
+        rawDataString = eventDataString.substr(0, eventDataString.indexOf(',['));
+        matrix = eventDataString.substr(eventDataString.indexOf('['), eventDataString.length);
+
+        let eventData = rawDataString.split(',');
+        eventData.push(matrix);
+
+        return eventData;
+    }
+}
+
+class ParseMove {
+    constructor(data) {
+        const moveData = this.parseString(data);
+
+        this.playerId = moveData[1];
+        this.x = moveData[2];
+        this.y = moveData[3];
+    }
+
+    parseString(eventDataString) {
+        return eventDataString.split(',');
     }
 }
