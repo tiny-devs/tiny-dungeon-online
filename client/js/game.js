@@ -2,8 +2,8 @@ class Game {
     constructor(gameConfigs, mainElements) {
         this.width = gameConfigs.width;
         this.height = gameConfigs.height;
-        this.boardRows = 6;
-        this.boardColumns = 6;
+        this.boardRows = 16;
+        this.boardColumns = 16;
         this.cellWidth = (this.width / this.boardRows) | 0;
         this.cellHeight = (this.height / this.boardColumns) | 0;
 

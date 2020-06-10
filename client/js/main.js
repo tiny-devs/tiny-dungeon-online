@@ -162,8 +162,8 @@ class DrawingGrid {
 
 let gameConfigs = {
   game: {
-    width: 480,
-    height: 480,
+    width: 512,
+    height: 512,
   },
   drawingGrid: {
     drawingGridWidth: 160,
