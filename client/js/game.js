@@ -2,10 +2,10 @@ class Game {
     constructor(gameConfigs, mainElements) {
         this.width = gameConfigs.width;
         this.height = gameConfigs.height;
-        this.boardRows = 5;
-        this.boardColumns = 5;
-        this.cellWidth = this.width / this.boardRows;
-        this.cellHeight = this.height / this.boardColumns;
+        this.boardRows = 6;
+        this.boardColumns = 6;
+        this.cellWidth = (this.width / this.boardRows) | 0;
+        this.cellHeight = (this.height / this.boardColumns) | 0;
 
         this.backgroundLayer = new BackgroundLayer(this);
         this.spritesLayer = new SpritesLayer(this);
@@ -16,8 +16,8 @@ class Game {
     applyServerRules(serverRules) {
         this.boardRows = serverRules.boardRows;
         this.boardColumns = serverRules.boardColumns;
-        this.cellWidth = this.width / this.boardRows;
-        this.cellHeight = this.height / this.boardColumns;
+        this.cellWidth = (this.width / this.boardRows) | 0;
+        this.cellHeight = (this.height / this.boardColumns) | 0;
 
         this.board.draw();
     }
@@ -62,20 +62,22 @@ class Player {
 
     draw() {
         this.layer.ctx.beginPath();
+        this.layer.ctx.fillStyle = this.color;
 
         for (let column = 0; column < this.playerSize; column++) {
             for (let line = 0; line < this.playerSize; line++) {
                 const draw = this.playerMatrix[line][column];
                 if (draw) {
-                    this.layer.ctx.fillStyle = this.color;
-                    const startX = (column * this.game.cellWidth / this.playerSize) + (this.x * this.game.cellWidth);
-                    const startY = (line * this.game.cellHeight / this.playerSize) + (this.y * this.game.cellHeight);
-                    this.layer.ctx.fillRect(startX, startY, this.game.cellWidth / this.playerSize, this.game.cellHeight / this.playerSize);
+                    const startX = ((column * this.game.cellWidth / this.playerSize) + (this.x * this.game.cellWidth)) | 0;
+                    const startY = ((line * this.game.cellHeight / this.playerSize) + (this.y * this.game.cellHeight)) | 0;
+                    const width = (this.game.cellWidth / this.playerSize);
+                    const height = (this.game.cellHeight / this.playerSize);
+                    this.layer.ctx.fillRect(startX, startY, width, height);
                 } 
             }
         }
 
-        this.layer.ctx.stroke();
+        this.layer.ctx.fill();
     }
 
     move(x, y) {
@@ -91,6 +93,10 @@ class SpritesLayer {
         this.playerListElement = document.getElementById('player-list');
         this.c = document.getElementById('sprites-layer');
         this.ctx = this.c.getContext('2d');
+        this.ctx.shadowOffsetX = 0;
+        this.ctx.shadowOffsetY = 0;
+        this.ctx.shadowBlur = 0;
+        this.ctx.shadowColor = null;
         this.ctx.canvas.width = this.game.width;
         this.ctx.canvas.height = this.game.height;
 
@@ -137,6 +143,10 @@ class BackgroundLayer {
 
         this.c = document.getElementById('background-layer');
         this.ctx = this.c.getContext('2d');
+        this.ctx.shadowOffsetX = 0;
+        this.ctx.shadowOffsetY = 0;
+        this.ctx.shadowBlur = 0;
+        this.ctx.shadowColor = null;
         this.ctx.canvas.width = this.game.width;
         this.ctx.canvas.height = this.game.height;
     }
