@@ -31,16 +31,9 @@ class Board {
 
     draw() {
         this.layer.clear();
-
-        let i = 0;
-        let j = 0;
-        for (i = 0; i < this.game.boardRows; i++) {
-            for (j = 0; j < this.game.boardColumns; j++) {
-                this.layer.ctx.beginPath();
-                this.layer.ctx.rect(i * this.game.cellWidth, j * this.game.cellHeight, this.game.cellWidth, this.game.cellHeight);
-                this.layer.ctx.stroke();
-            }
-        }
+        this.layer.ctx.beginPath();
+        this.layer.ctx.rect(0, 0, this.game.width, this.game.height);
+        this.layer.ctx.stroke();
     }
 }
 
