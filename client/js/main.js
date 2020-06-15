@@ -91,14 +91,18 @@ class DrawingCanvas {
 
   mouseMove(e) {
       e = e || window.event;
+
+      let pos = this.getOffset(e);
       
       if (this.drawing || this.erasing) {
-         this.draw(e.layerX, e.layerY);
+         this.draw(pos.x, pos.y);
       }
   }
 
   mouseClick(e) {
       e = e || window.event;
+
+      let pos = this.getOffset(e);
 
       if (e.type === 'mousedown') {
           if (e.button == 0) {
@@ -109,11 +113,20 @@ class DrawingCanvas {
               this.drawing = false;
           }
           
-          this.draw(e.layerX, e.layerY);
+          this.draw(pos.x, pos.y);
       } else {
           this.drawing = false;
           this.erasing = false;
       }
+  }
+
+  getOffset(e) {
+    let target = e.target || e.srcElement,
+    rect = target.getBoundingClientRect(),
+    offsetX = (e.clientX - rect.left),
+    offsetY = (e.clientY - rect.top);
+
+    return { x: (offsetX | 0), y: (offsetY | 0) };
   }
 
   draw(x,y) {
