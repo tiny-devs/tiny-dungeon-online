@@ -22,29 +22,41 @@ export class Player {
         this.clientWs = clientWs;
     }
 
-    public move(key: Direction, boardRows: number, boardColumns: number) {
+    public move(key: Direction, boardRows: number, boardColumns: number, collisionLayer: any): boolean {
+        let validMove = true
+
         switch (key) {
             case Direction.Right:
-                if (this.x + 1 < boardRows) {
+                if ((this.x + 1 < boardRows) && (collisionLayer[this.y][this.x + 1] === 0)) {
                     this.x++;
+                } else {
+                    validMove = false
                 }
                 break;
             case Direction.Down:
-                if (this.y + 1 < boardColumns) {
+                if ((this.y + 1 < boardColumns) && (collisionLayer[this.y + 1][this.x] ===  0)) {
                     this.y++;
+                } else {
+                    validMove = false
                 }
                 break;
             case Direction.Left:
-                if (this.x - 1 >= 0) {
+                if ((this.x - 1 >= 0) && (collisionLayer[this.y][this.x - 1] ===  0)) {
                     this.x--;
+                } else {
+                    validMove = false
                 }
                 break;
             case Direction.Up:
-                if (this.y - 1 >= 0) {
+                if ((this.y - 1 >= 0) && (collisionLayer[this.y - 1][this.x] ===  0)) {
                     this.y--;
+                } else {
+                    validMove = false
                 }
                 break;
         }
+
+        return validMove
     }
 
     public getReturnData() {
