@@ -42,7 +42,6 @@ export class Server {
       ];
 
       publicFiles.map(async file => {
-        console.log(req.url)
         if (req.method === 'GET' && req.url === '/js/' + file) {
           req.respond({
             status: 200,
