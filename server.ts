@@ -24,36 +24,34 @@ export class Server {
           body: await Deno.open('./client/index.html'),
         })
       }
-    
-      if (req.method === 'GET' && req.url === '/js/client.js') {
-        req.respond({
-          status: 200,
-          headers: new Headers({
-            'content-type': 'application/javascript',
-          }),
-          body: await Deno.open('./client/js/client.js'),
-        })
-      }
 
-      if (req.method === 'GET' && req.url === '/js/game.js') {
-        req.respond({
-          status: 200,
-          headers: new Headers({
-            'content-type': 'application/javascript',
-          }),
-          body: await Deno.open('./client/js/game.js'),
-        })
-      }
+      const publicFiles = [
+        'board/Board.js',
+        'board/layers/BackgroundLayer.js',
+        'board/layers/SpritesLayer.js',
+        'drawingCanvas/DrawingCanvas.js',
+        'drawingCanvas/DrawingGrid.js',
+        'entities/Player.js',
+        'parser/ParseLogin.js',
+        'parser/ParseMove.js',
+        'parser/Parser.js',
+        'Client.js',
+        'Enums.js',
+        'Game.js',
+        'Main.js'
+      ];
 
-      if (req.method === 'GET' && req.url === '/js/main.js') {
-        req.respond({
-          status: 200,
-          headers: new Headers({
-            'content-type': 'application/javascript',
-          }),
-          body: await Deno.open('./client/js/main.js'),
-        })
-      }
+      publicFiles.map(async file => {
+        if (req.method === 'GET' && req.url === '/js/' + file) {
+          req.respond({
+            status: 200,
+            headers: new Headers({
+              'content-type': 'application/javascript',
+            }),
+            body: await Deno.open('./client/js/' + file),
+          })
+        }
+      })
 
       if (req.method === 'GET' && req.url === '/ws') {
         if (acceptable(req)) {
