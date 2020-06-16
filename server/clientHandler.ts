@@ -2,26 +2,33 @@ import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std/ws/mod.t
 import { v4 } from 'https://deno.land/std/uuid/mod.ts'
 import { Player } from './player.ts'
 import { Command, Direction } from './Enums.ts'
+import Room from './map/rooms/room.ts'
+import Map from './map/map.ts'
 
 export class ClientHandler {
   private boardColumns: number = 5
   private boardRows: number = 5
   public players: Player[] = []
-
+  public room: Room
 
   constructor(serverConfigs: any) {
     this.boardRows = serverConfigs.boardRows
     this.boardColumns = serverConfigs.boardColumns
+
+    //for now the map is just a room, later we need to implement a proper room system
+    this.room = new Map().map[0]
   }
 
   private broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
-    playerMoved.move(direction, this.boardRows, this.boardColumns)
-
-    for (const player of this.players) {
-      player.clientWs.send(`${Command.Move},`+
-      `${playerMoved.id},`+
-      `${playerMoved.x},`+
-      `${playerMoved.y}`)
+    let isValid = playerMoved.move(direction, this.boardRows, this.boardColumns, this.room.solidLayer)
+  
+    if (isValid) {
+      for (const player of this.players) {
+        player.clientWs.send(`${Command.Move},`+
+        `${playerMoved.id},`+
+        `${playerMoved.x},`+
+        `${playerMoved.y}`)
+      }
     }
   }
 
