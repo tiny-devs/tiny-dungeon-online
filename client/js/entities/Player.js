@@ -38,4 +38,32 @@ class Player {
         this.x = x;
         this.y = y;
     }
+
+    isValidMove(direction, collisionShape) {
+        let valid = true;
+        switch(direction){
+            case Direction.Up:
+                if (collisionShape[+this.y-1][+this.x]) {
+                    valid = false;
+                }
+                break;
+            case Direction.Down:
+                if (collisionShape[+this.y+1][+this.x]) {
+                    valid = false;
+                }
+                break;
+            case Direction.Left:
+                if (collisionShape[+this.y][+this.x-1]) {
+                    valid = false;
+                }
+                break;
+            case Direction.Right:
+                if (collisionShape[+this.y][+this.x+1]) {
+                    valid = false;
+                }
+                break;
+        }
+
+        return valid;
+    }
 }

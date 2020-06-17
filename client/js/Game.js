@@ -8,8 +8,10 @@ class Game {
         this.cellHeight = (this.height / this.boardColumns) | 0;
 
         this.backgroundLayer = new BackgroundLayer(this);
+        this.solidLayer = new SolidLayer(this);
         this.spritesLayer = new SpritesLayer(this);
 
+        this.currentRoom = new InitialRoom(this);
         this.board = new Board(this, this.backgroundLayer);
     }
 
@@ -20,5 +22,6 @@ class Game {
         this.cellHeight = (this.height / this.boardColumns) | 0;
 
         this.board.draw();
+        this.currentRoom.draw();
     }
 }

@@ -9,9 +9,10 @@ class Client {
         this.ws = null;
         this.loggedIn = false;
         this.playerName = clientConfigs.playerName;
+        this.playerId = '';
         this.playerMatrix = clientConfigs.playerMatrix;
-        this.playerList = [];
         this.parser = new Parser(this);
+        this.currentRoom = this.game.currentRoom;
 
         this.setupWebSocket();
     }
@@ -66,16 +67,22 @@ class Client {
     }
 
     checkKey(e) {
-        if (this.loggedIn) {
-            if (e.keyCode == '38' || e.keyCode == '87') {
-                this.ws.send(`${Command.Move},${Direction.Up}`);
-            } else if (e.keyCode == '40' || e.keyCode == '83') {
-                this.ws.send(`${Command.Move},${Direction.Down}`);
-            } else if (e.keyCode == '37' || e.keyCode == '65') {
-                this.ws.send(`${Command.Move},${Direction.Left}`);
-            } else if (e.keyCode == '39' || e.keyCode == '68') {
-                this.ws.send(`${Command.Move},${Direction.Right}`);
-            }
+        let direction = 0;        
+        if (e.keyCode == '38' || e.keyCode == '87') {
+            direction = Direction.Up;
+        } else if (e.keyCode == '40' || e.keyCode == '83') {
+            direction = Direction.Down;
+        } else if (e.keyCode == '37' || e.keyCode == '65') {
+            direction = Direction.Left;
+        } else if (e.keyCode == '39' || e.keyCode == '68') {
+            direction = Direction.Right;
+        }
+
+        const player = this.game.spritesLayer.getPlayerById(this.playerId);
+        const isValidMove = player.isValidMove(direction, this.game.currentRoom.solidLayerShape);
+
+        if (this.loggedIn && isValidMove) {
+            this.ws.send(`${Command.Move},${direction}`);
         }
     }
 

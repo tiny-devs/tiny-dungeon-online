@@ -28,7 +28,12 @@ export class Server {
       const publicFiles = [
         'board/Board.js',
         'board/layers/BackgroundLayer.js',
+        'board/layers/SolidLayer.js',
         'board/layers/SpritesLayer.js',
+        'board/map/InitialRoom.js',
+        'board/map/tiles/Grass.js',
+        'board/map/tiles/Dirt.js',
+        'board/map/tiles/Tree.js',
         'drawingCanvas/DrawingCanvas.js',
         'drawingCanvas/DrawingGrid.js',
         'entities/Player.js',
