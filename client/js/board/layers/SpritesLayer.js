@@ -47,4 +47,8 @@ class SpritesLayer {
             player.draw();
         });
     }
+
+    getPlayerById(id) {
+        return this.players.find(x => x.id === id);
+    }
 }

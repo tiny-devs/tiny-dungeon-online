@@ -31,6 +31,7 @@
         <div id="game">
           <div id="layers">
             <canvas id="background-layer" width="512" height="512" class="canvas-layer"></canvas>
+            <canvas id="solid-layer" width="512" height="512" class="canvas-layer"></canvas>
             <canvas id="sprites-layer" width="512" height="512" class="canvas-layer"></canvas>
           </div>
           <div id="game-info">
@@ -42,7 +43,12 @@
     </div>
     <script src="js/board/Board.js"></script>
     <script src="js/board/layers/BackgroundLayer.js"></script>
+    <script src="js/board/layers/SolidLayer.js"></script>
     <script src="js/board/layers/SpritesLayer.js"></script>
+    <script src="js/board/map/tiles/Grass.js"></script>
+    <script src="js/board/map/tiles/Dirt.js"></script>
+    <script src="js/board/map/tiles/Tree.js"></script>
+    <script src="js/board/map/InitialRoom.js"></script>
     <script src="js/drawingCanvas/DrawingCanvas.js"></script>
     <script src="js/drawingCanvas/DrawingGrid.js"></script>
     <script src="js/entities/Player.js"></script>

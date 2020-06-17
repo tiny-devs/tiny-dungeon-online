@@ -26,6 +26,7 @@ class Parser {
 
         this.client.game.applyServerRules(loginData.serverRules);
         this.client.game.spritesLayer.addPlayers(loginData.players);
+        this.client.playerId = loginData.playerId;
         this.client.drawSprites();
     }
 
