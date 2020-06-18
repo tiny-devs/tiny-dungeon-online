@@ -9,5 +9,6 @@ const Command = {
     "Login": 1,
     "Move": 2,
     "Ping": 3,
-    "Pong": 4
+    "Pong": 4,
+    "Error": 5
 }

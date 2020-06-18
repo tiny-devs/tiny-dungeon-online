@@ -19,19 +19,23 @@ class Main {
   
       this.game = null;
       this.client = null;
+      this.hasConfirmedName = false;
   
       this.confirmBtn.onclick = () => { this.onConfirmName() };
     }
   
     onConfirmName() {
-      if (this.playerNameInput.value) {
-        this.clientConfigs.playerName = this.playerNameInput.value;
-        if (this.hasDraw()) {
-          this.clientConfigs.playerMatrix = this.drawingGrid.drawingMatrix.map((arr) => {
-            return arr.slice();
-          });
-           
-          this.startGame();
+      if (!this.hasConfirmedName) {
+        if (this.playerNameInput.value) {
+          this.clientConfigs.playerName = this.playerNameInput.value;
+          if (this.hasDraw()) {
+            this.hasConfirmedName = true;
+            this.clientConfigs.playerMatrix = this.drawingGrid.drawingMatrix.map((arr) => {
+              return arr.slice();
+            });
+             
+            this.startGame();
+          }
         }
       }
     }
