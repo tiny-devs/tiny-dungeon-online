@@ -14,6 +14,9 @@ class Parser {
                 case Command.Move:
                     this.parseMove(data);
                     break
+                case Command.Error:
+                    this.parseError(data);
+                    break
             }
 
         } catch(e) {
@@ -26,7 +29,9 @@ class Parser {
 
         this.client.game.applyServerRules(loginData.serverRules);
         this.client.game.spritesLayer.addPlayers(loginData.players);
-        this.client.playerId = loginData.playerId;
+        if (this.client.playerId === '') {
+            this.client.playerId = loginData.playerId;
+        }
         this.client.drawSprites();
     }
 
@@ -34,5 +39,13 @@ class Parser {
         const moveData = new ParseMove(data);
 
         this.client.updatePlayer(moveData);
+    }
+
+    parseError(data) {
+        const errorData = new ParseError(data);
+
+        if(!alert(errorData.message)) {
+            window.location.reload();
+        }
     }
 }

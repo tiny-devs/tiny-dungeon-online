@@ -39,6 +39,7 @@ export class Server {
         'entities/Player.js',
         'parser/ParseLogin.js',
         'parser/ParseMove.js',
+        'parser/ParseError.js',
         'parser/Parser.js',
         'Client.js',
         'Enums.js',

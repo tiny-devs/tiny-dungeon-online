@@ -3,6 +3,7 @@ export enum Command {
     Move,
     Ping,
     Pong,
+    Error,
 }
 
 export enum Direction {

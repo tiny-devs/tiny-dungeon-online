@@ -52,9 +52,25 @@ export class ClientHandler {
     return playersReturn
   }
 
+  private checkNameDuplicate(name: string, playerWs: WebSocket): boolean {
+    let nameExists = this.players.some(p => p.name == name)
+    if (nameExists) {
+      playerWs.send(`${Command.Error},"Name already exists"`)
+      return true
+    }
+    return false
+  }
+
+  private logPlayerOut(player: Player, playerId: string) {
+    const index = this.players.indexOf(player)
+    if (index > -1) {
+      this.players.splice(index, 1)
+    }
+    this.broadcastPlayerConnection(playerId)
+  }
+
   private pong(player: Player): void {
-    this.players.filter(p => p.name == player.name)[0];
-    player.clientWs?.send(`${Command.Pong}`);
+    player.clientWs?.send(`${Command.Pong}`)
   }
 
   private parseEventDataString(eventDataString: string): string[] {
@@ -74,6 +90,7 @@ export class ClientHandler {
   }
 
   public async handleClient(ws: WebSocket): Promise<void> {
+    let duplicatedName = false
     const playerId = v4.generate()
     const player = new Player(playerId, '', '', 0, 0, ws)
 
@@ -83,11 +100,7 @@ export class ClientHandler {
       const eventDataString = event as string
 
       if (isWebSocketCloseEvent(event)) {
-        const index = this.players.indexOf(player)
-        if (index > -1) {
-          this.players.splice(index, 1)
-        }
-        this.broadcastPlayerConnection(playerId)
+        this.logPlayerOut(player, playerId)
         break
       }
 
@@ -99,6 +112,11 @@ export class ClientHandler {
             this.broadcastPlayerMove(player, +eventData[1])
             break
           case Command.Login:
+            duplicatedName = this.checkNameDuplicate(eventData[1], ws)
+            if (duplicatedName) {
+              break
+            }
+
             player.name = eventData[1]
             player.color = eventData[2]
             player.matrix = JSON.parse(eventData[3])
@@ -107,6 +125,11 @@ export class ClientHandler {
           case Command.Ping:
             this.pong(player)
             break
+        }
+
+        if (duplicatedName) {
+          this.logPlayerOut(player, playerId)
+          break
         }
 
       } catch(e) {
