@@ -43,27 +43,55 @@ class Player {
         let valid = true;
         switch(direction){
             case Direction.Up:
-                if (collisionShape[+this.y-1][+this.x]) {
+                if (!this.isOnBorder(collisionShape, +this.x, +this.y-1)) {
+                    if (collisionShape[+this.y-1][+this.x]) {
+                        valid = false;
+                    }
+                } else {
                     valid = false;
                 }
                 break;
             case Direction.Down:
-                if (collisionShape[+this.y+1][+this.x]) {
+                if (!this.isOnBorder(collisionShape, +this.x, +this.y+1)) {
+                    if (collisionShape[+this.y+1][+this.x]) {
+                        valid = false;
+                    }
+                } else {
                     valid = false;
                 }
                 break;
             case Direction.Left:
-                if (collisionShape[+this.y][+this.x-1]) {
+                if (!this.isOnBorder(collisionShape, +this.x-1, +this.y)) {
+                    if (collisionShape[+this.y][+this.x-1]) {
+                        valid = false;
+                    }
+                } else {
                     valid = false;
                 }
                 break;
             case Direction.Right:
-                if (collisionShape[+this.y][+this.x+1]) {
+                if (!this.isOnBorder(collisionShape, +this.x+1, +this.y)) {
+                    if (collisionShape[+this.y][+this.x+1]) {
+                        valid = false;
+                    }
+                } else {
                     valid = false;
                 }
                 break;
         }
 
         return valid;
+    }
+
+    isOnBorder(collisionShape, x, y) {
+        let onBorder = false;
+        if (collisionShape[y] !== undefined) {
+            if (collisionShape[y][x] === undefined) {
+                onBorder = true;
+            }
+        } else {
+            onBorder = true;
+        }
+        return onBorder;
     }
 }
