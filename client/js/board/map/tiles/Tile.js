@@ -8,8 +8,6 @@ class Tile {
       this.y = y;
       this.tileSize = 8;
       this.tileMatrix = tile;
-  
-      this.draw();
     }
   
     draw() {
