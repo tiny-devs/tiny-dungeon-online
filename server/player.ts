@@ -108,7 +108,8 @@ export class Player {
             color: this.color,
             x: this.x,
             y: this.y,
-            matrix: this.matrix
+            matrix: this.matrix,
+            currentRoomId: this.currentRoomId
         }
     }
 
