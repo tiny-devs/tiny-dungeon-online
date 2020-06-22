@@ -12,3 +12,8 @@ export enum Direction {
     Left,
     Right,
 }
+
+export enum Rooms {
+    Initial = 0,
+    Woods,
+}

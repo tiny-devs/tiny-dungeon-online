@@ -12,3 +12,8 @@ const Command = {
     "Pong": 4,
     "Error": 5
 }
+
+const Rooms = {
+    "Initial": 0,
+    "Woods": 1
+}

@@ -12,6 +12,6 @@ class Map {
     }
 
     buildMap() {
-        return [new InitialRoom(this.game), new Woods(this.game)];
+        return [new InitialRoom(this.game, Rooms.Initial), new Woods(this.game, Rooms.Woods)];
     }
 }

@@ -1,8 +1,10 @@
 import Room from './room.ts'
+import { Rooms } from '../../Enums.ts'
+import Exits from "./exits.ts"
 
 export default class InitialRoom extends Room{
   constructor(id: number) {
-    super (id, { n: -1, s: -1, w: -1, e: 1 })
+    super (id, new Exits(-1, -1, -1, Rooms.Woods))
     this.solidLayer = this.buildSolidLayer()
   }
 
