@@ -72,7 +72,7 @@ export class Player {
                     const result = this.currentRoom.goWest()
                     if (result.valid) {
                         this.currentRoomId = result.roomId
-                        this.x = boardRows
+                        this.x = boardRows - 1
                         validMove = true
                     }
                 }
@@ -87,7 +87,7 @@ export class Player {
                     const result = this.currentRoom.goNorth()
                     if (result.valid) {
                         this.currentRoomId = result.roomId
-                        this.y = boardColumns
+                        this.y = boardColumns - 1
                         validMove = true
                     }
                 }
