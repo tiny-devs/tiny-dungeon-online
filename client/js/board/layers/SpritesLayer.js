@@ -16,9 +16,9 @@ class SpritesLayer {
         // next we will have: this.enemies, this.warps, this.trees, etc...
     }
 
-    draw() {
+    draw(clientRoomId) {
         this.ctx.clearRect(0, 0, this.c.width, this.c.height);
-        this.drawPlayers();
+        this.drawPlayers(clientRoomId);
         // this.drawEnemies, this.drawWarps, ...
     }
 
@@ -33,7 +33,7 @@ class SpritesLayer {
         }
     }
 
-    drawPlayers() {
+    drawPlayers(clientRoomId) {
         while(this.playerListElement.firstChild){
             this.playerListElement.removeChild(this.playerListElement.firstChild);
         }
@@ -44,7 +44,9 @@ class SpritesLayer {
             li.style.color = player.color;
             this.playerListElement.appendChild(li);
 
-            player.draw();
+            if (player.currentRoomId == clientRoomId) {
+                player.draw();
+            }
         });
     }
 

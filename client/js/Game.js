@@ -11,7 +11,7 @@ class Game {
         this.solidLayer = new SolidLayer(this);
         this.spritesLayer = new SpritesLayer(this);
 
-        this.currentRoom = new InitialRoom(this);
+        this.map = new Map(this);
         this.board = new Board(this, this.backgroundLayer);
     }
 
@@ -22,6 +22,6 @@ class Game {
         this.cellHeight = (this.height / this.boardColumns) | 0;
 
         this.board.draw();
-        this.currentRoom.draw();
+        this.map.rooms[0].draw();
     }
 }

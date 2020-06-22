@@ -33,7 +33,7 @@ class Tile {
     }
   
     clear() {
-      this.ctx.clearRect(this.x, this.y, this.game.cellWidth, this.game.cellHeight);
+      this.layer.ctx.clearRect(this.x, this.y, this.game.cellWidth, this.game.cellHeight);
     }
   
     destroy() {

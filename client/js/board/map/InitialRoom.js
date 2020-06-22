@@ -6,6 +6,8 @@ class InitialRoom {
     this.backgroundLayerShape = this.getBackgroundLayerShape();
     this.solidLayerShape = this.getSolidLayerShape();
     this.tiles = [];
+
+    this.initTiles();
   }
 
   getBackgroundLayerShape() {
@@ -46,7 +48,7 @@ class InitialRoom {
             [Tiles.Tree,Tiles.Tree,0,0,0,0,0,0,0,0,0,0,0,0,0,Tiles.Tree]];
   }
 
-  draw() {
+  initTiles() {
     for (let column = 0; column < this.game.boardColumns; column++) {
       for (let line = 0; line < this.game.boardRows; line++) {
 
@@ -63,11 +65,14 @@ class InitialRoom {
     }
   }
 
-  clear() {
-    this.tiles.forEach((tile) => {
-      tile.destroy();
-    });
+  draw() {
+    for (const tile of this.tiles) {
+      tile.draw()
+    }
+  }
 
-    this.tiles.splice(0, this.tiles.length);
+  clear() {
+    this.game.backgroundLayer.clear();
+    this.game.solidLayer.clear();
   }
 }

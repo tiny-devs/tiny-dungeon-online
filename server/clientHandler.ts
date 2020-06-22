@@ -8,34 +8,50 @@ import Map from './map/map.ts'
 export class ClientHandler {
   private boardColumns: number = 5
   private boardRows: number = 5
-  public players: Player[] = []
-  public room: Room
+  public playerNames: string[] = []
+  public map: Map
 
   constructor(serverConfigs: any) {
     this.boardRows = serverConfigs.boardRows
     this.boardColumns = serverConfigs.boardColumns
 
-    //for now the map is just a room, later we need to implement a proper room system
-    this.room = new Map().map[0]
+    this.map = new Map()
+  }
+
+  private switchRooms(player: Player, newRoom: Room) {
+    const oldRoom = this.map.getRoomById(player.currentRoom.id)
+    oldRoom.removePlayer(player)
+
+    player.currentRoomId = newRoom.id
+    player.currentRoom = newRoom
+    newRoom.addPlayer(player)
   }
 
   private broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
-    let isValid = playerMoved.move(direction, this.boardRows, this.boardColumns, this.room.solidLayer)
+    let isValid = playerMoved.move(direction, this.boardRows, this.boardColumns)
+    if (playerMoved.changedRoom()) {
+      const newRoom = this.map.getRoomById(playerMoved.currentRoomId)
+      this.switchRooms(playerMoved, newRoom)
+    }
   
     if (isValid) {
-      for (const player of this.players) {
-        player.clientWs.send(`${Command.Move},`+
-        `${playerMoved.id},`+
-        `${playerMoved.x},`+
-        `${playerMoved.y}`)
+      for (const room of this.map.rooms) {
+        for (const player of room.players) {
+          player.clientWs.send(`${Command.Move},`+
+          `${playerMoved.id},`+
+          `${playerMoved.x},`+
+          `${playerMoved.y},`+
+          `${playerMoved.currentRoomId}`)
+        }
       }
     }
   }
 
   private broadcastPlayerConnection(playerId: string): void {
-    const data = JSON.stringify(this.getAllPlayers())
+    const data = JSON.stringify(this.getAllPlayersOfRoom(0))
+    const room = this.map.getRoomById(0)
 
-    for (const player of this.players) {
+    for (const player of room.players) {
       player.clientWs.send(`${Command.Login},`+
       `${playerId},`+
       `${this.boardRows},`+
@@ -44,16 +60,17 @@ export class ClientHandler {
     }
   }
 
-  private getAllPlayers() {
+  private getAllPlayersOfRoom(roomId: number) {
+    const room = this.map.getRoomById(roomId)
     let playersReturn = []
-    for (const player of this.players) {
+    for (const player of room.players) {
       playersReturn.push(player.getReturnData())
     }
     return playersReturn
   }
 
   private checkNameDuplicate(name: string, playerWs: WebSocket): boolean {
-    let nameExists = this.players.some(p => p.name == name)
+    let nameExists = this.playerNames.some(pName => pName == name)
     if (nameExists) {
       playerWs.send(`${Command.Error},"Name already exists"`)
       return true
@@ -62,10 +79,9 @@ export class ClientHandler {
   }
 
   private logPlayerOut(player: Player, playerId: string) {
-    const index = this.players.indexOf(player)
-    if (index > -1) {
-      this.players.splice(index, 1)
-    }
+    const room = this.map.getRoomById(player.currentRoom.id)
+    room.removePlayer(player)
+    this.playerNames = this.playerNames.filter(e => e !== player.name);
     this.broadcastPlayerConnection(playerId)
   }
 
@@ -91,10 +107,11 @@ export class ClientHandler {
 
   public async handleClient(ws: WebSocket): Promise<void> {
     let duplicatedName = false
+    const initialRoom = this.map.rooms[0]
     const playerId = v4.generate()
-    const player = new Player(playerId, '', '', 0, 0, ws)
+    const player = new Player(playerId, '', '', 0, 0, initialRoom, ws)
 
-    this.players.push(player)
+    initialRoom.addPlayer(player)
   
     for await (const event of ws) {
       const eventDataString = event as string
@@ -117,6 +134,7 @@ export class ClientHandler {
               break
             }
 
+            this.playerNames.push(eventData[1])
             player.name = eventData[1]
             player.color = eventData[2]
             player.matrix = JSON.parse(eventData[3])

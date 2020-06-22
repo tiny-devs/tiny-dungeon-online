@@ -10,9 +10,10 @@ class Client {
         this.loggedIn = false;
         this.playerName = clientConfigs.playerName;
         this.playerId = '';
+        this.currentRoomId = 0;
         this.playerMatrix = clientConfigs.playerMatrix;
         this.parser = new Parser(this);
-        this.currentRoom = this.game.currentRoom;
+        this.currentRoom = this.game.map.rooms[0];
 
         this.setupWebSocket();
     }
@@ -56,14 +57,26 @@ class Client {
     updatePlayer(moveData) {
         for(const player of this.game.spritesLayer.players) {
             if (player.id == moveData.playerId) {
-                player.move(moveData.x, moveData.y);
+                if (this.playerId == moveData.playerId) {
+                    if (moveData.currentRoomId != this.currentRoomId) {
+                        this.drawRoom(moveData.currentRoomId);
+                        this.currentRoomId = moveData.currentRoomId;
+                    }
+                }
+                player.move(moveData.x, moveData.y, moveData.currentRoomId);
             }
         }
         this.drawSprites();
     }
 
+    drawRoom(roomId) {
+        this.currentRoom.clear();
+        this.currentRoom = this.game.map.getRoomById(roomId);
+        this.currentRoom.draw();
+    }
+
     drawSprites() {
-        this.game.spritesLayer.draw();
+        this.game.spritesLayer.draw(this.currentRoomId);
     }
 
     checkKey(e) {
@@ -79,7 +92,7 @@ class Client {
         }
 
         const player = this.game.spritesLayer.getPlayerById(this.playerId);
-        const isValidMove = player.isValidMove(direction, this.game.currentRoom.solidLayerShape);
+        const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape);
 
         if (this.loggedIn && isValidMove) {
             this.ws.send(`${Command.Move},${direction}`);

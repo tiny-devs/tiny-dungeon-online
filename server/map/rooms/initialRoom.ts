@@ -1,8 +1,8 @@
 import Room from './room.ts'
 
 export default class InitialRoom extends Room{
-  constructor() {
-    super (0)
+  constructor(id: number) {
+    super (id, { n: -1, s: -1, w: -1, e: 1 })
     this.solidLayer = this.buildSolidLayer()
   }
 
