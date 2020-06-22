@@ -8,6 +8,7 @@ class Player {
         this.color = playerData.color;
         this.name = playerData.name;
         this.id = playerData.id;
+        this.currentRoomId = 0
         this.playerSize = 8;
         this.playerMatrix = playerData.matrix.map((arr) => {
             return arr.slice();
@@ -34,9 +35,10 @@ class Player {
         this.layer.ctx.fill();
     }
 
-    move(x, y) {
+    move(x, y, currentRoomId) {
         this.x = x;
         this.y = y;
+        this.currentRoomId = currentRoomId;
     }
 
     isValidMove(direction, collisionShape) {
@@ -47,8 +49,6 @@ class Player {
                     if (collisionShape[+this.y-1][+this.x]) {
                         valid = false;
                     }
-                } else {
-                    valid = false;
                 }
                 break;
             case Direction.Down:
@@ -56,8 +56,6 @@ class Player {
                     if (collisionShape[+this.y+1][+this.x]) {
                         valid = false;
                     }
-                } else {
-                    valid = false;
                 }
                 break;
             case Direction.Left:
@@ -65,8 +63,6 @@ class Player {
                     if (collisionShape[+this.y][+this.x-1]) {
                         valid = false;
                     }
-                } else {
-                    valid = false;
                 }
                 break;
             case Direction.Right:
@@ -74,12 +70,10 @@ class Player {
                     if (collisionShape[+this.y][+this.x+1]) {
                         valid = false;
                     }
-                } else {
-                    valid = false;
                 }
                 break;
         }
-
+        
         return valid;
     }
 
