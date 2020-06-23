@@ -8,7 +8,7 @@ class Player {
         this.color = playerData.color;
         this.name = playerData.name;
         this.id = playerData.id;
-        this.currentRoomId = 0
+        this.currentRoomId = playerData.currentRoomId;
         this.playerSize = 8;
         this.playerMatrix = playerData.matrix.map((arr) => {
             return arr.slice();

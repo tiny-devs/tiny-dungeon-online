@@ -1,12 +1,13 @@
 import { Player } from "../../player.ts"
+import Exits from "./exits.ts"
 
 export default class Room {
   public id: number
   public solidLayer: any
   public players: Player[] = []
-  public exits: any = { n: -1, s: -1, w: -1, e: -1 }
+  public exits: Exits
 
-  constructor(id: number, exits: any) {
+  constructor(id: number, exits: Exits) {
     this.id = id
     this.exits = exits
   }
@@ -24,7 +25,7 @@ export default class Room {
 
   goNorth(): any {
     let isValid = false
-    if (this.exits.n != -1) {
+    if (this.exits.hasNorth()) {
       isValid = true
     }
     return { valid: isValid, roomId: this.exits.n }
@@ -32,7 +33,7 @@ export default class Room {
 
   goSouth(): any {
     let isValid = false
-    if (this.exits.s != -1) {
+    if (this.exits.hasSouth()) {
       isValid = true
     }
     return { valid: isValid, roomId: this.exits.s }
@@ -40,7 +41,7 @@ export default class Room {
 
   goWest(): any {
     let isValid = false
-    if (this.exits.w != -1) {
+    if (this.exits.hasWest()) {
       isValid = true
     }
     return { valid: isValid, roomId: this.exits.w }
@@ -48,7 +49,7 @@ export default class Room {
 
   goEast(): any {
     let isValid = false
-    if (this.exits.e != -1) {
+    if (this.exits.hasEast()) {
       isValid = true
     }
     return { valid: isValid, roomId: this.exits.e }

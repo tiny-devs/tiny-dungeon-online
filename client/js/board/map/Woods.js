@@ -1,8 +1,8 @@
 class Woods {
-    constructor(game) {
+    constructor(game, id) {
       this.game = game;
   
-      this.id = 1;
+      this.id = id;
       this.backgroundLayerShape = this.getBackgroundLayerShape();
       this.solidLayerShape = this.getSolidLayerShape();
       this.tiles = [];

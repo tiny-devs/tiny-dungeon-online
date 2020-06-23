@@ -26,11 +26,12 @@ class Parser {
 
     parseLogin(data) {
         const loginData = new ParseLogin(data);
-
-        this.client.game.applyServerRules(loginData.serverRules);
+        
         this.client.game.spritesLayer.addPlayers(loginData.players);
-        if (this.client.playerId === '') {
+        if (this.client.loggedIn === false) {
+            this.client.loggedIn = true;
             this.client.playerId = loginData.playerId;
+            this.client.game.applyServerRules(loginData.serverRules);
         }
         this.client.drawSprites();
     }

@@ -22,6 +22,6 @@ class Game {
         this.cellHeight = (this.height / this.boardColumns) | 0;
 
         this.board.draw();
-        this.map.rooms[0].draw();
+        this.map.rooms[Rooms.Initial].draw();
     }
 }

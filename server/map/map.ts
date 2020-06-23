@@ -1,6 +1,7 @@
 import InitialRoom from './rooms/initialRoom.ts'
 import Woods from './rooms/woods.ts'
 import Room from './rooms/room.ts'
+import { Rooms } from '../Enums.ts'
 
 export default class Map {
   public rooms: Room[]
@@ -16,6 +17,6 @@ export default class Map {
   }
 
   private buildMap(): any {
-    return [new InitialRoom(0), new Woods(1)]
+    return [new InitialRoom(Rooms.Initial), new Woods(Rooms.Woods)]
   }
 }

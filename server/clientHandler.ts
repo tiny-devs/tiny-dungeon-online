@@ -48,23 +48,25 @@ export class ClientHandler {
   }
 
   private broadcastPlayerConnection(playerId: string): void {
-    const data = JSON.stringify(this.getAllPlayersOfRoom(0))
-    const room = this.map.getRoomById(0)
+    const data = JSON.stringify(this.getAllPlayers())
 
-    for (const player of room.players) {
-      player.clientWs.send(`${Command.Login},`+
-      `${playerId},`+
-      `${this.boardRows},`+
-      `${this.boardColumns},`+
-      `${data}`)
+    for (const room of this.map.rooms) {
+      for (const player of room.players) {
+        player.clientWs.send(`${Command.Login},`+
+        `${playerId},`+
+        `${this.boardRows},`+
+        `${this.boardColumns},`+
+        `${data}`)
+      }
     }
   }
 
-  private getAllPlayersOfRoom(roomId: number) {
-    const room = this.map.getRoomById(roomId)
+  private getAllPlayers() {
     let playersReturn = []
-    for (const player of room.players) {
-      playersReturn.push(player.getReturnData())
+    for (const room of this.map.rooms) {
+      for (const player of room.players) {
+        playersReturn.push(player.getReturnData())
+      }
     }
     return playersReturn
   }

@@ -36,7 +36,6 @@ class Client {
         this.ws.send(this.getPlayerLoginData());
         this.gameScreen.style.display='block';
         this.loginScreen.style.display='none';
-        this.loggedIn = true;
         this.pingPong();
     }
 
