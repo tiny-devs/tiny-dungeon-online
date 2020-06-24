@@ -5,6 +5,9 @@ class DrawingCanvas {
         this.c.onmousemove = this.mouseMove.bind(this);
         this.c.onmousedown = this.mouseClick.bind(this);
         this.c.onmouseup = this.mouseClick.bind(this);
+        this.c.ontouchmove = this.mouseMove.bind(this);
+        this.c.ontouchstart = this.mouseClick.bind(this);
+        this.c.ontouchend = this.mouseClick.bind(this);
         this.c.oncontextmenu = (e) => {return false;};
         this.ctx = this.c.getContext('2d');
   
@@ -48,13 +51,18 @@ class DrawingCanvas {
   
         let pos = this.getOffset(e);
   
-        if (e.type === 'mousedown') {
-            if (e.button == 0) {
+        if (e.type === 'mousedown' || e.type === 'touchstart' || e.type === 'touchmove') {
+            if (e.type === 'mousedown') {
+                if (e.button == 0) {
+                    this.drawing = true;
+                    this.erasing = false;
+                } else if (e.button == 2) {
+                    this.erasing = true;
+                    this.drawing = false;
+                }
+            } else {
                 this.drawing = true;
                 this.erasing = false;
-            } else if (e.button == 2) {
-                this.erasing = true;
-                this.drawing = false;
             }
             
             this.draw(pos.x, pos.y);
@@ -65,10 +73,22 @@ class DrawingCanvas {
     }
   
     getOffset(e) {
+      let clientX = 0;
+      let clientY = 0;
+      if (e.touches) {
+        if (e.touches.length > 0) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        }
+      } else {
+        clientX = e.clientX;
+        clientY = e.clientY;
+      }
+      
       let target = e.target || e.srcElement,
       rect = target.getBoundingClientRect(),
-      offsetX = (e.clientX - rect.left),
-      offsetY = (e.clientY - rect.top);
+      offsetX = (clientX - rect.left),
+      offsetY = (clientY - rect.top);
   
       return { x: (offsetX | 0), y: (offsetY | 0) };
     }
@@ -91,5 +111,12 @@ class DrawingCanvas {
         this.ctx.stroke();
         
         this.drawingMatrix[y][x] = matrixValue;
+    }
+
+    reset() {
+        this.drawingMatrix.length = 0;
+        this.ctx.clearRect(0, 0, this.c.width, this.c.height);
+        this.grid.draw();
+        this.initDrawingMatrix();
     }
   }

@@ -4,6 +4,15 @@ class Client {
         this.loginScreen = mainElements.loginScreen;
         this.gameScreen = mainElements.gameScreen;
         this.gameScreen.style.display='none';
+        this.up = mainElements.mobileUp;
+        this.up.onclick = () => { this.checkKey({keyCode: '38'}) }
+        this.down = mainElements.mobileDown;
+        this.down.onclick = () => { this.checkKey({keyCode: '40'}) }
+        this.left = mainElements.mobileLeft;
+        this.left.onclick = () => { this.checkKey({keyCode: '37'}) }
+        this.right = mainElements.mobileRight;
+        this.right.onclick = () => { this.checkKey({keyCode: '39'}) }
+
 
         this.game = game;
         this.ws = null;

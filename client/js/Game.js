@@ -13,6 +13,10 @@ class Game {
 
         this.map = new Map(this);
         this.board = new Board(this, this.backgroundLayer);
+
+        if (mainElements.mobile) {
+            mainElements.mobileControls.style.display = 'block';
+        }
     }
 
     applyServerRules(serverRules) {

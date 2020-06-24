@@ -11,7 +11,7 @@
   </head>
   <body>
     <div id="content">
-      <div class="title">
+      <div class="title" id="title-content">
         <h1 id="title">Tiny Dungeon Online</h1>
         <p id="sub-title">A Tiny Minimalist Online RPG Game</p>
       </div>
@@ -20,7 +20,10 @@
           <p>Draw yourself:</p>
           <canvas id="draw" width="200" height="200"></canvas>
           <br/>
-          <sub>left click: draw / right click: erase</sub>
+          <center>
+            <sub id="help-draw-desktop">left click: draw / right click: erase</sub>
+            <input type="button" value="reset" id="help-draw-mobile"></input>
+          </center>
           <br/>
           <p>Enter your name:</p>
           <input id="player-name"></input>
@@ -33,6 +36,15 @@
             <canvas id="background-layer" width="512" height="512" class="canvas-layer"></canvas>
             <canvas id="solid-layer" width="512" height="512" class="canvas-layer"></canvas>
             <canvas id="sprites-layer" width="512" height="512" class="canvas-layer"></canvas>
+          </div>
+          <div id="mobile-controls">
+            <center>
+              <br/>
+              <input type="button" value="▲" id="up"></input>
+              <input type="button" value="▼" id="down"></input>
+              <input type="button" value="◄" id="left"></input>
+              <input type="button" value="►" id="right"></input>
+            </center>
           </div>
           <div id="game-info">
             <p>Players Online:</p>
@@ -89,6 +101,14 @@
 
       sub {
         font-size: 50%;
+      }
+
+      #help-draw-mobile {
+        display: none;
+      }
+
+      #mobile-controls {
+        display: none;
       }
 
       .game-flex-container {
