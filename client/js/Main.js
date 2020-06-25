@@ -76,8 +76,10 @@ class Main {
             });
              
             if (this.mobile) {
-              const title = document.getElementById('title-content');
-              title.style.display = 'none';
+              const title = document.getElementById('title');
+              const subtitle = document.getElementById('sub-title');
+              title.style.fontSize = '1em';
+              subtitle.style.fontSize = '50%';
             }
             this.startGame();
           }
