@@ -16,8 +16,8 @@ class Main {
       this.mobile = this.isMobile();
       if (this.mobile) {
         this.setupMobile();
-        configs.game.width = 256;
-        configs.game.height = 256;
+        configs.game.width = configs.game.width/2;
+        configs.game.height = configs.game.height/2;
       }
 
       this.layersParentElement.style.width = `${configs.game.width}px`;
