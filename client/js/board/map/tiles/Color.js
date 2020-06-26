@@ -23,6 +23,5 @@ const PlayerColors = [
     Color.DarkGrey,
     Color.DarkPurple,
     Color.Yellow,
-    Color.White,
     Color.Red
 ];
