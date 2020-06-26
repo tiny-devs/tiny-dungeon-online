@@ -12,13 +12,16 @@ class Main {
       this.gameScreen = document.getElementById('game');
       this.gameScreen.style.display='none';
       this.layersParentElement = document.getElementById('layers');
-      this.layersParentElement.style.width = `${configs.game.width}px`;
-      this.layersParentElement.style.height = `${configs.game.height}px`;
 
       this.mobile = this.isMobile();
       if (this.mobile) {
         this.setupMobile();
+        configs.game.width = configs.game.width/2;
+        configs.game.height = configs.game.height/2;
       }
+
+      this.layersParentElement.style.width = `${configs.game.width}px`;
+      this.layersParentElement.style.height = `${configs.game.height}px`;
       
       this.drawingGrid = new DrawingCanvas(this, configs.drawingGrid);
   
@@ -73,8 +76,10 @@ class Main {
             });
              
             if (this.mobile) {
-              const title = document.getElementById('title-content');
-              title.style.display = 'none';
+              const title = document.getElementById('title');
+              const subtitle = document.getElementById('sub-title');
+              title.style.fontSize = '1em';
+              subtitle.style.fontSize = '50%';
             }
             this.startGame();
           }

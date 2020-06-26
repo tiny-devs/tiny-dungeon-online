@@ -5,7 +5,7 @@
     <meta name="description" content="A Tiny Minimalistic Online RPG Game">
     <meta name="author" content="Tiny Devs">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1">
     <title>TDO</title>
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
   </head>
@@ -41,8 +41,9 @@
             <center>
               <br/>
               <input type="button" value="▲" id="up"></input>
-              <input type="button" value="▼" id="down"></input>
+              <br/>
               <input type="button" value="◄" id="left"></input>
+              <input type="button" value="▼" id="down"></input>
               <input type="button" value="►" id="right"></input>
             </center>
           </div>
@@ -122,6 +123,16 @@
 
       .canvas-layer {
         position: absolute;
+      }
+
+      p, li {
+        cursor: default;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
       }
     </style>
   </body>
