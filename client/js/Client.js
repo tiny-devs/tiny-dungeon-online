@@ -23,6 +23,7 @@ class Client {
         this.playerMatrix = clientConfigs.playerMatrix;
         this.parser = new Parser(this);
         this.currentRoom = this.game.map.rooms[0];
+        this.canMove = true;
 
         this.setupWebSocket();
     }
@@ -88,23 +89,32 @@ class Client {
     }
 
     checkKey(e) {
-        let direction = 0;        
-        if (e.keyCode == '38' || e.keyCode == '87') {
-            direction = Direction.Up;
-        } else if (e.keyCode == '40' || e.keyCode == '83') {
-            direction = Direction.Down;
-        } else if (e.keyCode == '37' || e.keyCode == '65') {
-            direction = Direction.Left;
-        } else if (e.keyCode == '39' || e.keyCode == '68') {
-            direction = Direction.Right;
-        }
+        if(this.canMove) {
+            this.delayMove();
 
-        const player = this.game.spritesLayer.getPlayerById(this.playerId);
-        const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape);
-
-        if (this.loggedIn && isValidMove) {
-            this.ws.send(`${Command.Move},${direction}`);
+            let direction = 0;        
+            if (e.keyCode == '38' || e.keyCode == '87') {
+                direction = Direction.Up;
+            } else if (e.keyCode == '40' || e.keyCode == '83') {
+                direction = Direction.Down;
+            } else if (e.keyCode == '37' || e.keyCode == '65') {
+                direction = Direction.Left;
+            } else if (e.keyCode == '39' || e.keyCode == '68') {
+                direction = Direction.Right;
+            }
+    
+            const player = this.game.spritesLayer.getPlayerById(this.playerId);
+            const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape);
+    
+            if (this.loggedIn && isValidMove) {
+                this.ws.send(`${Command.Move},${direction}`);
+            }
         }
+    }
+
+    delayMove() {
+        this.canMove = false;
+        setTimeout(() => { this.canMove = true; }, 100);
     }
 
     getRandomPlayerColor() {
