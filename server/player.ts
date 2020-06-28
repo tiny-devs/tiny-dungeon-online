@@ -11,6 +11,7 @@ export class Player {
     public currentRoomId: number
     public currentRoom: Room
     public clientWs: any
+    private canMove: boolean = true
 
     constructor(id: string,
         name: string,
@@ -31,67 +32,73 @@ export class Player {
     public move(key: Direction, boardRows: number, boardColumns: number): boolean {
         let validMove = false
 
-        switch (key) {
-            case Direction.Right:
-                if (this.x + 1 < boardRows) {
-                    if (this.notCollided(this.y,this.x + 1)) {
-                        this.x++
-                        validMove = true
+        if (this.canMove) {
+            switch (key) {
+                case Direction.Right:
+                    if (this.x + 1 < boardRows) {
+                        if (this.notCollided(this.y,this.x + 1)) {
+                            this.x++
+                            validMove = true
+                        }
+                    } else {
+                        const result = this.currentRoom.goEast()
+                        if (result.valid) {
+                            this.currentRoomId = result.roomId
+                            this.x = 0
+                            validMove = true
+                        }
                     }
-                } else {
-                    const result = this.currentRoom.goEast()
-                    if (result.valid) {
-                        this.currentRoomId = result.roomId
-                        this.x = 0
-                        validMove = true
+                    break;
+                case Direction.Down:
+                    if (this.y + 1 < boardColumns) {
+                        if (this.notCollided(this.y + 1,this.x)) {
+                            this.y++
+                            validMove = true
+                        }
+                    } else {
+                        const result = this.currentRoom.goSouth()
+                        if (result.valid) {
+                            this.currentRoomId = result.roomId
+                            this.y = 0
+                            validMove = true
+                        }
                     }
-                }
-                break;
-            case Direction.Down:
-                if (this.y + 1 < boardColumns) {
-                    if (this.notCollided(this.y + 1,this.x)) {
-                        this.y++
-                        validMove = true
+                    break;
+                case Direction.Left:
+                    if (this.x - 1 >= 0) {
+                        if (this.notCollided(this.y,this.x - 1)) {
+                            this.x--
+                            validMove = true
+                        }
+                    } else {
+                        const result = this.currentRoom.goWest()
+                        if (result.valid) {
+                            this.currentRoomId = result.roomId
+                            this.x = boardRows - 1
+                            validMove = true
+                        }
                     }
-                } else {
-                    const result = this.currentRoom.goSouth()
-                    if (result.valid) {
-                        this.currentRoomId = result.roomId
-                        this.y = 0
-                        validMove = true
+                    break;
+                case Direction.Up:
+                    if (this.y - 1 >= 0) {
+                        if (this.notCollided(this.y - 1,this.x)) {
+                            this.y--
+                            validMove = true
+                        }
+                    } else {
+                        const result = this.currentRoom.goNorth()
+                        if (result.valid) {
+                            this.currentRoomId = result.roomId
+                            this.y = boardColumns - 1
+                            validMove = true
+                        }
                     }
-                }
-                break;
-            case Direction.Left:
-                if (this.x - 1 >= 0) {
-                    if (this.notCollided(this.y,this.x - 1)) {
-                        this.x--
-                        validMove = true
-                    }
-                } else {
-                    const result = this.currentRoom.goWest()
-                    if (result.valid) {
-                        this.currentRoomId = result.roomId
-                        this.x = boardRows - 1
-                        validMove = true
-                    }
-                }
-                break;
-            case Direction.Up:
-                if (this.y - 1 >= 0) {
-                    if (this.notCollided(this.y - 1,this.x)) {
-                        this.y--
-                        validMove = true
-                    }
-                } else {
-                    const result = this.currentRoom.goNorth()
-                    if (result.valid) {
-                        this.currentRoomId = result.roomId
-                        this.y = boardColumns - 1
-                        validMove = true
-                    }
-                }
-                break;
+                    break;
+            }
+
+            if (validMove) {
+                this.delayMove()
+            }
         }
 
         return validMove
@@ -115,5 +122,10 @@ export class Player {
 
     private notCollided(y: number, x: number): boolean {
         return this.currentRoom.solidLayer[y][x] === 0
+    }
+
+    private delayMove(): void {
+        this.canMove = false;
+        setTimeout(() => { this.canMove = true; }, 100);
     }
 }
