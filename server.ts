@@ -7,6 +7,8 @@ export class Server {
   private argPort: number = flags.parse(Deno.args).port
   private port: number
   private clientHandler: ClientHandler;
+  private publicFolder: string = './client/js'
+  private publicFiles: string[] = [];
 
   constructor(serverConfigs: any) {
     this.port = this.argPort ? Number(this.argPort) : serverConfigs.defaultPort
@@ -14,6 +16,7 @@ export class Server {
   }
 
   public init(): void {
+    this.setPublicFilesList(this.publicFolder)
     listenAndServe({ port: this.port }, async (req) => {
       if (req.method === 'GET' && req.url === '/') {
         req.respond({
@@ -25,31 +28,7 @@ export class Server {
         })
       }
 
-      const publicFiles = [
-        'board/Board.js',
-        'board/layers/BackgroundLayer.js',
-        'board/layers/SolidLayer.js',
-        'board/layers/SpritesLayer.js',
-        'board/map/tiles/Color.js',
-        'board/map/tiles/Tile.js',
-        'board/map/tiles/Tiles.js',
-        'board/map/Map.js',
-        'board/map/InitialRoom.js',
-        'board/map/Woods.js',
-        'drawingCanvas/DrawingCanvas.js',
-        'drawingCanvas/DrawingGrid.js',
-        'entities/Player.js',
-        'parser/ParseLogin.js',
-        'parser/ParseMove.js',
-        'parser/ParseError.js',
-        'parser/Parser.js',
-        'Client.js',
-        'Enums.js',
-        'Game.js',
-        'Main.js'
-      ];
-
-      publicFiles.map(async file => {
+      this.publicFiles.map(async file => {
         if (req.method === 'GET' && req.url === '/js/' + file) {
           req.respond({
             status: 200,
@@ -74,5 +53,22 @@ export class Server {
     })
 
     console.log(`Server running on localhost:${this.port}`)
+  }
+
+  public setPublicFilesList(path: string): void {
+    for (const dirEntry of Deno.readDirSync(path)) {
+      if (dirEntry.isDirectory) {
+        this.setPublicFilesList(`${path}/${dirEntry.name}`)
+      } else {
+        let pathToRemove = this.publicFolder
+        let outputFile = dirEntry.name
+        if (this.publicFolder !== path) {
+          pathToRemove += '/'
+          outputFile = `/${outputFile}`
+        }
+        const outputPath = path.replace(`${pathToRemove}`,'')
+        this.publicFiles.push(`${outputPath}${outputFile}`)
+      }
+    }
   }
 }
