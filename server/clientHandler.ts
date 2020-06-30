@@ -1,6 +1,6 @@
 import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std/ws/mod.ts'
 import { v4 } from 'https://deno.land/std/uuid/mod.ts'
-import { Player } from './player.ts'
+import { Player } from './entities/player.ts'
 import { Command, Direction } from './Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'

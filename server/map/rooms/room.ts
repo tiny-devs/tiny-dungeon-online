@@ -1,4 +1,4 @@
-import { Player } from "../../player.ts"
+import { Player } from "../../entities/player.ts"
 import Exits from "./exits.ts"
 
 export default class Room {
