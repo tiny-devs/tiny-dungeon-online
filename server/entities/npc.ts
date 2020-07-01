@@ -5,35 +5,31 @@ export class Npc {
   public id: number
   public npcId: number
   public name: string
-  public color: string
   public x: number
   public y: number
   public boardRows: number
   public boardColumns: number
-  public matrix: number[][] = []
-  public currentRoomId: number
-  public currentRoom: Room
+  public roomId: number
+  public room: Room
   public frequency: number = 200
   public moveChance: number = 0.25
 
   constructor(id: number,
       npcId: number,
       name: string,
-      color: string,
       x: number, y: number,
       frequency: number,
       moveChance: number,
       boardRows: number,
       boardColumns: number,
-      currentRoom: Room) {
+      room: Room) {
     this.id = id
     this.npcId = npcId
     this.name = name
-    this.color = color
     this.x = x
     this.y = y
-    this.currentRoomId = currentRoom.id
-    this.currentRoom = currentRoom
+    this.roomId = room.id
+    this.room = room
     this.frequency = frequency
     this.moveChance = moveChance
     this.boardRows = boardRows
@@ -86,17 +82,15 @@ export class Npc {
   public getReturnData() {
     return {
       id: this.id,
-      name: this.name,
-      color: this.color,
+      npcId: this.npcId,
       x: this.x,
       y: this.y,
-      matrix: this.matrix,
-      currentRoomId: this.currentRoomId
+      roomId: this.roomId
     }
   }
 
   private notCollided(y: number, x: number): boolean {
-    return this.currentRoom.solidLayer[y][x] === 0
+    return this.room.solidLayer[y][x] === 0
   }
 
   private heartBeat(): void {
@@ -105,7 +99,7 @@ export class Npc {
       if (this.moveChance >= randomChance) {
         const moveWasValid = this.move(this.getRandomDirection())
         if (moveWasValid) {
-          this.currentRoom.clientHandler.broadcastNpcMove(this)
+          this.room.clientHandler.broadcastNpcMove(this)
         }
       }
 
@@ -114,7 +108,7 @@ export class Npc {
   }
 
   getRandomDirection(): Direction {
-    const directionInt = Math.floor(Math.random() * (4 - 2) ) + 1
+    const directionInt = Math.floor(Math.random() * (5 - 1)) + 1
     return directionInt as Direction
   }
 }

@@ -13,13 +13,13 @@ class SpritesLayer {
         this.ctx.canvas.height = this.game.height;
 
         this.players = [];
-        // next we will have: this.enemies, this.warps, this.trees, etc...
+        this.npcs = [];
     }
 
     draw(clientRoomId) {
         this.ctx.clearRect(0, 0, this.c.width, this.c.height);
         this.drawPlayers(clientRoomId);
-        // this.drawEnemies, this.drawWarps, ...
+        this.drawNpcs(clientRoomId);
     }
 
     clear() {
@@ -30,6 +30,13 @@ class SpritesLayer {
         this.players.splice(0, this.players.length);
         for(const player of players) {
             this.players.push(new Player(this.game, player, this));
+        }
+    }
+
+    addNpcs(npcs) {
+        this.npcs.splice(0, this.npcs.length);
+        for(const npc of npcs) {
+            this.npcs.push(new Npc(this.game, this, npc.x, npc.y, this.getMatrixNpcById(npc.npcId), npc.id, npc.roomId));
         }
     }
 
@@ -50,7 +57,30 @@ class SpritesLayer {
         });
     }
 
+    drawNpcs(clientRoomId) {
+        this.npcs.forEach(npc => {
+            if (npc.roomId == clientRoomId) {
+                npc.draw();
+            }
+        });
+    }
+
     getPlayerById(id) {
         return this.players.find(x => x.id === id);
+    }
+
+    getNpcByIdAndRoom(id, roomId) {
+        return this.npcs.find(x => (x.id === +id) && (x.roomId === +roomId));
+    }
+
+    getMatrixNpcById(npcId) {
+        let npcMatrix;
+        switch (npcId) {
+            case 1:
+                npcMatrix = Npcs.Dog;
+                break;
+        }
+        
+        return npcMatrix;
     }
 }
