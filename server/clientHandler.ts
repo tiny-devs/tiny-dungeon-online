@@ -76,13 +76,7 @@ export class ClientHandler {
 
   private unicastNpcsInRoom(player: Player): void {
     const data = JSON.stringify(this.getAllNpcsInRoom(player.currentRoom))
-
-    for (const room of this.map.rooms) {
-      for (const player of room.players) {
-        player.clientWs.send(`${Command.NpcsInRoom},`+
-        `${data}`)
-      }
-    }
+    player.clientWs.send(`${Command.NpcsInRoom},${data}`)
   }
 
   private getAllPlayers() {
