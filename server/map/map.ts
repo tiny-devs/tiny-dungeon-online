@@ -2,11 +2,14 @@ import InitialRoom from './rooms/initialRoom.ts'
 import Woods from './rooms/woods.ts'
 import Room from './rooms/room.ts'
 import { Rooms } from '../Enums.ts'
+import { ClientHandler } from '../clientHandler.ts'
 
 export default class Map {
+  private clientHandler: ClientHandler
   public rooms: Room[]
 
-  constructor() {
+  constructor(clientHandler: ClientHandler) {
+    this.clientHandler = clientHandler
     this.rooms = this.buildMap()
   }
 
@@ -17,6 +20,6 @@ export default class Map {
   }
 
   private buildMap(): any {
-    return [new InitialRoom(Rooms.Initial), new Woods(Rooms.Woods)]
+    return [new InitialRoom(Rooms.Initial, this.clientHandler), new Woods(Rooms.Woods, this.clientHandler)]
   }
 }

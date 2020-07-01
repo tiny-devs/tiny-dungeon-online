@@ -1,5 +1,5 @@
-import { Direction } from './Enums.ts'
-import Room from './map/rooms/room.ts'
+import { Direction } from '../Enums.ts'
+import Room from '../map/rooms/room.ts'
 
 export class Player {
     public id: string

@@ -1,13 +1,14 @@
 import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std/ws/mod.ts'
 import { v4 } from 'https://deno.land/std/uuid/mod.ts'
-import { Player } from './player.ts'
+import { Player } from './entities/player.ts'
 import { Command, Direction } from './Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
+import { Npc } from './entities/npc.ts'
 
 export class ClientHandler {
-  private boardColumns: number = 5
-  private boardRows: number = 5
+  public boardColumns: number = 16
+  public boardRows: number = 16
   public playerNames: string[] = []
   public map: Map
 
@@ -15,16 +16,17 @@ export class ClientHandler {
     this.boardRows = serverConfigs.boardRows
     this.boardColumns = serverConfigs.boardColumns
 
-    this.map = new Map()
+    this.map = new Map(this)
   }
 
   private switchRooms(player: Player, newRoom: Room) {
-    const oldRoom = this.map.getRoomById(player.currentRoom.id)
-    oldRoom.removePlayer(player)
+    player.currentRoom.removePlayer(player)
 
     player.currentRoomId = newRoom.id
     player.currentRoom = newRoom
     newRoom.addPlayer(player)
+
+    this.unicastNpcsInRoom(player)
   }
 
   private broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
@@ -47,6 +49,17 @@ export class ClientHandler {
     }
   }
 
+  public broadcastNpcMove(npcMoved: Npc): void {
+    for (const player of npcMoved.room.players) {
+      player.clientWs.send(`${Command.NpcMove},`+
+      `${npcMoved.id},` +
+      `${npcMoved.npcId},`+
+      `${npcMoved.x},`+
+      `${npcMoved.y},` +
+      `${npcMoved.roomId}`)
+    }
+  }
+
   private broadcastPlayerConnection(playerId: string): void {
     const data = JSON.stringify(this.getAllPlayers())
 
@@ -61,6 +74,11 @@ export class ClientHandler {
     }
   }
 
+  private unicastNpcsInRoom(player: Player): void {
+    const data = JSON.stringify(this.getAllNpcsInRoom(player.currentRoom))
+    player.clientWs.send(`${Command.NpcsInRoom},${data}`)
+  }
+
   private getAllPlayers() {
     let playersReturn = []
     for (const room of this.map.rooms) {
@@ -69,6 +87,14 @@ export class ClientHandler {
       }
     }
     return playersReturn
+  }
+
+  private getAllNpcsInRoom(room: Room) {
+    let npcsReturn = []
+    for (const npc of room.npcs) {
+      npcsReturn.push(npc.getReturnData())
+    }
+    return npcsReturn
   }
 
   private checkNameDuplicate(name: string, playerWs: WebSocket): boolean {
@@ -141,6 +167,7 @@ export class ClientHandler {
             player.color = eventData[2]
             player.matrix = JSON.parse(eventData[3])
             this.broadcastPlayerConnection(playerId)
+            this.unicastNpcsInRoom(player)
             break
           case Command.Ping:
             this.pong(player)

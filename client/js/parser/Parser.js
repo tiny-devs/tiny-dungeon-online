@@ -14,6 +14,12 @@ class Parser {
                 case Command.Move:
                     this.parseMove(data);
                     break
+                case Command.NpcsInRoom:
+                        this.parseNpcsInRoom(data);
+                        break
+                case Command.NpcMove:
+                        this.parseNpcMove(data);
+                        break
                 case Command.Error:
                     this.parseError(data);
                     break
@@ -40,6 +46,19 @@ class Parser {
         const moveData = new ParseMove(data);
 
         this.client.updatePlayer(moveData);
+    }
+
+    parseNpcMove(data) {
+        const npcMoveData = new ParseNpcMove(data);
+
+        this.client.updateNpc(npcMoveData);
+    }
+
+    parseNpcsInRoom(data) {
+        const npcsInRoomData = new ParseNpcsInRoom(data);
+        
+        this.client.game.spritesLayer.addNpcs(npcsInRoomData.npcs);
+        this.client.drawSprites();
     }
 
     parseError(data) {

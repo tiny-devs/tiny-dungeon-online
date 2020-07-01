@@ -4,6 +4,8 @@ export enum Command {
     Ping,
     Pong,
     Error,
+    NpcMove,
+    NpcsInRoom
 }
 
 export enum Direction {
@@ -16,4 +18,8 @@ export enum Direction {
 export enum Rooms {
     Initial = 0,
     Woods,
+}
+
+export enum Npcs {
+    Dog = 1,
 }

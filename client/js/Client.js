@@ -78,6 +78,12 @@ class Client {
         this.drawSprites();
     }
 
+    updateNpc(moveData) {
+        const npc = this.game.spritesLayer.getNpcByIdAndRoom(moveData.id, moveData.roomId);
+        npc.move(moveData);
+        this.drawSprites();
+    }
+
     drawRoom(roomId) {
         this.currentRoom.clear();
         this.currentRoom = this.game.map.getRoomById(roomId);
