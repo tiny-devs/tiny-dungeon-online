@@ -4,6 +4,7 @@ export enum Command {
     Ping,
     Pong,
     Error,
+    NpcMove
 }
 
 export enum Direction {
@@ -16,6 +17,10 @@ export enum Direction {
 export enum Rooms {
     Initial = 0,
     Woods,
+}
+
+export enum Npcs {
+    Dog = 1,
 }
 
 export const Color = {

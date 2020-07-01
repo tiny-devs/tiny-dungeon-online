@@ -3,6 +3,7 @@ import Room from '../map/rooms/room.ts'
 
 export class Npc {
   public id: number
+  public npcId: number
   public name: string
   public color: string
   public x: number
@@ -16,6 +17,7 @@ export class Npc {
   public moveChance: number = 0.25
 
   constructor(id: number,
+      npcId: number,
       name: string,
       color: string,
       x: number, y: number,
@@ -25,6 +27,7 @@ export class Npc {
       boardColumns: number,
       currentRoom: Room) {
     this.id = id
+    this.npcId = npcId
     this.name = name
     this.color = color
     this.x = x
@@ -102,7 +105,7 @@ export class Npc {
       if (this.moveChance >= randomChance) {
         const moveWasValid = this.move(this.getRandomDirection())
         if (moveWasValid) {
-          // broadcast move
+          this.currentRoom.clientHandler.broadcastNpcMove(this)
         }
       }
 

@@ -10,7 +10,8 @@ const Command = {
     "Move": 2,
     "Ping": 3,
     "Pong": 4,
-    "Error": 5
+    "Error": 5,
+    "NpcMove": 6
 }
 
 const Rooms = {

@@ -4,10 +4,11 @@ import { Player } from './entities/player.ts'
 import { Command, Direction } from './Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
+import { Npc } from './entities/npc.ts'
 
 export class ClientHandler {
-  private boardColumns: number = 5
-  private boardRows: number = 5
+  public boardColumns: number = 16
+  public boardRows: number = 16
   public playerNames: string[] = []
   public map: Map
 
@@ -15,7 +16,18 @@ export class ClientHandler {
     this.boardRows = serverConfigs.boardRows
     this.boardColumns = serverConfigs.boardColumns
 
-    this.map = new Map()
+    this.map = new Map(this)
+  }
+
+  public broadcastNpcMove(npcMoved: Npc): void {
+    for (const player of npcMoved.currentRoom.players) {
+      player.clientWs.send(`${Command.NpcMove},`+
+      `${npcMoved.id},` +
+      `${npcMoved.npcId},`+
+      `${npcMoved.x},`+
+      `${npcMoved.y},` +
+      `${npcMoved.currentRoomId}`)
+    }
   }
 
   private switchRooms(player: Player, newRoom: Room) {
