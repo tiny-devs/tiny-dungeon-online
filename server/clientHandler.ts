@@ -30,7 +30,7 @@ export class ClientHandler {
   }
 
   private broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
-    let isValid = playerMoved.move(direction, this.boardRows, this.boardColumns)
+    let isValid = playerMoved.move(direction)
     if (playerMoved.changedRoom()) {
       const newRoom = this.map.getRoomById(playerMoved.currentRoomId)
       this.switchRooms(playerMoved, newRoom)
@@ -137,7 +137,7 @@ export class ClientHandler {
     let duplicatedName = false
     const initialRoom = this.map.rooms[0]
     const playerId = v4.generate()
-    const player = new Player(playerId, '', '', 0, 0, initialRoom, ws)
+    const player = new Player(playerId, '', '', 0, 0, initialRoom, this.boardRows, this.boardColumns, ws)
 
     initialRoom.addPlayer(player)
   
