@@ -11,6 +11,8 @@ export class Player {
     public currentRoomId: number
     public currentRoom: Room
     public clientWs: any
+    public boardRows: number
+    public boardColumns: number
     private canMove: boolean = true
 
     constructor(id: string,
@@ -18,6 +20,8 @@ export class Player {
         color: string,
         x: number, y: number,
         currentRoom: Room,
+        boardRows: number,
+        boardColumns: number,
         clientWs: any) {
         this.id = id
         this.name = name
@@ -26,16 +30,18 @@ export class Player {
         this.y = y
         this.currentRoomId = currentRoom.id
         this.currentRoom = currentRoom
+        this.boardRows = boardRows
+        this.boardColumns = boardColumns
         this.clientWs = clientWs
     }
 
-    public move(key: Direction, boardRows: number, boardColumns: number): boolean {
+    public move(key: Direction): boolean {
         let validMove = false
 
         if (this.canMove) {
             switch (key) {
                 case Direction.Right:
-                    if (this.x + 1 < boardRows) {
+                    if (this.x + 1 < this.boardRows) {
                         if (this.notCollided(this.y,this.x + 1)) {
                             this.x++
                             validMove = true
@@ -50,7 +56,7 @@ export class Player {
                     }
                     break;
                 case Direction.Down:
-                    if (this.y + 1 < boardColumns) {
+                    if (this.y + 1 < this.boardColumns) {
                         if (this.notCollided(this.y + 1,this.x)) {
                             this.y++
                             validMove = true
@@ -74,7 +80,7 @@ export class Player {
                         const result = this.currentRoom.goWest()
                         if (result.valid) {
                             this.currentRoomId = result.roomId
-                            this.x = boardRows - 1
+                            this.x = this.boardRows - 1
                             validMove = true
                         }
                     }
@@ -89,7 +95,7 @@ export class Player {
                         const result = this.currentRoom.goNorth()
                         if (result.valid) {
                             this.currentRoomId = result.roomId
-                            this.y = boardColumns - 1
+                            this.y = this.boardColumns - 1
                             validMove = true
                         }
                     }
@@ -121,7 +127,10 @@ export class Player {
     }
 
     private notCollided(y: number, x: number): boolean {
-        return this.currentRoom.solidLayer[y][x] === 0
+        const notSolidTile = this.currentRoom.solidLayer[y][x] === 0
+        const notNpc = !this.currentRoom.npcs.some(npc => npc.x == x && npc.y == y)
+
+        return notSolidTile && notNpc
     }
 
     private delayMove(): void {

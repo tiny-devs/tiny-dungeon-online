@@ -90,16 +90,26 @@ export class Npc {
   }
 
   private notCollided(y: number, x: number): boolean {
-    return this.room.solidLayer[y][x] === 0
-  }
+    const notSolidTile = this.room.solidLayer[y][x] === 0
+    const notPlayer = !this.room.players.some(player => player.x == x && player.y == y)
+
+    return notSolidTile && notPlayer
+}
 
   private heartBeat(): void {
     setTimeout(() => {
       const randomChance = Math.random()
       if (this.moveChance >= randomChance) {
-        const moveWasValid = this.move(this.getRandomDirection())
-        if (moveWasValid) {
-          this.room.clientHandler.broadcastNpcMove(this)
+        let moveWasValid = false
+        let tryCount = 0
+        while (tryCount <= 4) {
+          moveWasValid = this.move(this.getRandomDirection())
+          tryCount++
+
+          if (moveWasValid) {
+            this.room.clientHandler.broadcastNpcMove(this)
+            break
+          }
         }
       }
 
