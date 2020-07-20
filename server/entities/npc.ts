@@ -4,7 +4,6 @@ import Room from '../map/rooms/room.ts'
 export class Npc {
   public id: number
   public npcId: number
-  public name: string
   public x: number
   public y: number
   public boardRows: number
@@ -16,7 +15,6 @@ export class Npc {
 
   constructor(id: number,
       npcId: number,
-      name: string,
       x: number, y: number,
       frequency: number,
       moveChance: number,
@@ -25,7 +23,6 @@ export class Npc {
       room: Room) {
     this.id = id
     this.npcId = npcId
-    this.name = name
     this.x = x
     this.y = y
     this.roomId = room.id
@@ -94,7 +91,7 @@ export class Npc {
     const notPlayer = !this.room.players.some(player => player.x == x && player.y == y)
 
     return notSolidTile && notPlayer
-}
+  }
 
   private heartBeat(): void {
     setTimeout(() => {
@@ -117,7 +114,7 @@ export class Npc {
     }, this.frequency);
   }
 
-  getRandomDirection(): Direction {
+  private getRandomDirection(): Direction {
     const directionInt = Math.floor(Math.random() * (5 - 1)) + 1
     return directionInt as Direction
   }

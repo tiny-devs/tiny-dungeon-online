@@ -1,7 +1,6 @@
 import Room from './room.ts'
 import { Rooms, Npcs } from '../../Enums.ts'
 import Exits from './exits.ts'
-import { Dog } from '../../entities/dog.ts'
 import { ClientHandler } from '../../clientHandler.ts'
 
 export default class InitialRoom extends Room{
