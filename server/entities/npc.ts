@@ -1,4 +1,4 @@
-import { Direction } from '../Enums.ts'
+import { Direction, Npcs } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 
 export class Npc {
@@ -10,14 +10,12 @@ export class Npc {
   public boardColumns: number
   public roomId: number
   public room: Room
-  public frequency: number = 200
+  public frequency: number = 500
   public moveChance: number = 0.25
 
   constructor(id: number,
       npcId: number,
       x: number, y: number,
-      frequency: number,
-      moveChance: number,
       boardRows: number,
       boardColumns: number,
       room: Room) {
@@ -27,8 +25,6 @@ export class Npc {
     this.y = y
     this.roomId = room.id
     this.room = room
-    this.frequency = frequency
-    this.moveChance = moveChance
     this.boardRows = boardRows
     this.boardColumns = boardColumns
 
