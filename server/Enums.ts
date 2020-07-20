@@ -22,4 +22,5 @@ export enum Rooms {
 
 export enum Npcs {
     Dog = 1,
+    Spider,
 }
