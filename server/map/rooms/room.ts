@@ -41,8 +41,8 @@ export default class Room {
         npcs++
         const npcToSpawn = this.npcSpawns[j][i]
 
-        if (npcToSpawn) {
-          this.npcs.push(new Npc(npcs, npcToSpawn as Npcs, i, j, this.boardRows, this.boardColumns, this))
+        if (npcToSpawn !== 0) {
+          this.npcs.push(new Npc(npcs, npcToSpawn.id as Npcs, npcToSpawn.agressive, i, j, this.boardRows, this.boardColumns, this))
         } else {
           npcs--
         }
