@@ -2,7 +2,6 @@ import { Player } from "../../entities/player.ts"
 import Exits from "./exits.ts"
 import { Npc } from "../../entities/npc.ts"
 import { Npcs } from '../../Enums.ts'
-import { Dog } from '../../entities/dog.ts'
 import { ClientHandler } from '../../clientHandler.ts'
 
 export default class Room {
@@ -41,13 +40,11 @@ export default class Room {
       for (let j=0; j<this.npcSpawns[0].length; j++) {
         npcs++
         const npcToSpawn = this.npcSpawns[j][i]
-        switch (npcToSpawn) {
-          case Npcs.Dog:
-            this.npcs.push(new Dog(npcs, i, j, this.boardRows, this.boardColumns, this))
-            break
-          default:
-            npcs--
-            break
+
+        if (npcToSpawn !== 0) {
+          this.npcs.push(new Npc(npcs, npcToSpawn.id as Npcs, npcToSpawn.agressive, i, j, this.boardRows, this.boardColumns, this))
+        } else {
+          npcs--
         }
       }
     }

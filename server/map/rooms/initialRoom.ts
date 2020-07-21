@@ -1,7 +1,6 @@
 import Room from './room.ts'
 import { Rooms, Npcs } from '../../Enums.ts'
 import Exits from './exits.ts'
-import { Dog } from '../../entities/dog.ts'
 import { ClientHandler } from '../../clientHandler.ts'
 
 export default class InitialRoom extends Room{
@@ -45,7 +44,7 @@ export default class InitialRoom extends Room{
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,Npcs.Dog,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,{id:Npcs.Dog,agressive:false},0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
   }

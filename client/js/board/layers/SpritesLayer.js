@@ -74,11 +74,9 @@ class SpritesLayer {
     }
 
     getMatrixNpcById(npcId) {
-        let npcMatrix;
-        switch (npcId) {
-            case 1:
-                npcMatrix = Npcs.Dog;
-                break;
+        let npcMatrix = Npcs[Object.keys(Npcs)[npcId-1]];
+        if (!npcMatrix) {
+            console.log('No sprite defined')
         }
         
         return npcMatrix;
