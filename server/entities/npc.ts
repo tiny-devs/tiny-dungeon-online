@@ -1,5 +1,6 @@
 import { Direction, Npcs } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
+import { Player } from './player.ts'
 
 export class Npc {
   public id: number
@@ -9,6 +10,8 @@ export class Npc {
   public anger: number = 6
   public maxAnger: number = 6
   public chasing: boolean = false
+  public spawnX: number
+  public spawnY: number
   public x: number
   public y: number
   public boardRows: number
@@ -18,6 +21,11 @@ export class Npc {
   public frequency: number = 500
   public moveChance: number = 0.25
   public hp: number
+  public totalHp: number
+  public attack: number = 5
+  public defense: number = 5
+  public respawnTime: number = 10000
+  public dead: boolean = false
 
   constructor(id: number,
       npcId: number,
@@ -30,26 +38,31 @@ export class Npc {
     this.id = id
     this.npcId = npcId
     this.isAgressive = agressive
+    this.spawnX = x
+    this.spawnY = y
     this.x = x
     this.y = y
     this.roomId = room.id
     this.room = room
     this.boardRows = boardRows
     this.boardColumns = boardColumns
+    this.totalHp = hp
     this.hp = hp
 
     this.heartBeat()
   }
 
-  public move(key: Direction): boolean {
-    let validMove = false
+  public move(key: Direction): any {
+    let result = {valid:false,playerHit:null as unknown as Player | undefined}
 
     switch (key) {
       case Direction.Right:
         if (this.x + 1 < this.boardRows) {
             if (this.notCollided(this.y,this.x + 1)) {
                 this.x++
-                validMove = true
+                result.valid = true
+            } else {
+              result.playerHit = this.getPlayerAtCoords(this.y,this.x + 1)
             }
         }
         break;
@@ -57,7 +70,9 @@ export class Npc {
         if (this.y + 1 < this.boardColumns) {
             if (this.notCollided(this.y + 1,this.x)) {
                 this.y++
-                validMove = true
+                result.valid = true
+            } else {
+              result.playerHit = this.getPlayerAtCoords(this.y + 1,this.x)
             }
         }
         break;
@@ -65,7 +80,9 @@ export class Npc {
         if (this.x - 1 >= 0) {
             if (this.notCollided(this.y,this.x - 1)) {
                 this.x--
-                validMove = true
+                result.valid = true
+            } else {
+              result.playerHit = this.getPlayerAtCoords(this.y,this.x - 1)
             }
         }
         break;
@@ -73,13 +90,15 @@ export class Npc {
         if (this.y - 1 >= 0) {
             if (this.notCollided(this.y - 1,this.x)) {
                 this.y--
-                validMove = true
+                result.valid = true
+            } else {
+              result.playerHit = this.getPlayerAtCoords(this.y - 1,this.x)
             }
         }
         break;
     }
 
-    return validMove
+    return result
   }
 
   public getReturnData() {
@@ -101,13 +120,13 @@ export class Npc {
     }
     
     if (this.moveChance >= randomChance) {
-      let moveWasValid = false
+      let moveResult = {valid:false,playerHit:false}
       let tryCount = 0
       while (tryCount <= 4) {
-        moveWasValid = this.move(this.getRandomDirection())
+        moveResult = this.move(this.getRandomDirection())
         tryCount++
 
-        if (moveWasValid) {
+        if (moveResult.valid) {
           this.room.clientHandler.broadcastNpcMove(this)
           break
         }
@@ -115,16 +134,69 @@ export class Npc {
     }
   }
 
-  private agressiveBehaviour() {
+  private async agressiveBehaviour() {
     const result = this.checkSurroundings()
     if (result.found) {
       this.chasing = true
       this.anger = this.maxAnger
-      this.move(result.direction)
+
+      let moveResult = this.move(result.direction)
+      if (moveResult.playerHit) {
+        await this.engage(moveResult.playerHit)
+      }
+
       this.room.clientHandler.broadcastNpcMove(this)
     } else {
       this.passiveBehaviour()
     }
+  }
+
+  private async delay(ms: number): Promise<unknown> {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+
+  private async engage(player: Player) {
+    const damageCaused = this.getAttackDamage()
+    player.takeDamage(damageCaused)
+
+    await this.delay(500)
+
+    const damageTaken = player.getAttackDamage()
+    this.takeDamage(damageTaken)
+  }
+
+  private getAttackDamage(): number {
+    return Math.floor(Math.random() * (this.attack))
+  }
+
+  private getDefenseFromDamage(): number {
+    return Math.floor(Math.random() * (this.defense))
+  }
+
+  private takeDamage(dmg: number) {
+    const defense = this.getDefenseFromDamage()
+    const actualDamage = (dmg - defense)
+
+    this.hp-= actualDamage < 0 ? 0 : actualDamage
+    if (this.hp <= 0) {
+        this.hp = 0
+        this.die()
+    }
+
+    console.log(`dealt ${dmg} damage, defended ${defense} (${actualDamage}), enemy has ${this.hp}`)
+  }
+
+  private die() {
+    this.dead = true
+    this.x = -1
+    this.y = -1
+    setTimeout(() => {
+      this.dead = false
+      this.hp = this.totalHp
+      this.x = this.spawnX
+      this.y = this.spawnY
+      this.heartBeat()
+    }, this.respawnTime);
   }
 
   private checkSurroundings() {
@@ -151,25 +223,26 @@ export class Npc {
 
   private notCollided(y: number, x: number): boolean {
     const notSolidTile = this.room.solidLayer[y][x] === 0
-    const notPlayer = !this.hasPlayer(y, x)
+    const notPlayer = !this.getPlayerAtCoords(y, x)
 
     return notSolidTile && notPlayer
   }
 
-  private hasPlayer(y: number, x: number) {
-    return this.room.players.some(player => player.x == x && player.y == y)
+  private getPlayerAtCoords(y: number, x: number): Player | undefined{
+    return this.room.players.find(player => player.x == x && player.y == y)
   }
 
   private heartBeat(): void {
-    setTimeout(() => {
+    setTimeout(async () => {
       if (this.isAgressive) {
-        this.agressiveBehaviour()
+        await this.agressiveBehaviour()
       } else {
         this.passiveBehaviour()
       }
-      
 
-      this.heartBeat()
+      if (!this.dead) {
+        this.heartBeat()
+      }
     }, this.frequency);
   }
 
