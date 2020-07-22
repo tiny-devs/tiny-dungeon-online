@@ -5,7 +5,7 @@ export class Npc {
   public id: number
   public npcId: number
   public isAgressive: boolean
-  public fieldOfView: number = 6
+  public fieldOfView: number = 36
   public anger: number = 6
   public maxAnger: number = 6
   public chasing: boolean = false
@@ -126,66 +126,24 @@ export class Npc {
 
   private checkSurroundings() {
     let result = {found: false, direction: 0}
-    for(let i=1; i<5; i++) {
-      let foundPlayer = this.checkDirection(i as Direction)
-      if (foundPlayer) {
-        result.found = true
-        result.direction = i as Direction
-        break
+
+    let playerInRange = this.room.players.find(player => 
+      (Math.pow(player.x - this.x,2) + Math.pow(player.y - this.y,2)) <= this.fieldOfView
+    )
+    if (playerInRange) {
+      result.found = true
+      if (playerInRange.y > this.y) {
+        result.direction = Direction.Down
+      } else if (playerInRange.x < this.x) {
+        result.direction = Direction.Left
+      } else if (playerInRange.x > this.x) {
+        result.direction = Direction.Right
+      } else {
+        result.direction = Direction.Up
       }
     }
 
     return result
-  }
-
-  private checkDirection(direction: Direction): boolean {
-    let viewed = 1
-    let foundPlayer = false
-
-    switch (direction) {
-      case Direction.Right:
-        while (viewed <= this.fieldOfView) {
-          if (this.hasPlayer(this.y,this.x + viewed)) {
-            foundPlayer = true
-            viewed=this.fieldOfView
-          }
-          viewed++
-        }
-        
-        break
-      case Direction.Down:
-        while (viewed <= this.fieldOfView) {
-          if (this.hasPlayer(this.y + viewed,this.x)) {
-            foundPlayer = true
-            viewed=this.fieldOfView
-          }
-          viewed++
-        }
-        
-        break
-      case Direction.Left:
-        while (viewed <= this.fieldOfView) {
-          if (this.hasPlayer(this.y,this.x - viewed)) {
-            foundPlayer = true
-            viewed=this.fieldOfView
-          }
-          viewed++
-        }
-        
-        break
-      case Direction.Up:
-        while (viewed <= this.fieldOfView) {
-          if (this.hasPlayer(this.y - viewed,this.x)) {
-            foundPlayer = true
-            viewed=this.fieldOfView
-          }
-          viewed++
-        }
-        
-        break
-    }
-
-    return foundPlayer
   }
 
   private notCollided(y: number, x: number): boolean {
