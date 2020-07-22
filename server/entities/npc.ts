@@ -17,11 +17,12 @@ export class Npc {
   public room: Room
   public frequency: number = 500
   public moveChance: number = 0.25
-  public isFollowing: boolean = false
+  public hp: number
 
   constructor(id: number,
       npcId: number,
       agressive: boolean,
+      hp: number,
       x: number, y: number,
       boardRows: number,
       boardColumns: number,
@@ -35,6 +36,7 @@ export class Npc {
     this.room = room
     this.boardRows = boardRows
     this.boardColumns = boardColumns
+    this.hp = hp
 
     this.heartBeat()
   }
@@ -86,7 +88,8 @@ export class Npc {
       npcId: this.npcId,
       x: this.x,
       y: this.y,
-      roomId: this.roomId
+      roomId: this.roomId,
+      hp: this.hp
     }
   }
 

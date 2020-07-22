@@ -13,6 +13,7 @@ export class Player {
     public clientWs: any
     public boardRows: number
     public boardColumns: number
+    public hp: number = 100
     private canMove: boolean = true
 
     constructor(id: string,
@@ -122,7 +123,8 @@ export class Player {
             x: this.x,
             y: this.y,
             matrix: this.matrix,
-            currentRoomId: this.currentRoomId
+            currentRoomId: this.currentRoomId,
+            hp: this.hp
         }
     }
 

@@ -1,5 +1,5 @@
 class Npc {
-  constructor(game, layer, x, y, npc, id, roomId) {
+  constructor(game, layer, x, y, npc, id, roomId, hp) {
     this.game = game;
     this.layer = layer;
 
@@ -9,6 +9,7 @@ class Npc {
     this.y = y;
     this.tileSize = 8;
     this.tileMatrix = npc;
+    this.hp = hp
   }
 
   draw() {

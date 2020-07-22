@@ -9,6 +9,7 @@ class Player {
         this.name = playerData.name;
         this.id = playerData.id;
         this.currentRoomId = playerData.currentRoomId;
+        this.hp = playerData.hp;
         this.playerSize = 8;
         this.playerMatrix = playerData.matrix.map((arr) => {
             return arr.slice();

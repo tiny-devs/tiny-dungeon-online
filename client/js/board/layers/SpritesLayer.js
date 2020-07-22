@@ -36,7 +36,7 @@ class SpritesLayer {
     addNpcs(npcs) {
         this.npcs.splice(0, this.npcs.length);
         for(const npc of npcs) {
-            this.npcs.push(new Npc(this.game, this, npc.x, npc.y, this.getMatrixNpcById(npc.npcId), npc.id, npc.roomId));
+            this.npcs.push(new Npc(this.game, this, npc.x, npc.y, this.getMatrixNpcById(npc.npcId), npc.id, npc.roomId, npc.hp));
         }
     }
 
