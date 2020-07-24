@@ -5,6 +5,7 @@ import { Command, Direction } from './Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
+import { PveData } from './pve/pveData.ts'
 
 export class ClientHandler {
   public boardColumns: number = 16
@@ -17,16 +18,6 @@ export class ClientHandler {
     this.boardColumns = serverConfigs.boardColumns
 
     this.map = new Map(this)
-  }
-
-  private switchRooms(player: Player, newRoom: Room) {
-    player.currentRoom.removePlayer(player)
-
-    player.currentRoomId = newRoom.id
-    player.currentRoom = newRoom
-    newRoom.addPlayer(player)
-
-    this.unicastNpcsInRoom(player)
   }
 
   public broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
@@ -58,6 +49,29 @@ export class ClientHandler {
       `${npcMoved.y},` +
       `${npcMoved.roomId}`)
     }
+  }
+
+  public broadcastPveFight(pveData: PveData): void {
+    for (const player of pveData.room.players) {
+      player.clientWs.send(`${Command.Pve},`+
+      `${pveData.attacker},` +
+      `${pveData.damageCaused},`+
+      `${pveData.npc.hp},` +
+      `${pveData.npc.id},` +
+      `${pveData.player.hp},` +
+      `${pveData.player.id},` +
+      `${pveData.room.id}`)
+    }
+  }
+
+  private switchRooms(player: Player, newRoom: Room) {
+    player.currentRoom.removePlayer(player)
+
+    player.currentRoomId = newRoom.id
+    player.currentRoom = newRoom
+    newRoom.addPlayer(player)
+
+    this.unicastNpcsInRoom(player)
   }
 
   private broadcastPlayerConnection(playerId: string): void {

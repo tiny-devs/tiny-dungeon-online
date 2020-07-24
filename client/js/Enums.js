@@ -12,10 +12,16 @@ const Command = {
     "Pong": 4,
     "Error": 5,
     "NpcMove": 6,
-    "NpcsInRoom": 7
+    "NpcsInRoom": 7,
+    "Pve": 8
 }
 
 const Rooms = {
     "Initial": 0,
     "Woods": 1
+}
+
+const PveAttacker = {
+    "Player": 0,
+    "Npc": 1
 }

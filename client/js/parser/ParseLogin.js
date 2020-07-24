@@ -4,8 +4,8 @@ class ParseLogin {
 
         this.playerId = loginData[1];
         this.serverRules = {
-            boardRows: loginData[2],
-            boardColumns: loginData[3]
+            boardRows: +loginData[2],
+            boardColumns: +loginData[3]
         }
         this.players = JSON.parse(loginData[4]);
     }

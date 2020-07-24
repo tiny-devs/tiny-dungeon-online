@@ -10,6 +10,9 @@ class Player {
         this.id = playerData.id;
         this.currentRoomId = playerData.currentRoomId;
         this.hp = playerData.hp;
+        this.maxHp = playerData.maxHp;
+        this.isFighting = false;
+        this.pveData;
         this.playerSize = 8;
         this.playerMatrix = playerData.matrix.map((arr) => {
             return arr.slice();
@@ -36,7 +39,51 @@ class Player {
         this.layer.ctx.fill();
     }
 
+    takeDamage(pveData) {
+        this.pveData = pveData;
+        this.hp = pveData.playerHp;
+        this.isFighting = true;
+        this.drawHp();
+        if (this.hp <= 0) {
+            this.hp = this.maxHp
+            this.isFighting = false;
+        }
+
+        if (pveData.npcHp <= 1) {
+            this.isFighting = false;
+        }
+    }
+
+    drawHp() {
+        this.layer.ctx.beginPath();
+        this.layer.ctx.fillStyle = Color.Red;
+        this.layer.ctx.fillRect(this.x * this.game.cellWidth, (this.y) * (this.game.cellHeight - 2), this.game.cellWidth, 5);
+        this.layer.ctx.fillStyle = Color.DarkGreen;
+        this.layer.ctx.fillRect(this.x * this.game.cellWidth, (this.y) * (this.game.cellHeight - 2), (this.game.cellWidth * this.hp)/this.maxHp, 5);
+        this.layer.ctx.fill();
+
+        this.drawHit();
+    }
+
+    drawHit() {
+        let dmgFactor = ''
+        this.layer.ctx.font = "15px arial";
+        if (this.pveData.damageCaused == 0) {
+            this.layer.ctx.fillStyle = Color.Blue;
+        } else {
+            this.layer.ctx.fillStyle = Color.Red;
+            dmgFactor = '-'
+        }
+
+        this.layer.ctx.fillText(`${dmgFactor}${this.pveData.damageCaused}`,
+        (this.x * this.game.cellWidth) + (this.game.cellWidth/2), this.y * (this.game.cellHeight - 3));
+    }
+
     move(x, y, currentRoomId) {
+        if ((x != this.x) || (y != this.y)) {
+            this.isFighting = false;
+        }
+
         this.x = x;
         this.y = y;
         this.currentRoomId = currentRoomId;

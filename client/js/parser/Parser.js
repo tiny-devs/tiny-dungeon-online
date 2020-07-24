@@ -20,6 +20,9 @@ class Parser {
                 case Command.NpcMove:
                         this.parseNpcMove(data);
                         break
+                case Command.Pve:
+                        this.parsePve(data);
+                        break
                 case Command.Error:
                     this.parseError(data);
                     break
@@ -59,6 +62,12 @@ class Parser {
         
         this.client.game.spritesLayer.addNpcs(npcsInRoomData.npcs);
         this.client.drawSprites();
+    }
+
+    parsePve(data) {
+        const pveData = new ParsePve(data)
+
+        this.client.drawPve(pveData)
     }
 
     parseError(data) {

@@ -14,7 +14,8 @@ export class Player {
     public clientWs: any
     public boardRows: number
     public boardColumns: number
-    public hp: number = 100
+    public hp: number = 10
+    public maxHp: number = 10
     public attack: number = 5
     public defense: number = 5
     private canMove: boolean = true
@@ -130,20 +131,23 @@ export class Player {
             y: this.y,
             matrix: this.matrix,
             currentRoomId: this.currentRoomId,
-            hp: this.hp
+            hp: this.hp,
+            maxHp: this.maxHp
         }
     }
 
-    public takeDamage(dmg: number) {
-        const defense = this.getDefenseFromDamage()
+    public takeDamage(dmg: number): number {
+        let defense = this.getDefenseFromDamage()
+        defense = defense > dmg ? dmg : defense
         const actualDamage = (dmg - defense)
     
         this.hp-= actualDamage < 0 ? 0 : actualDamage
         if (this.hp <= 0) {
-            this.hp = 100
+            this.hp = this.maxHp
             this.respawn()
         }
-        console.log(`took ${dmg} damage, defended ${defense} (${actualDamage}), has ${this.hp}`)
+
+        return defense
     }
 
     public getAttackDamage(): number {

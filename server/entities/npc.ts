@@ -1,6 +1,7 @@
-import { Direction, Npcs } from '../Enums.ts'
+import { Direction, Npcs, PveAttacker } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { Player } from './player.ts'
+import { PveData } from '../pve/pveData.ts'
 
 export class Npc {
   public id: number
@@ -20,10 +21,11 @@ export class Npc {
   public room: Room
   public frequency: number = 500
   public moveChance: number = 0.25
+  public moveCounter: number = 0
   public hp: number
-  public totalHp: number
-  public attack: number = 5
-  public defense: number = 5
+  public maxHp: number
+  public attack: number = 3
+  public defense: number = 3
   public respawnTime: number = 10000
   public dead: boolean = false
 
@@ -46,7 +48,7 @@ export class Npc {
     this.room = room
     this.boardRows = boardRows
     this.boardColumns = boardColumns
-    this.totalHp = hp
+    this.maxHp = hp
     this.hp = hp
 
     this.heartBeat()
@@ -108,7 +110,8 @@ export class Npc {
       x: this.x,
       y: this.y,
       roomId: this.roomId,
-      hp: this.hp
+      hp: this.hp,
+      maxHp: this.maxHp
     }
   }
 
@@ -156,13 +159,25 @@ export class Npc {
   }
 
   private async engage(player: Player) {
+    let enemyAttackData = new PveData(this.room, player, this, PveAttacker.Npc)
+
     const damageCaused = this.getAttackDamage()
-    player.takeDamage(damageCaused)
+    let playerDefended = player.takeDamage(damageCaused)
+
+    enemyAttackData.damageCaused = damageCaused
+    enemyAttackData.damageDefended = playerDefended
+    this.room.clientHandler.broadcastPveFight(enemyAttackData)
 
     await this.delay(500)
 
+    let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
+
     const damageTaken = player.getAttackDamage()
-    this.takeDamage(damageTaken)
+    let enemyDefended = this.takeDamage(damageTaken)
+
+    playerAttackData.damageCaused = damageTaken
+    playerAttackData.damageDefended = enemyDefended
+    this.room.clientHandler.broadcastPveFight(playerAttackData)
   }
 
   private getAttackDamage(): number {
@@ -173,8 +188,9 @@ export class Npc {
     return Math.floor(Math.random() * (this.defense))
   }
 
-  private takeDamage(dmg: number) {
-    const defense = this.getDefenseFromDamage()
+  private takeDamage(dmg: number): number {
+    let defense = this.getDefenseFromDamage()
+    defense = defense > dmg ? dmg : defense
     const actualDamage = (dmg - defense)
 
     this.hp-= actualDamage < 0 ? 0 : actualDamage
@@ -183,7 +199,7 @@ export class Npc {
         this.die()
     }
 
-    console.log(`dealt ${dmg} damage, defended ${defense} (${actualDamage}), enemy has ${this.hp}`)
+    return defense
   }
 
   private die() {
@@ -192,7 +208,7 @@ export class Npc {
     this.y = -1
     setTimeout(() => {
       this.dead = false
-      this.hp = this.totalHp
+      this.hp = this.maxHp
       this.x = this.spawnX
       this.y = this.spawnY
       this.heartBeat()
@@ -205,16 +221,30 @@ export class Npc {
     let playerInRange = this.room.players.find(player => 
       (Math.pow(player.x - this.x,2) + Math.pow(player.y - this.y,2)) <= this.fieldOfView
     )
+
     if (playerInRange) {
       result.found = true
-      if (playerInRange.y > this.y) {
-        result.direction = Direction.Down
-      } else if (playerInRange.x < this.x) {
-        result.direction = Direction.Left
-      } else if (playerInRange.x > this.x) {
-        result.direction = Direction.Right
+
+      if (this.moveCounter == 0) {
+        if (playerInRange.y != this.y) {
+          this.moveCounter = 1
+        }
+
+        if (playerInRange.x < this.x) {
+          result.direction = Direction.Left
+        } else {
+          result.direction = Direction.Right
+        }
       } else {
-        result.direction = Direction.Up
+        if (playerInRange.x != this.x) {
+          this.moveCounter = 0
+        }
+        
+        if (playerInRange.y > this.y) {
+          result.direction = Direction.Down
+        } else {
+          result.direction = Direction.Up
+        }
       }
     }
 
