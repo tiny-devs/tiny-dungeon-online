@@ -1,16 +1,16 @@
 class Npc {
-  constructor(game, layer, x, y, npc, id, roomId, hp, maxHp) {
+  constructor(game, layer, npcData, npcMatrix) {
     this.game = game;
     this.layer = layer;
 
-    this.id = id;
-    this.roomId = roomId;
-    this.x = x;
-    this.y = y;
+    this.id = npcData.id;
+    this.roomId = npcData.roomId;
+    this.x = npcData.x;
+    this.y = npcData.y;
     this.tileSize = 8;
-    this.tileMatrix = npc;
-    this.maxHp = maxHp;
-    this.hp = hp;
+    this.tileMatrix = npcMatrix;
+    this.maxHp = npcData.maxHp;
+    this.hp = npcData.hp;
     this.pveData;
     this.isFighting = false;
   }
