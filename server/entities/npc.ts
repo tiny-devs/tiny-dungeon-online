@@ -1,15 +1,16 @@
-import { Direction, Npcs, PveAttacker } from '../Enums.ts'
+import { Direction, PveAttacker } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { Player } from './player.ts'
 import { PveData } from '../pve/pveData.ts'
+import NpcBase from './npcs/npcBase.ts'
 
 export class Npc {
   public id: number
   public npcId: number
   public isAgressive: boolean
-  public fieldOfView: number = 36
-  public anger: number = 6
-  public maxAnger: number = 6
+  public fieldOfView: number
+  public anger: number
+  public maxAnger: number
   public chasing: boolean = false
   public spawnX: number
   public spawnY: number
@@ -19,27 +20,23 @@ export class Npc {
   public boardColumns: number
   public roomId: number
   public room: Room
-  public frequency: number = 500
-  public moveChance: number = 0.25
+  public frequency: number
+  public moveChance: number
   public moveCounter: number = 0
   public hp: number
   public maxHp: number
-  public attack: number = 3
-  public defense: number = 3
-  public respawnTime: number = 10000
+  public attack: number
+  public defense: number
+  public respawnTime: number
   public dead: boolean = false
 
   constructor(id: number,
-      npcId: number,
-      agressive: boolean,
-      hp: number,
+      npcData: NpcBase,
       x: number, y: number,
       boardRows: number,
       boardColumns: number,
       room: Room) {
     this.id = id
-    this.npcId = npcId
-    this.isAgressive = agressive
     this.spawnX = x
     this.spawnY = y
     this.x = x
@@ -48,8 +45,19 @@ export class Npc {
     this.room = room
     this.boardRows = boardRows
     this.boardColumns = boardColumns
-    this.maxHp = hp
-    this.hp = hp
+
+    this.maxHp = npcData.hp
+    this.hp = npcData.hp
+    this.npcId = npcData.id
+    this.isAgressive = npcData.agressive
+    this.anger = npcData.anger
+    this.maxAnger = npcData.anger
+    this.fieldOfView = npcData.fieldOfView
+    this.frequency = npcData.frequency
+    this.moveChance = npcData.moveChance
+    this.respawnTime = npcData.respawnTime
+    this.attack = npcData.attack
+    this.defense = npcData.defense
 
     this.heartBeat()
   }
