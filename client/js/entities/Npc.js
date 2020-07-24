@@ -53,9 +53,9 @@ class Npc {
   drawHp() {
     this.layer.ctx.beginPath();
     this.layer.ctx.fillStyle = Color.Red;
-    this.layer.ctx.fillRect(this.x * this.game.cellWidth, this.y * (this.game.cellHeight - 2), this.game.cellWidth, 5);
+    this.layer.ctx.fillRect(this.x * this.game.cellWidth, (this.y * this.game.cellHeight) - 7, this.game.cellWidth, 5);
     this.layer.ctx.fillStyle = Color.DarkGreen;
-    this.layer.ctx.fillRect(this.x * this.game.cellWidth, this.y * (this.game.cellHeight - 2), (this.game.cellWidth * this.hp)/this.maxHp, 5);
+    this.layer.ctx.fillRect(this.x * this.game.cellWidth, (this.y * this.game.cellHeight) - 7, (this.game.cellWidth * this.hp)/this.maxHp, 5);
     this.layer.ctx.fill();
 
     this.drawHit();
@@ -63,16 +63,17 @@ class Npc {
 
   drawHit() {
     let dmgFactor = ''
-    this.layer.ctx.font = "15px arial";
+    this.layer.ctx.font = '15px arial';
+    this.layer.ctx.textAlign = 'center';
     if (this.pveData.damageCaused == 0) {
-      this.layer.ctx.fillStyle = Color.Blue;
+        this.layer.ctx.fillStyle = Color.Blue;
     } else {
-      this.layer.ctx.fillStyle = Color.Red;
-      dmgFactor = '-'
+        this.layer.ctx.fillStyle = Color.Red;
+        dmgFactor = '-'
     }
 
     this.layer.ctx.fillText(`${dmgFactor}${this.pveData.damageCaused}`,
-    (this.x * this.game.cellWidth) + (this.game.cellWidth/2), this.y * (this.game.cellHeight - 3));
+    (this.x*this.game.cellWidth) + (this.game.cellWidth/2), (this.y * this.game.cellHeight) - 10);
   }
 
   move(moveData) {
