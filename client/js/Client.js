@@ -81,7 +81,9 @@ class Client {
     updateNpc(moveData) {
         const npc = this.game.spritesLayer.getNpcByIdAndRoom(moveData.id, moveData.roomId);
         npc.move(moveData);
-        this.drawSprites();
+        if (!npc.isFighting) {
+            this.drawSprites();
+        }
     }
 
     drawRoom(roomId) {
@@ -121,6 +123,17 @@ class Client {
     delayMove() {
         this.canMove = false;
         setTimeout(() => { this.canMove = true; }, 100);
+    }
+
+    drawPve(pveData) {
+        if (pveData.attacker == PveAttacker.Npc) {
+            const player = this.game.spritesLayer.getPlayerById(pveData.playerId);
+            player.takeDamage(pveData)
+        } else {
+            const npc = this.game.spritesLayer.getNpcByIdAndRoom(pveData.npcId, pveData.roomId)
+            npc.takeDamage(pveData)
+        }
+        this.drawSprites();
     }
 
     getRandomPlayerColor() {

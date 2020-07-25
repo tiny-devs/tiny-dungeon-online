@@ -1,7 +1,6 @@
-import { Player } from "../../entities/player.ts"
+import { Player } from '../../entities/player.ts'
 import Exits from "./exits.ts"
-import { Npc } from "../../entities/npc.ts"
-import { Npcs } from '../../Enums.ts'
+import { Npc } from '../../entities/npc.ts'
 import { ClientHandler } from '../../clientHandler.ts'
 
 export default class Room {
@@ -42,7 +41,7 @@ export default class Room {
         const npcToSpawn = this.npcSpawns[j][i]
 
         if (npcToSpawn !== 0) {
-          this.npcs.push(new Npc(npcs, npcToSpawn.id as Npcs, npcToSpawn.agressive, i, j, this.boardRows, this.boardColumns, this))
+          this.npcs.push(new Npc(npcs, npcToSpawn, i, j, this.boardRows, this.boardColumns, this))
         } else {
           npcs--
         }

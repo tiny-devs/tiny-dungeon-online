@@ -1,5 +1,6 @@
-import { Direction } from '../Enums.ts'
+import { Direction, Rooms } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
+import { ClientHandler } from '../clientHandler.ts'
 
 export class Player {
     public id: string
@@ -13,7 +14,12 @@ export class Player {
     public clientWs: any
     public boardRows: number
     public boardColumns: number
+    public hp: number = 10
+    public maxHp: number = 10
+    public attack: number = 5
+    public defense: number = 5
     private canMove: boolean = true
+    private clientHandler: ClientHandler
 
     constructor(id: string,
         name: string,
@@ -22,7 +28,8 @@ export class Player {
         currentRoom: Room,
         boardRows: number,
         boardColumns: number,
-        clientWs: any) {
+        clientWs: any,
+        clientHandler: ClientHandler) {
         this.id = id
         this.name = name
         this.color = color
@@ -33,6 +40,7 @@ export class Player {
         this.boardRows = boardRows
         this.boardColumns = boardColumns
         this.clientWs = clientWs
+        this.clientHandler = clientHandler
     }
 
     public move(key: Direction): boolean {
@@ -122,15 +130,50 @@ export class Player {
             x: this.x,
             y: this.y,
             matrix: this.matrix,
-            currentRoomId: this.currentRoomId
+            currentRoomId: this.currentRoomId,
+            hp: this.hp,
+            maxHp: this.maxHp
         }
+    }
+
+    public takeDamage(dmg: number): number {
+        let defense = this.getDefenseFromDamage()
+        defense = defense > dmg ? dmg : defense
+        const actualDamage = (dmg - defense)
+    
+        this.hp-= actualDamage < 0 ? 0 : actualDamage
+        if (this.hp <= 0) {
+            this.hp = this.maxHp
+            this.respawn()
+        }
+
+        return defense
+    }
+
+    public getAttackDamage(): number {
+        return Math.floor(Math.random() * (this.attack))
+    }
+
+    private getDefenseFromDamage(): number {
+        return Math.floor(Math.random() * (this.defense))
+    }
+
+    private respawn() {
+        this.currentRoomId = Rooms.Initial
+        this.x = 0
+        this.y = 0
+        this.clientHandler.broadcastPlayerMove(this, Direction.Right)
     }
 
     private notCollided(y: number, x: number): boolean {
         const notSolidTile = this.currentRoom.solidLayer[y][x] === 0
-        const notNpc = !this.currentRoom.npcs.some(npc => npc.x == x && npc.y == y)
+        const notNpc = !this.hasNpc(y,x)
 
         return notSolidTile && notNpc
+    }
+
+    private hasNpc(y: number, x: number) {
+        return this.currentRoom.npcs.some(npc => npc.x == x && npc.y == y)
     }
 
     private delayMove(): void {

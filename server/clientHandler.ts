@@ -5,6 +5,7 @@ import { Command, Direction } from './Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
+import { PveData } from './pve/pveData.ts'
 
 export class ClientHandler {
   public boardColumns: number = 16
@@ -19,17 +20,7 @@ export class ClientHandler {
     this.map = new Map(this)
   }
 
-  private switchRooms(player: Player, newRoom: Room) {
-    player.currentRoom.removePlayer(player)
-
-    player.currentRoomId = newRoom.id
-    player.currentRoom = newRoom
-    newRoom.addPlayer(player)
-
-    this.unicastNpcsInRoom(player)
-  }
-
-  private broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
+  public broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
     let isValid = playerMoved.move(direction)
     if (playerMoved.changedRoom()) {
       const newRoom = this.map.getRoomById(playerMoved.currentRoomId)
@@ -58,6 +49,29 @@ export class ClientHandler {
       `${npcMoved.y},` +
       `${npcMoved.roomId}`)
     }
+  }
+
+  public broadcastPveFight(pveData: PveData): void {
+    for (const player of pveData.room.players) {
+      player.clientWs.send(`${Command.Pve},`+
+      `${pveData.attacker},` +
+      `${pveData.damageCaused},`+
+      `${pveData.npc.hp},` +
+      `${pveData.npc.id},` +
+      `${pveData.player.hp},` +
+      `${pveData.player.id},` +
+      `${pveData.room.id}`)
+    }
+  }
+
+  private switchRooms(player: Player, newRoom: Room) {
+    player.currentRoom.removePlayer(player)
+
+    player.currentRoomId = newRoom.id
+    player.currentRoom = newRoom
+    newRoom.addPlayer(player)
+
+    this.unicastNpcsInRoom(player)
   }
 
   private broadcastPlayerConnection(playerId: string): void {
@@ -137,7 +151,7 @@ export class ClientHandler {
     let duplicatedName = false
     const initialRoom = this.map.rooms[0]
     const playerId = v4.generate()
-    const player = new Player(playerId, '', '', 0, 0, initialRoom, this.boardRows, this.boardColumns, ws)
+    const player = new Player(playerId, '', '', 0, 0, initialRoom, this.boardRows, this.boardColumns, ws, this)
 
     initialRoom.addPlayer(player)
   

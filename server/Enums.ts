@@ -5,7 +5,8 @@ export enum Command {
     Pong,
     Error,
     NpcMove,
-    NpcsInRoom
+    NpcsInRoom,
+    Pve
 }
 
 export enum Direction {
@@ -23,4 +24,9 @@ export enum Rooms {
 export enum Npcs {
     Dog = 1,
     Spider,
+}
+
+export enum PveAttacker {
+	Player = 0,
+    Npc,
 }

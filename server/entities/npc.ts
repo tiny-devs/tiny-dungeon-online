@@ -1,34 +1,44 @@
-import { Direction, Npcs } from '../Enums.ts'
+import { Direction, PveAttacker } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
+import { Player } from './player.ts'
+import { PveData } from '../pve/pveData.ts'
+import NpcBase from './npcs/npcBase.ts'
 
 export class Npc {
   public id: number
   public npcId: number
   public isAgressive: boolean
-  public fieldOfView: number = 36
-  public anger: number = 6
-  public maxAnger: number = 6
+  public fieldOfView: number
+  public anger: number
+  public maxAnger: number
   public chasing: boolean = false
+  public spawnX: number
+  public spawnY: number
   public x: number
   public y: number
   public boardRows: number
   public boardColumns: number
   public roomId: number
   public room: Room
-  public frequency: number = 500
-  public moveChance: number = 0.25
-  public isFollowing: boolean = false
+  public frequency: number
+  public moveChance: number
+  public moveCounter: number = 0
+  public hp: number
+  public maxHp: number
+  public attack: number
+  public defense: number
+  public respawnTime: number
+  public dead: boolean = false
 
   constructor(id: number,
-      npcId: number,
-      agressive: boolean,
+      npcData: NpcBase,
       x: number, y: number,
       boardRows: number,
       boardColumns: number,
       room: Room) {
     this.id = id
-    this.npcId = npcId
-    this.isAgressive = agressive
+    this.spawnX = x
+    this.spawnY = y
     this.x = x
     this.y = y
     this.roomId = room.id
@@ -36,18 +46,33 @@ export class Npc {
     this.boardRows = boardRows
     this.boardColumns = boardColumns
 
+    this.maxHp = npcData.hp
+    this.hp = npcData.hp
+    this.npcId = npcData.id
+    this.isAgressive = npcData.agressive
+    this.anger = npcData.anger
+    this.maxAnger = npcData.anger
+    this.fieldOfView = npcData.fieldOfView
+    this.frequency = npcData.frequency
+    this.moveChance = npcData.moveChance
+    this.respawnTime = npcData.respawnTime
+    this.attack = npcData.attack
+    this.defense = npcData.defense
+
     this.heartBeat()
   }
 
-  public move(key: Direction): boolean {
-    let validMove = false
+  public move(key: Direction): any {
+    let result = {valid:false,playerHit:null as unknown as Player | undefined}
 
     switch (key) {
       case Direction.Right:
         if (this.x + 1 < this.boardRows) {
             if (this.notCollided(this.y,this.x + 1)) {
                 this.x++
-                validMove = true
+                result.valid = true
+            } else {
+              result.playerHit = this.getPlayerAtCoords(this.y,this.x + 1)
             }
         }
         break;
@@ -55,7 +80,9 @@ export class Npc {
         if (this.y + 1 < this.boardColumns) {
             if (this.notCollided(this.y + 1,this.x)) {
                 this.y++
-                validMove = true
+                result.valid = true
+            } else {
+              result.playerHit = this.getPlayerAtCoords(this.y + 1,this.x)
             }
         }
         break;
@@ -63,7 +90,9 @@ export class Npc {
         if (this.x - 1 >= 0) {
             if (this.notCollided(this.y,this.x - 1)) {
                 this.x--
-                validMove = true
+                result.valid = true
+            } else {
+              result.playerHit = this.getPlayerAtCoords(this.y,this.x - 1)
             }
         }
         break;
@@ -71,13 +100,15 @@ export class Npc {
         if (this.y - 1 >= 0) {
             if (this.notCollided(this.y - 1,this.x)) {
                 this.y--
-                validMove = true
+                result.valid = true
+            } else {
+              result.playerHit = this.getPlayerAtCoords(this.y - 1,this.x)
             }
         }
         break;
     }
 
-    return validMove
+    return result
   }
 
   public getReturnData() {
@@ -86,7 +117,9 @@ export class Npc {
       npcId: this.npcId,
       x: this.x,
       y: this.y,
-      roomId: this.roomId
+      roomId: this.roomId,
+      hp: this.hp,
+      maxHp: this.maxHp
     }
   }
 
@@ -98,13 +131,13 @@ export class Npc {
     }
     
     if (this.moveChance >= randomChance) {
-      let moveWasValid = false
+      let moveResult = {valid:false,playerHit:false}
       let tryCount = 0
       while (tryCount <= 4) {
-        moveWasValid = this.move(this.getRandomDirection())
+        moveResult = this.move(this.getRandomDirection())
         tryCount++
 
-        if (moveWasValid) {
+        if (moveResult.valid) {
           this.room.clientHandler.broadcastNpcMove(this)
           break
         }
@@ -112,16 +145,82 @@ export class Npc {
     }
   }
 
-  private agressiveBehaviour() {
+  private async agressiveBehaviour() {
     const result = this.checkSurroundings()
     if (result.found) {
       this.chasing = true
       this.anger = this.maxAnger
-      this.move(result.direction)
+
+      let moveResult = this.move(result.direction)
+      if (moveResult.playerHit) {
+        await this.engage(moveResult.playerHit)
+      }
+
       this.room.clientHandler.broadcastNpcMove(this)
     } else {
       this.passiveBehaviour()
     }
+  }
+
+  private async delay(ms: number): Promise<unknown> {
+    return new Promise( resolve => setTimeout(resolve, ms) );
+  }
+
+  private async engage(player: Player) {
+    let enemyAttackData = new PveData(this.room, player, this, PveAttacker.Npc)
+
+    const damageCaused = this.getAttackDamage()
+    let playerDefended = player.takeDamage(damageCaused)
+
+    enemyAttackData.damageCaused = damageCaused
+    enemyAttackData.damageDefended = playerDefended
+    this.room.clientHandler.broadcastPveFight(enemyAttackData)
+
+    await this.delay(500)
+
+    let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
+
+    const damageTaken = player.getAttackDamage()
+    let enemyDefended = this.takeDamage(damageTaken)
+
+    playerAttackData.damageCaused = damageTaken
+    playerAttackData.damageDefended = enemyDefended
+    this.room.clientHandler.broadcastPveFight(playerAttackData)
+  }
+
+  private getAttackDamage(): number {
+    return Math.floor(Math.random() * (this.attack))
+  }
+
+  private getDefenseFromDamage(): number {
+    return Math.floor(Math.random() * (this.defense))
+  }
+
+  private takeDamage(dmg: number): number {
+    let defense = this.getDefenseFromDamage()
+    defense = defense > dmg ? dmg : defense
+    const actualDamage = (dmg - defense)
+
+    this.hp-= actualDamage < 0 ? 0 : actualDamage
+    if (this.hp <= 0) {
+        this.hp = 0
+        this.die()
+    }
+
+    return defense
+  }
+
+  private die() {
+    this.dead = true
+    this.x = -1
+    this.y = -1
+    setTimeout(() => {
+      this.dead = false
+      this.hp = this.maxHp
+      this.x = this.spawnX
+      this.y = this.spawnY
+      this.heartBeat()
+    }, this.respawnTime);
   }
 
   private checkSurroundings() {
@@ -130,16 +229,30 @@ export class Npc {
     let playerInRange = this.room.players.find(player => 
       (Math.pow(player.x - this.x,2) + Math.pow(player.y - this.y,2)) <= this.fieldOfView
     )
+
     if (playerInRange) {
       result.found = true
-      if (playerInRange.y > this.y) {
-        result.direction = Direction.Down
-      } else if (playerInRange.x < this.x) {
-        result.direction = Direction.Left
-      } else if (playerInRange.x > this.x) {
-        result.direction = Direction.Right
+
+      if (this.moveCounter == 0) {
+        if (playerInRange.y != this.y) {
+          this.moveCounter = 1
+        }
+
+        if (playerInRange.x < this.x) {
+          result.direction = Direction.Left
+        } else {
+          result.direction = Direction.Right
+        }
       } else {
-        result.direction = Direction.Up
+        if (playerInRange.x != this.x) {
+          this.moveCounter = 0
+        }
+        
+        if (playerInRange.y > this.y) {
+          result.direction = Direction.Down
+        } else {
+          result.direction = Direction.Up
+        }
       }
     }
 
@@ -148,25 +261,26 @@ export class Npc {
 
   private notCollided(y: number, x: number): boolean {
     const notSolidTile = this.room.solidLayer[y][x] === 0
-    const notPlayer = !this.hasPlayer(y, x)
+    const notPlayer = !this.getPlayerAtCoords(y, x)
 
     return notSolidTile && notPlayer
   }
 
-  private hasPlayer(y: number, x: number) {
-    return this.room.players.some(player => player.x == x && player.y == y)
+  private getPlayerAtCoords(y: number, x: number): Player | undefined{
+    return this.room.players.find(player => player.x == x && player.y == y)
   }
 
   private heartBeat(): void {
-    setTimeout(() => {
+    setTimeout(async () => {
       if (this.isAgressive) {
-        this.agressiveBehaviour()
+        await this.agressiveBehaviour()
       } else {
         this.passiveBehaviour()
       }
-      
 
-      this.heartBeat()
+      if (!this.dead) {
+        this.heartBeat()
+      }
     }, this.frequency);
   }
 
