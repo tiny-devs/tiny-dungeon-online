@@ -4,6 +4,7 @@ import { Player } from "../player.ts"
 
 export default class Bag {
     public items: ItemBase[] = []
+    public coins: number = 0
     public size: number = 10
     private player: Player
 
@@ -14,6 +15,9 @@ export default class Bag {
     public useItem(itemId: Items): boolean {
         const item = this.items.find(i => i.id == itemId)
         if (item) {
+            if (item.money) {
+                this.coins += item.coins
+            }
             if (item.consumable) {
                 this.player.hp = ((item.healthRefuel + this.player.hp) > this.player.maxHp) ? this.player.maxHp : (item.healthRefuel + this.player.hp)
                 this.removeItem(item)

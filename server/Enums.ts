@@ -33,4 +33,6 @@ export enum PveAttacker {
 
 export enum Items {
     Coffee = 0,
+    Coins,
+    BronzeDagger
 }

@@ -3,6 +3,7 @@ import Room from '../map/rooms/room.ts'
 import { Player } from './player.ts'
 import { PveData } from '../pve/pveData.ts'
 import NpcBase from './npcs/npcBase.ts'
+import ItemBase from './items/itemBase.ts'
 
 export class Npc {
   public id: number
@@ -29,6 +30,7 @@ export class Npc {
   public defense: number
   public respawnTime: number
   public dead: boolean = false
+  public drops: ItemBase[]
 
   constructor(id: number,
       npcData: NpcBase,
@@ -58,6 +60,10 @@ export class Npc {
     this.respawnTime = npcData.respawnTime
     this.attack = npcData.attack
     this.defense = npcData.defense
+    this.drops = npcData.drops
+    for(const drop of this.drops) {
+      drop.roomId = this.roomId
+    }
 
     this.heartBeat()
   }
@@ -176,7 +182,7 @@ export class Npc {
     enemyAttackData.damageDefended = playerDefended
     this.room.clientHandler.broadcastPveFight(enemyAttackData)
 
-    await this.delay(500)
+    await this.delay(1000)
 
     let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
 
@@ -211,6 +217,7 @@ export class Npc {
   }
 
   private die() {
+    this.dropStuff()
     this.dead = true
     this.x = -1
     this.y = -1
@@ -221,6 +228,17 @@ export class Npc {
       this.y = this.spawnY
       this.heartBeat()
     }, this.respawnTime);
+  }
+
+  private dropStuff() {
+    for(const drop of this.drops) {
+      const randomChance = Math.random()
+      if (drop.dropChance >= randomChance) {
+        if (this.room.itemsLayer[this.y][this.x] == 0) {
+          this.room.itemsLayer[this.y][this.x] = { ...drop }
+        }
+      }
+    }
   }
 
   private checkSurroundings() {

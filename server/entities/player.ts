@@ -16,8 +16,8 @@ export class Player {
     public currentRoom: Room
     public hp: number = 10
     public maxHp: number = 10
-    public attack: number = 5
-    public defense: number = 5
+    public attack: number = 4
+    public defense: number = 4
     public bag: Bag = new Bag(this)
     public clientWs: any
     private canMove: boolean = true
@@ -192,7 +192,6 @@ export class Player {
         if (item && this.bag.items.length < this.bag.size) {
             this.bag.addItem(item)
             this.currentRoom.itemsLayer[y][x] = 0
-            console.log(this.bag.items)
             return true
         }
         return false

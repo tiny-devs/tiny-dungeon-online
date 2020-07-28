@@ -1,4 +1,5 @@
 import { Npcs } from "../../Enums.ts"
+import ItemBase from "../items/itemBase.ts"
 
 export default class NpcBase {
     public id: Npcs
@@ -11,6 +12,7 @@ export default class NpcBase {
     public moveChance: number
     public anger: number
     public fieldOfView: number
+    public drops: ItemBase[]
 
     constructor(id: number,
     agressive: boolean,
@@ -21,7 +23,8 @@ export default class NpcBase {
     frequency: number,
     moveChance: number,
     anger: number,
-    fieldOfView: number) {
+    fieldOfView: number,
+    drops: ItemBase[]) {
         this.id = id
         this.agressive = agressive
         this.hp = hp
@@ -32,5 +35,6 @@ export default class NpcBase {
         this.moveChance = moveChance
         this.anger = anger
         this.fieldOfView = fieldOfView
+        this.drops = drops
     }
 }
