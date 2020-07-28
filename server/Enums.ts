@@ -30,3 +30,7 @@ export enum PveAttacker {
 	Player = 0,
     Npc,
 }
+
+export enum Items {
+    Coffee = 0,
+}

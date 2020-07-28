@@ -11,6 +11,7 @@ export default class Room {
   public npcs: Npc[] = []
   public exits: Exits
   public clientHandler: ClientHandler
+  public itemsLayer: any
   public boardRows: number = 16
   public boardColumns: number = 16
 
