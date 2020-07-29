@@ -6,7 +6,10 @@ export enum Command {
     Error,
     NpcMove,
     NpcsInRoom,
-    Pve
+    Pve,
+    ItemsInRoom,
+    ItemPick,
+    ItemDrop,
 }
 
 export enum Direction {

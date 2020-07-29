@@ -64,6 +64,27 @@ export class ClientHandler {
     }
   }
 
+  public broadcastItemDrop(itemData: any, roomId: number, y: number, x: number): void {
+    const room = this.map.getRoomById(roomId)
+    
+    for (const player of room.players) {
+      player.clientWs.send(`${Command.ItemDrop},`+
+      `${itemData.id},` +
+      `${itemData.itemId},`+
+      `${roomId},` +
+      `${x},${y}`)
+    }
+  }
+
+  public broadcastItemPick(roomId: number, y: number, x: number): void {
+    const room = this.map.getRoomById(roomId)
+    
+    for (const player of room.players) {
+      player.clientWs.send(`${Command.ItemPick},`+
+      `${x},${y}`)
+    }
+  }
+
   private switchRooms(player: Player, newRoom: Room) {
     player.currentRoom.removePlayer(player)
 
@@ -72,6 +93,7 @@ export class ClientHandler {
     newRoom.addPlayer(player)
 
     this.unicastNpcsInRoom(player)
+    this.unicastItemsInRoom(player)
   }
 
   private broadcastPlayerConnection(playerId: string): void {
@@ -88,8 +110,13 @@ export class ClientHandler {
     }
   }
 
+  private unicastItemsInRoom(player: Player): void {
+    const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
+    player.clientWs.send(`${Command.ItemsInRoom},${data}`)
+  }
+
   private unicastNpcsInRoom(player: Player): void {
-    const data = JSON.stringify(this.getAllNpcsInRoom(player.currentRoom))
+    const data = JSON.stringify(player.currentRoom.getAllNpcsInRoom())
     player.clientWs.send(`${Command.NpcsInRoom},${data}`)
   }
 
@@ -101,14 +128,6 @@ export class ClientHandler {
       }
     }
     return playersReturn
-  }
-
-  private getAllNpcsInRoom(room: Room) {
-    let npcsReturn = []
-    for (const npc of room.npcs) {
-      npcsReturn.push(npc.getReturnData())
-    }
-    return npcsReturn
   }
 
   private checkNameDuplicate(name: string, playerWs: WebSocket): boolean {
@@ -182,6 +201,7 @@ export class ClientHandler {
             player.matrix = JSON.parse(eventData[3])
             this.broadcastPlayerConnection(playerId)
             this.unicastNpcsInRoom(player)
+            this.unicastItemsInRoom(player)
             break
           case Command.Ping:
             this.pong(player)

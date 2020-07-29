@@ -1,7 +1,8 @@
 import { Items } from "../../Enums.ts"
 
 export default class ItemBase {
-    public id: Items
+    public id: number
+    public itemId: Items
     public money: boolean
     public consumable: boolean
     public wearable: boolean
@@ -12,9 +13,9 @@ export default class ItemBase {
     public bonusDefense: number
     public healthRefuel: number
     public dropChance: number
-    public roomId: number = 0
 
     constructor(id: number,
+    itemId: Items,
     money: boolean,
     consumable: boolean,
     wearable: boolean,
@@ -26,6 +27,7 @@ export default class ItemBase {
     healthRefuel: number,
     dropChance: number) {
         this.id = id
+        this.itemId = itemId
         this.money = money
         this.consumable = consumable
         this.wearable = wearable

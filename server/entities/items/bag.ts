@@ -34,7 +34,7 @@ export default class Bag {
         const item = this.items.find(i => i.id == itemId)
         if (item) {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
-                this.player.currentRoom.itemsLayer[this.player.y][this.player.x] = item
+                this.player.currentRoom.addItem(this.player.y,this.player.x,item)
                 this.removeItem(item)
             }
             return true

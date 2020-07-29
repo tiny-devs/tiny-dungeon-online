@@ -61,9 +61,6 @@ export class Npc {
     this.attack = npcData.attack
     this.defense = npcData.defense
     this.drops = npcData.drops
-    for(const drop of this.drops) {
-      drop.roomId = this.roomId
-    }
 
     this.heartBeat()
   }
@@ -235,7 +232,7 @@ export class Npc {
       const randomChance = Math.random()
       if (drop.dropChance >= randomChance) {
         if (this.room.itemsLayer[this.y][this.x] == 0) {
-          this.room.itemsLayer[this.y][this.x] = { ...drop }
+          this.room.addItem(this.y,this.x,drop)
         }
       }
     }

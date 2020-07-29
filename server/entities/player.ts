@@ -191,7 +191,7 @@ export class Player {
         const item = this.currentRoom.itemsLayer[y][x]
         if (item && this.bag.items.length < this.bag.size) {
             this.bag.addItem(item)
-            this.currentRoom.itemsLayer[y][x] = 0
+            this.currentRoom.removeItem(y,x)
             return true
         }
         return false
