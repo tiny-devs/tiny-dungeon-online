@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="description" content="A Tiny Minimalistic Online RPG Game">
+    <meta name="author" content="Tiny Devs">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1">
+    <title>TDO</title>
+    <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
+  </head>
+  <body>
+    <div id="content">
+      <div class="title" id="title-content">
+        <h1 id="title">Tiny Dungeon Online</h1>
+        <p id="sub-title">A Tiny Minimalist Online RPG Game</p>
+      </div>
+      <div class="login-flex-container">
+        <div id="login" class="login-flex-item">
+          <p>Draw yourself:</p>
+          <canvas id="draw" width="200" height="200"></canvas>
+          <br/>
+          <center>
+            <sub id="help-draw-desktop">left click: draw / right click: erase</sub>
+            <input type="button" value="reset" id="help-draw-mobile"></input>
+          </center>
+          <br/>
+          <p>Enter your name:</p>
+          <input id="player-name"></input>
+          <button id="confirm-btn">Create Hero</button>
+        </div>
+      </div>
+      <div class="game-flex-container">
+        <div id="game">
+          <div id="layers">
+            <canvas id="background-layer" width="512" height="512" class="canvas-layer"></canvas>
+            <canvas id="solid-layer" width="512" height="512" class="canvas-layer"></canvas>
+            <canvas id="sprites-layer" width="512" height="512" class="canvas-layer"></canvas>
+          </div>
+          <div id="mobile-controls">
+            <center>
+              <br/>
+              <input type="button" value="▲" id="up"></input>
+              <br/>
+              <input type="button" value="◄" id="left"></input>
+              <input type="button" value="▼" id="down"></input>
+              <input type="button" value="►" id="right"></input>
+            </center>
+          </div>
+          <div id="game-info">
+            <p>Players Online:</p>
+            <ul id="player-list"></ul>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="./bundle.js"></script>
+    <style>
+      body {
+        font-family: "Press Start 2P";
+      }
+
+      .title {
+        text-align: center;
+      }
+
+      .login-flex-container {
+        display: flex;
+        justify-content: center;
+      }
+
+      .login-flex-item {
+        text-align: center;
+      }
+
+      #login {
+        border-style: solid;
+        padding: 0.62rem;
+        border-width: 0.12rem;
+        border-radius: 0.31rem;
+      }
+
+      sub {
+        font-size: 50%;
+      }
+
+      #help-draw-mobile {
+        display: none;
+      }
+
+      #mobile-controls {
+        display: none;
+      }
+
+      .game-flex-container {
+        display: flex;
+        justify-content: center;
+      }
+
+      .game-flex-item {
+        text-align: center;
+      }
+
+      .canvas-layer {
+        position: absolute;
+      }
+
+      p, li {
+        cursor: default;
+        -webkit-touch-callout: none;
+        -webkit-user-select: none;
+        -khtml-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+        user-select: none;
+      }
+    </style>
+  </body>
+</html>
