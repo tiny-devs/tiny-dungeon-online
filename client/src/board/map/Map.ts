@@ -1,7 +1,7 @@
-import { Game } from '../../startup/Game'
-import { Rooms } from '../../models/Enums'
-import { Woods } from './Woods'
-import { InitialRoom } from './InitialRoom'
+import { Game } from '../../startup/Game.ts'
+import { Rooms } from '../../models/Enums.ts'
+import { Woods } from './Woods.ts'
+import { InitialRoom } from './InitialRoom.ts'
 
 export class Map {
     private game: Game

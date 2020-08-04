@@ -1,11 +1,11 @@
 import { PlayerConfig } from '../models/configs'
-import { Game } from './Game'
-import { Main } from './Main'
-import { Parser } from '../parser/Parser'
-import { Command, PveAttacker, Rooms, Direction } from '../models/Enums'
-import { PlayerColors } from '../board/map/tiles/Color'
-import { Woods } from '../board/map/Woods'
-import { InitialRoom } from '../board/map/InitialRoom'
+import { Game } from './Game.ts'
+import { Main } from './Main.ts'
+import { Parser } from '../parser/Parser.ts'
+import { Command, PveAttacker, Rooms, Direction } from '../models/Enums.ts'
+import { PlayerColors } from '../board/map/tiles/Color.ts'
+import { Woods } from '../board/map/Woods.ts'
+import { InitialRoom } from '../board/map/InitialRoom.ts'
 
 export class Client {
     private game: Game

@@ -1,6 +1,6 @@
-import { Game } from '../startup/Game'
-import { Color } from '../board/map/tiles/Color'
-import { Rooms } from '../models/Enums'
+import { Game } from '../startup/Game.ts'
+import { Color } from '../board/map/tiles/Color.ts'
+import { Rooms } from '../models/Enums.ts'
 
 export class Npc {
     public id: number

@@ -1,7 +1,7 @@
-import { Game } from '../startup/Game'
-import { SpritesLayer } from '../board/layers/SpritesLayer'
-import { Color } from '../board/map/tiles/Color'
-import { Rooms, Direction } from '../models/Enums'
+import { Game } from '../startup/Game.ts'
+import { SpritesLayer } from '../board/layers/SpritesLayer.ts'
+import { Color } from '../board/map/tiles/Color.ts'
+import { Rooms, Direction } from '../models/Enums.ts'
 
 export class Player {
     public x: number

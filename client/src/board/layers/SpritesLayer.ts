@@ -1,8 +1,8 @@
-import { Game } from '../../startup/Game'
-import { Player } from '../../entities/Player'
-import { Npc } from '../../entities/Npc'
-import { Rooms } from '../../models/Enums'
-import { Npcs } from '../../entities/Npcs'
+import { Game } from '../../startup/Game.ts'
+import { Player } from '../../entities/Player.ts'
+import { Npc } from '../../entities/Npc.ts'
+import { Rooms } from '../../models/Enums.ts'
+import { Npcs } from '../../entities/Npcs.ts'
 
 export class SpritesLayer {
     public ctx: CanvasRenderingContext2D
@@ -93,7 +93,7 @@ export class SpritesLayer {
     }
 
     getMatrixNpcById(npcId: number) {
-        let npcMatrix = Npcs[Object.keys(Npcs)[npcId - 1]]
+        let npcMatrix = Npcs[Object.keys(Npcs)[npcId - 1]] as any
         if (!npcMatrix) {
             console.log('No sprite defined')
         }

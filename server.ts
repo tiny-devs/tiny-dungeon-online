@@ -7,7 +7,7 @@ export class Server {
   private argPort: number = flags.parse(Deno.args).port;
   private port: number;
   private clientHandler: ClientHandler;
-  private publicFolder: string = "./client/js";
+  private publicFolder: string = "./client/public";
   private publicFiles: string[] = [];
 
   constructor(serverConfigs: any) {
@@ -24,19 +24,18 @@ export class Server {
           headers: new Headers({
             "content-type": "text/html",
           }),
-          body: await Deno.open("./client/index.html"),
+          body: await Deno.open("./client/public/index.html"),
         });
       }
 
       this.publicFiles.map(async (file) => {
-        console.log(file);
         if (req.method === "GET" && req.url === "/js/" + file) {
           req.respond({
             status: 200,
             headers: new Headers({
               "content-type": "application/javascript",
             }),
-            body: await Deno.open("./client/js/" + file),
+            body: await Deno.open("./client/public/" + file),
           });
         }
       });

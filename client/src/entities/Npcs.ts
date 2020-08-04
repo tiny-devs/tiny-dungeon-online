@@ -1,4 +1,4 @@
-import { Color } from '../board/map/tiles/Color'
+import { Color } from '../board/map/tiles/Color.ts'
 
 export const Npcs = {
     Dog: [
@@ -21,4 +21,4 @@ export const Npcs = {
         [Color.DarkGrey, 0, Color.DarkGrey, 0, 0, Color.DarkGrey, 0, Color.DarkGrey],
         [Color.DarkGrey, 0, Color.DarkGrey, 0, 0, Color.DarkGrey, 0, Color.DarkGrey],
     ],
-}
+} as any

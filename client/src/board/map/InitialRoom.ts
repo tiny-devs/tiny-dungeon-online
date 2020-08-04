@@ -1,8 +1,8 @@
-import { Game } from '../../startup/Game'
-import { Rooms } from '../../models/Enums'
-import { Tiles } from './tiles/Tiles'
-import { Tile } from './tiles/Tile'
-import { Color } from './tiles/Color'
+import { Game } from '../../startup/Game.ts'
+import { Rooms } from '../../models/Enums.ts'
+import { Tiles } from './tiles/Tiles.ts'
+import { Tile } from './tiles/Tile.ts'
+import { Color } from './tiles/Color.ts'
 
 export class InitialRoom {
     public id: Rooms
@@ -68,12 +68,12 @@ export class InitialRoom {
     initTiles() {
         for (let column = 0; column < this.game.gridConfig.columns; column++) {
             for (let line = 0; line < this.game.gridConfig.rows; line++) {
-                const tileToDrawBackground = this.backgroundLayerShape[line][column]
+                const tileToDrawBackground = this.backgroundLayerShape[line][column] as any
                 if (tileToDrawBackground != 0) {
                     this.tiles.push(new Tile(this.game, this.game.backgroundLayer, column, line, tileToDrawBackground))
                 }
 
-                const tileToDraw = this.solidLayerShape[line][column]
+                const tileToDraw = this.solidLayerShape[line][column] as any
                 if (tileToDraw != 0) {
                     this.tiles.push(new Tile(this.game, this.game.solidLayer, column, line, tileToDraw))
                 }

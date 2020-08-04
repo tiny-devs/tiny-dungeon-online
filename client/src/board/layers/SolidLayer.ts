@@ -1,4 +1,4 @@
-import { Game } from '../../startup/Game'
+import { Game } from '../../startup/Game.ts'
 
 export class SolidLayer {
     private game: Game

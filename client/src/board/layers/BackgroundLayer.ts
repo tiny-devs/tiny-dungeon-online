@@ -1,4 +1,4 @@
-import { Game } from '../../startup/Game'
+import { Game } from '../../startup/Game.ts'
 
 export class BackgroundLayer {
     private game: Game

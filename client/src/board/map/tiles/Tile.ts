@@ -1,4 +1,4 @@
-import { Game } from '../../../startup/Game'
+import { Game } from '../../../startup/Game.ts'
 
 export class Tile {
     public id: number
