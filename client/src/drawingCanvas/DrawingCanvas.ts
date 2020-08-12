@@ -27,6 +27,7 @@ export class DrawingCanvas {
         this.drawing = false
         this.erasing = false
 
+        this.drawGrid()
         this.drawingMatrix = this.getInitDrawingMatrix()
     }
 
@@ -138,7 +139,14 @@ export class DrawingCanvas {
         this.drawingMatrix = this.getInitDrawingMatrix()
     }
 
-    private getInitDrawingMatrix(): number[][] {
-        return Array(this.config.rows).fill(Array(this.config.columns).fill(0))
+    private getInitDrawingMatrix() {
+        let drawingMatrixInit = [] as any
+        for(let i=0; i < this.config.rows; i++) {
+            drawingMatrixInit.push([]);
+            for(let j=0; j < this.config.columns; j++) {
+                drawingMatrixInit[i][j] = 0;
+            }
+        }
+        return drawingMatrixInit
     }
 }

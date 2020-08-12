@@ -1,20 +1,20 @@
-import { Game } from '../startup/Game.ts'
-import { SpritesLayer } from '../board/layers/SpritesLayer.ts'
-import { Color } from '../board/map/tiles/Color.ts'
-import { Rooms, Direction } from '../models/Enums.ts'
+import { Game } from '../startup/Game'
+import { SpritesLayer } from '../board/layers/SpritesLayer'
+import { Color } from '../board/map/tiles/Color'
+import { Rooms, Direction } from '../models/Enums'
 
 export class Player {
     public x: number
     public y: number
     public color: Color
     public name: string
-    public id: number
+    public id: string
     public currentRoomId: Rooms
     public hp: number
     public maxHp: number
     public isFighting: boolean
     public pveData: any
-    public playerMatrix: any[][]
+    public matrix: any[][]
 
     private game: Game
     private layer: SpritesLayer
@@ -33,9 +33,9 @@ export class Player {
         this.hp = playerData.hp!
         this.maxHp = playerData.maxHp!
         this.pveData = playerData.pveData!
-        this.isFighting = playerData.isFighting!
+        this.isFighting = false
         this.playerSize = 8
-        this.playerMatrix = [...playerData.playerMatrix!]
+        this.matrix = [...playerData.matrix!]
     }
 
     draw() {
@@ -44,8 +44,8 @@ export class Player {
 
         for (let column = 0; column < this.playerSize; column++) {
             for (let line = 0; line < this.playerSize; line++) {
-                const draw = this.playerMatrix[line][column]
-                if (draw) {
+                const draw = this.matrix[line][column]
+                if (draw != 0) {
                     const startX = ((column * this.game.gridConfig.cellWidth) / this.playerSize + this.x * this.game.gridConfig.cellWidth) | 0
                     const startY = ((line * this.game.gridConfig.cellHeight) / this.playerSize + this.y * this.game.gridConfig.cellHeight) | 0
                     const width = this.game.gridConfig.cellWidth / this.playerSize

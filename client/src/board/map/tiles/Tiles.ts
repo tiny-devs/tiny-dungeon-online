@@ -1,4 +1,4 @@
-import { Color } from './Color.ts'
+import { Color } from './Color'
 
 export const Tiles = {
     Tree: [

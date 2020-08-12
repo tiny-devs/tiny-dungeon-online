@@ -1,8 +1,8 @@
-import { Game } from '../../startup/Game.ts'
-import { Player } from '../../entities/Player.ts'
-import { Npc } from '../../entities/Npc.ts'
-import { Rooms } from '../../models/Enums.ts'
-import { Npcs } from '../../entities/Npcs.ts'
+import { Game } from '../../startup/Game'
+import { Player } from '../../entities/Player'
+import { Npc } from '../../entities/Npc'
+import { Rooms } from '../../models/Enums'
+import { Npcs } from '../../entities/Npcs'
 
 export class SpritesLayer {
     public ctx: CanvasRenderingContext2D
@@ -84,7 +84,7 @@ export class SpritesLayer {
         })
     }
 
-    getPlayerById(id: number) {
+    getPlayerById(id: string) {
         return this.players.find((x) => x.id === id)
     }
 

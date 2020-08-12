@@ -1,2 +1,2 @@
-export * from './ClientConfig.ts'
-export * from './PlayerConfig.ts'
+export * from './ClientConfig'
+export * from './PlayerConfig'

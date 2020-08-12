@@ -1,8 +1,8 @@
-import { Game } from '../../startup/Game.ts'
-import { Rooms } from '../../models/Enums.ts'
-import { Tiles } from './tiles/Tiles.ts'
-import { Tile } from './tiles/Tile.ts'
-import { Color } from './tiles/Color.ts'
+import { Game } from '../../startup/Game'
+import { Rooms } from '../../models/Enums'
+import { Tiles } from './tiles/Tiles'
+import { Tile } from './tiles/Tile'
+import { Color } from './tiles/Color'
 
 export class InitialRoom {
     public id: Rooms

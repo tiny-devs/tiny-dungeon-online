@@ -1,4 +1,4 @@
-import { Color } from '../board/map/tiles/Color.ts'
+import { Color } from '../board/map/tiles/Color'
 
 export const Npcs = {
     Dog: [

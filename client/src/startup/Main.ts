@@ -1,7 +1,7 @@
 import { ClientConfig, PlayerConfig, DimensionsConfig } from '../models/configs'
-import { DrawingCanvas } from '../drawingCanvas/DrawingCanvas.ts'
-import { Game } from './Game.ts'
-import { Client } from './Client.ts'
+import { DrawingCanvas } from '../drawingCanvas/DrawingCanvas'
+import { Game } from './Game'
+import { Client } from './Client'
 
 export class Main {
     public loginScreen: HTMLElement

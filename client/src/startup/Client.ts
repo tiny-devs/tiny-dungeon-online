@@ -1,11 +1,11 @@
 import { PlayerConfig } from '../models/configs'
-import { Game } from './Game.ts'
-import { Main } from './Main.ts'
-import { Parser } from '../parser/Parser.ts'
-import { Command, PveAttacker, Rooms, Direction } from '../models/Enums.ts'
-import { PlayerColors } from '../board/map/tiles/Color.ts'
-import { Woods } from '../board/map/Woods.ts'
-import { InitialRoom } from '../board/map/InitialRoom.ts'
+import { Game } from './Game'
+import { Main } from './Main'
+import { Parser } from '../parser/Parser'
+import { Command, PveAttacker, Rooms, Direction } from '../models/Enums'
+import { PlayerColors } from '../board/map/tiles/Color'
+import { Woods } from '../board/map/Woods'
+import { InitialRoom } from '../board/map/InitialRoom'
 
 export class Client {
     private game: Game
@@ -142,7 +142,7 @@ export class Client {
                 direction = Direction.Right
             }
 
-            const player = this.game.spritesLayer.getPlayerById(+this.playerId)!
+            const player = this.game.spritesLayer.getPlayerById(this.playerId)!
             const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape)
 
             if (this.loggedIn && isValidMove) {

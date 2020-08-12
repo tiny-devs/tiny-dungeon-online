@@ -1,10 +1,10 @@
-import { Command } from '../models/Enums.ts'
-import { ParseLogin } from './ParseLogin.ts'
-import { ParseMove } from './ParseMove.ts'
-import { ParseNpcMove } from './ParseNpcMove.ts'
-import { ParseNpcsInRoom } from './ParseNpcsInRoom.ts'
-import { ParsePve } from './ParsePve.ts'
-import { ParseError } from './ParseError.ts'
+import { Command } from '../models/Enums'
+import { ParseLogin } from './ParseLogin'
+import { ParseMove } from './ParseMove'
+import { ParseNpcMove } from './ParseNpcMove'
+import { ParseNpcsInRoom } from './ParseNpcsInRoom'
+import { ParsePve } from './ParsePve'
+import { ParseError } from './ParseError'
 
 export class Parser {
     private client: any
