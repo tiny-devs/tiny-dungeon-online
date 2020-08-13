@@ -1,0 +1,14 @@
+{
+    "compilerOptions": {
+        "target": "es6",
+        "module": "es2020",
+        "lib": ["es2020", "dom"],
+        "allowJs": true,
+        "sourceMap": true,
+        "outDir": "./public/",
+        "strict": true,
+        "noImplicitAny": true,
+        "moduleResolution": "node",
+        "esModuleInterop": true
+    }
+}
