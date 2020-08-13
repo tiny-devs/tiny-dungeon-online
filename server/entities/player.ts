@@ -1,6 +1,7 @@
-import { Direction, Rooms } from '../Enums.ts'
+import { Direction, Rooms, Items } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
+import Bag from './items/bag.ts'
 
 export class Player {
     public id: string
@@ -9,15 +10,16 @@ export class Player {
     public x: number
     public y: number
     public matrix: number[][] = []
-    public currentRoomId: number
-    public currentRoom: Room
-    public clientWs: any
     public boardRows: number
     public boardColumns: number
+    public currentRoomId: number
+    public currentRoom: Room
     public hp: number = 10
     public maxHp: number = 10
-    public attack: number = 5
-    public defense: number = 5
+    public attack: number = 4
+    public defense: number = 4
+    public bag: Bag = new Bag(this)
+    public clientWs: any
     private canMove: boolean = true
     private clientHandler: ClientHandler
 
@@ -112,6 +114,7 @@ export class Player {
 
             if (validMove) {
                 this.delayMove()
+                this.pickupAnyItemAtCoords(this.y,this.x)
             }
         }
 
@@ -141,7 +144,7 @@ export class Player {
         defense = defense > dmg ? dmg : defense
         const actualDamage = (dmg - defense)
     
-        this.hp-= actualDamage < 0 ? 0 : actualDamage
+        this.hp -= actualDamage < 0 ? 0 : actualDamage
         if (this.hp <= 0) {
             this.hp = this.maxHp
             this.respawn()
@@ -152,6 +155,14 @@ export class Player {
 
     public getAttackDamage(): number {
         return Math.floor(Math.random() * (this.attack))
+    }
+
+    public useItem(itemId: Items): boolean {
+        return this.bag.useItem(itemId)
+    }
+
+    public dropItem(itemId: Items): boolean {
+        return this.bag.dropItem(itemId)
     }
 
     private getDefenseFromDamage(): number {
@@ -174,6 +185,16 @@ export class Player {
 
     private hasNpc(y: number, x: number) {
         return this.currentRoom.npcs.some(npc => npc.x == x && npc.y == y)
+    }
+
+    private pickupAnyItemAtCoords(y: number, x: number): boolean {
+        const item = this.currentRoom.itemsLayer[y][x]
+        if (item && this.bag.items.length < this.bag.size) {
+            this.bag.addItem(item)
+            this.currentRoom.removeItem(y,x)
+            return true
+        }
+        return false
     }
 
     private delayMove(): void {

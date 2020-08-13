@@ -6,7 +6,10 @@ export enum Command {
     Error,
     NpcMove,
     NpcsInRoom,
-    Pve
+    Pve,
+    ItemsInRoom,
+    ItemPick,
+    ItemDrop,
 }
 
 export enum Direction {
@@ -29,4 +32,10 @@ export enum Npcs {
 export enum PveAttacker {
 	Player = 0,
     Npc,
+}
+
+export enum Items {
+    Coffee = 0,
+    Coins,
+    BronzeDagger
 }

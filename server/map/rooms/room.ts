@@ -2,6 +2,7 @@ import { Player } from '../../entities/player.ts'
 import Exits from "./exits.ts"
 import { Npc } from '../../entities/npc.ts'
 import { ClientHandler } from '../../clientHandler.ts'
+import ItemBase from '../../entities/items/itemBase.ts'
 
 export default class Room {
   public id: number
@@ -11,6 +12,8 @@ export default class Room {
   public npcs: Npc[] = []
   public exits: Exits
   public clientHandler: ClientHandler
+  public itemsLayer: any
+  public itemsCount: number = 0
   public boardRows: number = 16
   public boardColumns: number = 16
 
@@ -79,5 +82,71 @@ export default class Room {
       isValid = true
     }
     return { valid: isValid, roomId: this.exits.e }
+  }
+
+  addItem(y: number, x: number, item: ItemBase) {
+    this.itemsCount++
+    const nextId = this.itemsCount
+
+    let clonedItem = { ...item }
+    clonedItem.id = nextId
+    this.itemsLayer[y][x] = clonedItem
+
+    this.clientHandler.broadcastItemDrop({
+      id: clonedItem.id,
+      itemId: clonedItem.itemId
+    }, this.id, y, x)
+  }
+
+  removeItem(y: number, x: number) {
+    this.itemsLayer[y][x] = 0
+    this.resetItemsCound()
+
+    this.clientHandler.broadcastItemPick(this.id, y, x)
+  }
+
+  getAllNpcsInRoom() {
+    let npcsReturn = []
+    for (const npc of this.npcs) {
+      npcsReturn.push(npc.getReturnData())
+    }
+    return npcsReturn
+  }
+
+  getAllItemsInRoom() {
+    let itensReturn = []
+
+    for (let i=0; i<this.itemsLayer.length; i++) {
+      for (let j=0; j<this.itemsLayer[0].length; j++) {
+        const position = this.itemsLayer[j][i]
+
+        if (position !== 0) {
+          const item = position as ItemBase
+          itensReturn.push({
+            id: item.id,
+            itemId: item.itemId,
+            x:i,
+            y:j
+          })
+        }
+      }
+    }
+
+    return itensReturn
+  }
+
+  resetItemsCound(): number {
+    const currentItens = this.getAllItemsInRoom()
+    let greatestId = 0
+    for (const item of currentItens) {
+      if (item.id > greatestId) {
+        greatestId = item.id
+      }
+    }
+    if (greatestId == 0) {
+      this.itemsCount = 0
+    }
+
+    return greatestId
   }
 }
