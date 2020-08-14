@@ -30,8 +30,8 @@
           <button id="confirm-btn">Create Hero</button>
         </div>
       </div>
-      <div class="game-flex-container">
-        <div id="game">
+      <div id="game-container" class="game-flex-container">
+        <div id="game" class="game-flex-item">
           <div id="layers">
             <canvas id="background-layer" width="512" height="512" class="canvas-layer"></canvas>
             <canvas id="solid-layer" width="512" height="512" class="canvas-layer"></canvas>
@@ -52,6 +52,9 @@
             <ul id="player-list"></ul>
           </div>
         </div>
+        <div id="bag" class="game-flex-item">
+          <div id="items"></div>
+        </div>
       </div>
     </div>
     <script src="js/bundle.js"></script>
@@ -71,6 +74,10 @@
 
       .login-flex-item {
         text-align: center;
+      }
+
+      #bag {
+        border: 1px solid black;
       }
 
       #login {
@@ -98,7 +105,7 @@
       }
 
       .game-flex-item {
-        text-align: center;
+        align-self: auto;
       }
 
       .canvas-layer {

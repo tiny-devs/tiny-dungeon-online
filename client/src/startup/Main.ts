@@ -14,6 +14,7 @@ export class Main {
     public mobileLeft: HTMLElement
     public mobileRight: HTMLElement
     public gameScreen: HTMLElement
+    public bagElement: HTMLElement
     public layersParentElement: HTMLElement
 
     public drawingGrid: DrawingCanvas
@@ -36,11 +37,13 @@ export class Main {
         this.mobileLeft = document.getElementById('left')!
         this.mobileRight = document.getElementById('right')!
         this.gameScreen = document.getElementById('game')!
+        this.bagElement = document.getElementById('bag')!
         this.layersParentElement = document.getElementById('layers')!
 
         this.gameScreen.style.display = 'none'
+        this.bagElement.style.display = 'none'
 
-        if (this.isMobile) {
+        if (this.isMobile()) {
             this.setupMobile()
             configs.game.width = configs.game.width / 2
             configs.game.height = configs.game.height / 2
@@ -94,7 +97,7 @@ export class Main {
                     this.hasConfirmedName = true
                     this.playerConfig.playerMatrix = this.drawingGrid.drawingMatrix.map((arr) => arr.slice())
 
-                    if (this.isMobile) {
+                    if (this.isMobile()) {
                         const title = document.getElementById('title')!
                         const subtitle = document.getElementById('sub-title')!
                         title.style.fontSize = '1em'
@@ -111,7 +114,7 @@ export class Main {
         this.client = new Client(this.game, this.playerConfig, this)
     }
 
-    public get isMobile(): boolean {
+    public isMobile(): boolean {
         const toMatch = [/Android/i, /webOS/i, /iPhone/i, /iPad/i, /iPod/i, /BlackBerry/i, /Windows Phone/i]
 
         return toMatch.some((toMatchItem) => navigator.userAgent.match(toMatchItem))

@@ -12,6 +12,7 @@ export class Client {
 
     private loginScreen: HTMLElement
     private gameScreen: HTMLElement
+    private bagElement: HTMLElement
     private up: HTMLElement
     private down: HTMLElement
     private left: HTMLElement
@@ -30,7 +31,9 @@ export class Client {
         document.onkeydown = this.checkKey.bind(this)
         this.loginScreen = mainElements.loginScreen
         this.gameScreen = mainElements.gameScreen
+        this.bagElement = mainElements.bagElement
         this.gameScreen.style.display = 'none'
+        this.bagElement.style.display = 'none'
         this.up = mainElements.mobileUp
         this.up.onclick = () => {
             this.checkKey({ keyCode: 38 })
@@ -79,6 +82,9 @@ export class Client {
     successfulConection() {
         this.ws!.send(this.getPlayerLoginData())
         this.gameScreen.style.display = 'block'
+        this.bagElement.style.height = `${this.game.gridConfig.height}px`
+        this.bagElement.style.width = `${this.game.gridConfig.width/2}px`
+        this.bagElement.style.display = 'block'
         this.loginScreen.style.display = 'none'
         this.pingPong()
     }
