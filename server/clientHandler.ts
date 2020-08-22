@@ -138,9 +138,9 @@ export class ClientHandler {
     player.clientWs.send(`${Command.NpcsInRoom},${data}`)
   }
 
-  private unicastPlayerStats(player: Player): void {
+  private unicastPlayerStats(player: Player, itemId: Items): void {
     const data = JSON.stringify(player.getStats())
-    player.clientWs.send(`${Command.ItemUse},${data}`)
+    player.clientWs.send(`${Command.ItemUse},${itemId},${data}`)
   }
 
   private unicastPlayerDroped(player: Player, itemId: Items): void {
@@ -222,7 +222,7 @@ export class ClientHandler {
           case Command.ItemUse:
             const used = player.bag.useItem(+eventData[1])
             if (used) {
-              this.unicastPlayerStats(player)
+              this.unicastPlayerStats(player,+eventData[1])
             }
             break
           case Command.ItemRemove:

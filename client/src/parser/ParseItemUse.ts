@@ -1,16 +1,28 @@
+import { ItemsIds } from "../models/Enums"
+
 export class ParseItemUse {
+    public itemId: ItemsIds
     public stats: StatsDto
 
     constructor(data: string) {
-        this.stats = this.parseString(data)
+        const parsedData = this.parseString(data)
+
+        this.itemId = parsedData[0]
+        this.stats = parsedData[1]
     }
 
-    private parseString(eventDataString: string): StatsDto {
+    private parseString(eventDataString: string): any[] {
+        let data = []
+        let itemIdString = eventDataString.split(',')
+        let itemId = +itemIdString[1]
         let statsString = ''
         statsString = eventDataString.substr(eventDataString.indexOf('{'), eventDataString.length)
         let stats = JSON.parse(statsString)
 
-        return new StatsDto(stats.hp, stats.maxHp, stats.attack, stats.defense)
+        data.push(itemId)
+        data.push(new StatsDto(stats.hp, stats.maxHp, stats.attack, stats.defense))
+
+        return data
     }
 }
 

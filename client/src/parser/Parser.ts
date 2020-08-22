@@ -146,6 +146,7 @@ export class Parser {
         const useData = new ParseItemUse(data)
 
         this.client.applyStats(useData)
+        this.client.bag.removeItem(useData.itemId)
     }
 
     private parseItemWear(data: string) {
