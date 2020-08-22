@@ -92,17 +92,18 @@ export default class Room {
     clonedItem.id = nextId
     this.itemsLayer[y][x] = clonedItem
 
-    this.clientHandler.broadcastItemDrop({
+    this.clientHandler.roomcastItemDrop({
       id: clonedItem.id,
       itemId: clonedItem.itemId
     }, this.id, y, x)
   }
 
-  removeItem(y: number, x: number) {
+  removeItem(y: number, x: number, playerId: string) {
+    const item = this.itemsLayer[y][x]
     this.itemsLayer[y][x] = 0
     this.resetItemsCound()
 
-    this.clientHandler.broadcastItemPick(this.id, y, x)
+    this.clientHandler.roomcastItemPick(this.id, y, x, item.itemId, item.coins, playerId)
   }
 
   getAllNpcsInRoom() {

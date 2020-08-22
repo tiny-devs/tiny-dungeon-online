@@ -1,4 +1,4 @@
-import { Main } from './startup/Main.ts'
+import { Main } from './startup/Main'
 import { ClientConfig, GridConfig } from './models/configs'
 
 const gameConfig: ClientConfig = {

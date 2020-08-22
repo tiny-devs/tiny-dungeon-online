@@ -15,6 +15,7 @@ export class Main {
     public mobileRight: HTMLElement
     public gameScreen: HTMLElement
     public bagElement: HTMLElement
+    public coinsElement: HTMLElement
     public layersParentElement: HTMLElement
 
     public drawingGrid: DrawingCanvas
@@ -38,10 +39,12 @@ export class Main {
         this.mobileRight = document.getElementById('right')!
         this.gameScreen = document.getElementById('game')!
         this.bagElement = document.getElementById('bag')!
+        this.coinsElement = document.getElementById('coins')!
         this.layersParentElement = document.getElementById('layers')!
 
         this.gameScreen.style.display = 'none'
         this.bagElement.style.display = 'none'
+        this.coinsElement.style.display = 'none'
 
         if (this.isMobile()) {
             this.setupMobile()

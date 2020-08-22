@@ -14,6 +14,10 @@ export enum Command {
     NpcMove = 6,
     NpcsInRoom = 7,
     Pve = 8,
+    ItemsInRoom = 9,
+    ItemPick = 10,
+    ItemDrop = 11,
+    ItemUse = 12,
 }
 
 export enum Rooms {
@@ -24,4 +28,10 @@ export enum Rooms {
 export enum PveAttacker {
     Player = 0,
     Npc = 1,
+}
+
+export enum ItemsIds {
+    Coffee = 0,
+    Coin = 1,
+    BronzeDagger = 2
 }

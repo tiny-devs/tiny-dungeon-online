@@ -139,6 +139,19 @@ export class Player {
         }
     }
 
+    public getStats() {
+        return {
+            hp: this.hp,
+            maxHp: this.maxHp,
+            attack: this.attack,
+            defense: this.defense
+        }
+    }
+
+    public addHp(amount: number) {
+        this.hp = ((amount + this.hp) > this.maxHp) ? this.maxHp : (amount + this.hp)
+    }
+
     public takeDamage(dmg: number): number {
         let defense = this.getDefenseFromDamage()
         defense = defense > dmg ? dmg : defense
@@ -191,7 +204,7 @@ export class Player {
         const item = this.currentRoom.itemsLayer[y][x]
         if (item && this.bag.items.length < this.bag.size) {
             this.bag.addItem(item)
-            this.currentRoom.removeItem(y,x)
+            this.currentRoom.removeItem(y,x,this.id)
             return true
         }
         return false

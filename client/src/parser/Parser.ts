@@ -5,6 +5,10 @@ import { ParseNpcMove } from './ParseNpcMove'
 import { ParseNpcsInRoom } from './ParseNpcsInRoom'
 import { ParsePve } from './ParsePve'
 import { ParseError } from './ParseError'
+import { ParseItemPick } from './ParseItemPick'
+import { ParseItemDrop } from './ParseItemDrop'
+import { ParseItemsInRoom } from './ParseItemsInRoom'
+import { ParseItemUse } from './ParseItemUse'
 
 export class Parser {
     private client: any
@@ -33,6 +37,18 @@ export class Parser {
                 case Command.Pve:
                     this.parsePve(data)
                     break
+                case Command.ItemsInRoom:
+                    this.parseItemsInRoom(data)
+                    break
+                case Command.ItemDrop:
+                    this.parseItemDrop(data)
+                    break
+                case Command.ItemPick:
+                    this.parseItemPick(data)
+                    break
+                case Command.ItemUse:
+                    this.parseItemUse(data)
+                    break
                 case Command.Error:
                     this.parseError(data)
                     break
@@ -49,6 +65,7 @@ export class Parser {
         if (this.client.loggedIn === false) {
             this.client.loggedIn = true
             this.client.playerId = loginData.playerId
+            this.client.bag.playerId = loginData.playerId
             this.client.game.applyServerRules(loginData.serverRules)
         }
         this.client.drawSprites()
@@ -85,5 +102,29 @@ export class Parser {
         if (!confirm(errorData.message)) {
             window.location.reload()
         }
+    }
+
+    private parseItemsInRoom(data: string) {
+        const itemsData = new ParseItemsInRoom(data)
+
+        this.client.game.spritesLayer.addItems(itemsData.items)
+    }
+
+    private parseItemDrop(data: string) {
+        const dropData = new ParseItemDrop(data)
+
+        this.client.game.spritesLayer.addItem(dropData)
+    }
+
+    private parseItemPick(data: string) {
+        const pickData = new ParseItemPick(data)
+
+        this.client.pickItem(pickData)
+    }
+
+    private parseItemUse(data: string) {
+        const useData = new ParseItemUse(data)
+
+        this.client.applyStats(useData)
     }
 }

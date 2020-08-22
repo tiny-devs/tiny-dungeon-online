@@ -52,8 +52,11 @@
             <ul id="player-list"></ul>
           </div>
         </div>
-        <div id="bag" class="game-flex-item">
-          <div id="items"></div>
+        <div class="game-flex-item">
+          <h3 id="coins">Gold: 0</h3>
+          <div id="bag">
+            <div id="items"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -76,8 +79,21 @@
         text-align: center;
       }
 
+      #coins {
+        border: 1px solid black;
+        margin: 0px;
+        font-size: 70%;
+      }
+
       #bag {
         border: 1px solid black;
+        width: 128px;
+        height: 192px;
+      }
+
+      .item-btn {
+        text-align: center;
+        cursor: pointer;
       }
 
       #login {

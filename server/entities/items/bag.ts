@@ -13,25 +13,24 @@ export default class Bag {
     }
 
     public useItem(itemId: Items): boolean {
-        const item = this.items.find(i => i.id == itemId)
+        const item = this.items.find(i => i.itemId == itemId)
         if (item) {
-            if (item.money) {
-                this.coins += item.coins
-            }
             if (item.consumable) {
-                this.player.hp = ((item.healthRefuel + this.player.hp) > this.player.maxHp) ? this.player.maxHp : (item.healthRefuel + this.player.hp)
+                this.player.addHp(item.healthRefuel)
                 this.removeItem(item)
             }
             // if (item.wearable) 
             //     //wear item and apply bonuses
             // if ....
+
             return true
         }
+
         return false
     }
 
     public dropItem(itemId: Items): boolean {
-        const item = this.items.find(i => i.id == itemId)
+        const item = this.items.find(i => i.itemId == itemId)
         if (item) {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
                 this.player.currentRoom.addItem(this.player.y,this.player.x,item)
@@ -43,9 +42,14 @@ export default class Bag {
     }
 
     public addItem(item: ItemBase): boolean {
-        if (this.items.length < this.size) {
-            this.items.push(item)
+        if (item.money) {
+            this.coins += item.coins
             return true
+        } else {
+            if (this.items.length < this.size) {
+                this.items.push(item)
+                return true
+            }
         }
         return false
     }

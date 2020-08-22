@@ -10,6 +10,7 @@ export enum Command {
     ItemsInRoom,
     ItemPick,
     ItemDrop,
+    ItemUse,
 }
 
 export enum Direction {

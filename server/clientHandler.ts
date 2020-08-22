@@ -1,7 +1,7 @@
 import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std/ws/mod.ts'
 import { v4 } from 'https://deno.land/std/uuid/mod.ts'
 import { Player } from './entities/player.ts'
-import { Command, Direction } from './Enums.ts'
+import { Command, Direction, Items } from './Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
@@ -18,6 +18,20 @@ export class ClientHandler {
     this.boardColumns = serverConfigs.boardColumns
 
     this.map = new Map(this)
+  }
+
+  private broadcastPlayerConnection(playerId: string): void {
+    const data = JSON.stringify(this.getAllPlayers())
+
+    for (const room of this.map.rooms) {
+      for (const player of room.players) {
+        player.clientWs.send(`${Command.Login},`+
+        `${playerId},`+
+        `${this.boardRows},`+
+        `${this.boardColumns},`+
+        `${data}`)
+      }
+    }
   }
 
   public broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
@@ -40,7 +54,7 @@ export class ClientHandler {
     }
   }
 
-  public broadcastNpcMove(npcMoved: Npc): void {
+  public roomcastNpcMove(npcMoved: Npc): void {
     for (const player of npcMoved.room.players) {
       player.clientWs.send(`${Command.NpcMove},`+
       `${npcMoved.id},` +
@@ -51,7 +65,7 @@ export class ClientHandler {
     }
   }
 
-  public broadcastPveFight(pveData: PveData): void {
+  public roomcastPveFight(pveData: PveData): void {
     for (const player of pveData.room.players) {
       player.clientWs.send(`${Command.Pve},`+
       `${pveData.attacker},` +
@@ -64,7 +78,7 @@ export class ClientHandler {
     }
   }
 
-  public broadcastItemDrop(itemData: any, roomId: number, y: number, x: number): void {
+  public roomcastItemDrop(itemData: any, roomId: number, y: number, x: number): void {
     const room = this.map.getRoomById(roomId)
     
     for (const player of room.players) {
@@ -76,11 +90,13 @@ export class ClientHandler {
     }
   }
 
-  public broadcastItemPick(roomId: number, y: number, x: number): void {
+  public roomcastItemPick(roomId: number, y: number, x: number, itemId: Items, coins: number, playerId: string): void {
     const room = this.map.getRoomById(roomId)
-    
+
     for (const player of room.players) {
       player.clientWs.send(`${Command.ItemPick},`+
+      `${playerId},`+
+      `${itemId},${coins},`+
       `${x},${y}`)
     }
   }
@@ -96,28 +112,27 @@ export class ClientHandler {
     this.unicastItemsInRoom(player)
   }
 
-  private broadcastPlayerConnection(playerId: string): void {
-    const data = JSON.stringify(this.getAllPlayers())
+  private roomcastItemsInRoom(room: Room): void {
+    const data = JSON.stringify(room.getAllItemsInRoom())
 
-    for (const room of this.map.rooms) {
-      for (const player of room.players) {
-        player.clientWs.send(`${Command.Login},`+
-        `${playerId},`+
-        `${this.boardRows},`+
-        `${this.boardColumns},`+
-        `${data}`)
-      }
+    for (const player of room.players) {
+      player.clientWs.send(`${Command.ItemsInRoom},${data}`)
     }
   }
 
   private unicastItemsInRoom(player: Player): void {
     const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
-    player.clientWs.send(`${Command.ItemsInRoom},${data}`)
+    player.clientWs.send(`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
   }
 
   private unicastNpcsInRoom(player: Player): void {
     const data = JSON.stringify(player.currentRoom.getAllNpcsInRoom())
     player.clientWs.send(`${Command.NpcsInRoom},${data}`)
+  }
+
+  private unicastPlayerStats(player: Player): void {
+    const data = JSON.stringify(player.getStats())
+    player.clientWs.send(`${Command.ItemUse},${data}`)
   }
 
   private getAllPlayers() {
@@ -186,6 +201,13 @@ export class ClientHandler {
         let eventData = this.parseEventDataString(eventDataString);
 
         switch (+eventData[0]) {
+          case Command.ItemDrop:
+            player.bag.dropItem(+eventData[1])
+            break
+          case Command.ItemUse:
+            player.bag.useItem(+eventData[1])
+            this.unicastPlayerStats(player)
+            break
           case Command.Move:
             this.broadcastPlayerMove(player, +eventData[1])
             break
