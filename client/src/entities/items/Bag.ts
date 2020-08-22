@@ -38,7 +38,7 @@ export default class Bag {
                 if (this.items.length < this.size) {
                     this.itemsCount++
                     const itemSprite = this.getItemSprite(itemId)
-                    const canvasId = this.addCanvasNode(itemId, itemSprite)
+                    const canvasId = this.addCanvasNode(itemId)
                     this.items.push(new BagItem(this,itemId,itemSprite,canvasId))
                     this.drawItems()
                 }
@@ -46,20 +46,11 @@ export default class Bag {
         }
     }
 
-    public clickItem(e: Partial<MouseEvent>, elementId: string, itemId: ItemsIds) {
-        const canvasBtn = document.getElementById(elementId)!
-        this.itemsHolderEl.removeChild(canvasBtn)
-        const index = this.items.map(item => { return item.itemId; }).indexOf(itemId);
-        if (index > -1) {
-            this.items.splice(index, 1);
-        }
-
+    public clickItem(e: Partial<MouseEvent>, itemId: ItemsIds) {
         if (
-            e.type === 'mousedown' ||
-            e.type === 'touchstart' ||
-            e.type === 'touchmove'
+            e.type === 'mouseup'
         ) {
-            if (e.type === 'mousedown') {
+            if (e.type === 'mouseup') {
                 if (e.button == 0) {
                     this.client.useItem(itemId)
                 } else if (e.button == 2) {
@@ -68,7 +59,19 @@ export default class Bag {
             } else {
                 this.client.useItem(itemId)
             }
+        } else if (e.type === 'touchmove') {
+            this.client.dropItem(itemId)
         }
+    }
+
+    public removeItem(itemId: ItemsIds) {
+        const index = this.items.map(item => { return item.itemId; }).indexOf(itemId);
+        const canvasId = this.items[index].layer.canvasId
+        if (index > -1) {
+            this.items.splice(index, 1);
+        }
+        const canvasBtn = document.getElementById(canvasId)!
+        this.itemsHolderEl.removeChild(canvasBtn)
     }
 
     private getItemSprite(itemId: ItemsIds) {
@@ -77,13 +80,14 @@ export default class Bag {
         return items[keyOfItemId]
     }
 
-    private addCanvasNode(itemId: ItemsIds, item: any): string {
+    private addCanvasNode(itemId: ItemsIds): string {
         let elementId = `${itemId}-${this.itemsCount}`
         let newButton = document.createElement('canvas')
         newButton.classList.add('item-btn');
         newButton.id = elementId
-        newButton.onmousedown = (e) => this.clickItem(e, elementId, itemId)
-        newButton.ontouchstart = (e) => this.clickItem(e, elementId, itemId)
+        newButton.onmouseup = (e) => this.clickItem(e, itemId)
+        newButton.ontouchstart = (e) => this.clickItem(e, itemId)
+        newButton.ontouchmove = (e) => this.clickItem(e, itemId)
         newButton.oncontextmenu = () => false
         this.itemsHolderEl.appendChild(newButton)
         return elementId

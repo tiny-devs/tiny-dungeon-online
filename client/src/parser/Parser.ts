@@ -9,9 +9,13 @@ import { ParseItemPick } from './ParseItemPick'
 import { ParseItemDrop } from './ParseItemDrop'
 import { ParseItemsInRoom } from './ParseItemsInRoom'
 import { ParseItemUse } from './ParseItemUse'
+import { ParseItemWear } from './ParseItemWear'
+import { ParseItemRemove } from './ParseItemRemove'
+import { ParseItemDroped } from './ParseItemDroped'
+import { Client } from '../startup/Client'
 
 export class Parser {
-    private client: any
+    private client: Client
 
     constructor(client: any) {
         this.client = client
@@ -49,6 +53,15 @@ export class Parser {
                 case Command.ItemUse:
                     this.parseItemUse(data)
                     break
+                case Command.ItemWear:
+                    this.parseItemWear(data)
+                    break
+                case Command.ItemRemove:
+                    this.parseItemRemove(data)
+                    break
+                case Command.ItemDroped:
+                    this.parseItemDroped(data)
+                    break
                 case Command.Error:
                     this.parseError(data)
                     break
@@ -66,6 +79,7 @@ export class Parser {
             this.client.loggedIn = true
             this.client.playerId = loginData.playerId
             this.client.bag.playerId = loginData.playerId
+            this.client.gear.playerId = loginData.playerId
             this.client.game.applyServerRules(loginData.serverRules)
         }
         this.client.drawSprites()
@@ -116,6 +130,12 @@ export class Parser {
         this.client.game.spritesLayer.addItem(dropData)
     }
 
+    private parseItemDroped(data: string) {
+        const dropData = new ParseItemDroped(data)
+
+        this.client.bag.removeItem(dropData.itemId)
+    }
+
     private parseItemPick(data: string) {
         const pickData = new ParseItemPick(data)
 
@@ -126,5 +146,19 @@ export class Parser {
         const useData = new ParseItemUse(data)
 
         this.client.applyStats(useData)
+    }
+
+    private parseItemWear(data: string) {
+        const wearData = new ParseItemWear(data)
+
+        this.client.bag.removeItem(wearData.itemId)
+        this.client.gear.addGear(wearData.itemId, wearData.gearType)
+    }
+
+    private parseItemRemove(data: string) {
+        const removedData = new ParseItemRemove(data)
+
+        this.client.removedGear(removedData)
+        this.client.gear.removeGear(removedData.itemId)
     }
 }

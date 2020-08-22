@@ -18,6 +18,9 @@ export enum Command {
     ItemPick = 10,
     ItemDrop = 11,
     ItemUse = 12,
+    ItemWear = 13,
+    ItemRemove = 14,
+    ItemDroped = 15,
 }
 
 export enum Rooms {
@@ -31,7 +34,16 @@ export enum PveAttacker {
 }
 
 export enum ItemsIds {
-    Coffee = 0,
-    Coin = 1,
-    BronzeDagger = 2
+    Empty = 0,
+    Coffee = 1,
+    Coin = 2,
+    BronzeDagger = 3
+}
+
+export enum GearType {
+    None = 0,
+    Head,
+    Torso,
+    Legs,
+    Weapon
 }

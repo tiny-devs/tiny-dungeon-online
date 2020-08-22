@@ -2,6 +2,7 @@ import { Direction, Rooms, Items } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'
+import Gear from './items/gear.ts'
 
 export class Player {
     public id: string
@@ -19,6 +20,7 @@ export class Player {
     public attack: number = 4
     public defense: number = 4
     public bag: Bag = new Bag(this)
+    public gear: Gear
     public clientWs: any
     private canMove: boolean = true
     private clientHandler: ClientHandler
@@ -43,6 +45,7 @@ export class Player {
         this.boardColumns = boardColumns
         this.clientWs = clientWs
         this.clientHandler = clientHandler
+        this.gear = new Gear(this, clientHandler)
     }
 
     public move(key: Direction): boolean {
@@ -143,8 +146,8 @@ export class Player {
         return {
             hp: this.hp,
             maxHp: this.maxHp,
-            attack: this.attack,
-            defense: this.defense
+            attack: this.totalAttack(),
+            defense: this.totalDefense()
         }
     }
 
@@ -167,7 +170,7 @@ export class Player {
     }
 
     public getAttackDamage(): number {
-        return Math.floor(Math.random() * (this.attack))
+        return Math.floor(Math.random() * (this.totalAttack()))
     }
 
     public useItem(itemId: Items): boolean {
@@ -179,7 +182,15 @@ export class Player {
     }
 
     private getDefenseFromDamage(): number {
-        return Math.floor(Math.random() * (this.defense))
+        return Math.floor(Math.random() * (this.totalDefense()))
+    }
+
+    private totalDefense() {
+        return this.defense + this.gear.getDefenseBonus()
+    }
+
+    private totalAttack() {
+        return this.attack + this.gear.getAttackBonus()
     }
 
     private respawn() {

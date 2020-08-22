@@ -57,6 +57,12 @@
           <div id="bag">
             <div id="items"></div>
           </div>
+          <div id="gear">
+            <canvas id="head" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <canvas id="weapon" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <canvas id="torso" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <canvas id="legs" width="32" height="32" class="item-btn gear-slot"></canvas>
+          </div>
         </div>
       </div>
     </div>
@@ -91,9 +97,22 @@
         height: 192px;
       }
 
+      #gear {
+        border: 1px solid black;
+        width: 128px;
+        height: 96px;
+        text-align: center;
+      }
+
       .item-btn {
         text-align: center;
         cursor: pointer;
+      }
+
+      .gear-slot {
+        border: 1px solid black;
+        align-self: auto;
+        margin-top: 5px;
       }
 
       #login {

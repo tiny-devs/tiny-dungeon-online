@@ -1,6 +1,14 @@
 import { Color } from '../../board/map/tiles/Color'
 
 export const Items = {
+    Empty: [[Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ],
+        [Color.LightGrey ,0               ,0               ,0               ,0               ,0               ,0               ,Color.LightGrey ],
+        [Color.LightGrey ,0               ,0               ,0               ,0               ,0               ,0               ,Color.LightGrey ],
+        [Color.LightGrey ,0               ,0               ,0               ,0               ,0               ,0               ,Color.LightGrey ],
+        [Color.LightGrey ,0               ,0               ,0               ,0               ,0               ,0               ,Color.LightGrey ],
+        [Color.LightGrey ,0               ,0               ,0               ,0               ,0               ,0               ,Color.LightGrey ],
+        [Color.LightGrey ,0               ,0               ,0               ,0               ,0               ,0               ,Color.LightGrey ],
+        [Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ],],
     Coffee: [[0               ,0               ,0               ,0               ,Color.LightGrey ,Color.LightGrey ,Color.LightGrey ,0               ],
             [0               ,0               ,0               ,0               ,Color.LightGrey ,Color.LightGrey ,0               ,0               ],
             [0               ,0               ,0               ,Color.LightGrey ,Color.LightGrey ,0               ,0               ,0               ],

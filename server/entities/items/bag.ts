@@ -1,4 +1,4 @@
-import { Items } from "../../Enums.ts"
+import { Items, ItemType, GearType } from "../../Enums.ts"
 import ItemBase from "./itemBase.ts"
 import { Player } from "../player.ts"
 
@@ -13,20 +13,23 @@ export default class Bag {
     }
 
     public useItem(itemId: Items): boolean {
+        let used = false
         const item = this.items.find(i => i.itemId == itemId)
         if (item) {
-            if (item.consumable) {
+            if (item.type == ItemType.Consumable) {
                 this.player.addHp(item.healthRefuel)
                 this.removeItem(item)
+                used = true
             }
-            // if (item.wearable) 
-            //     //wear item and apply bonuses
-            // if ....
-
-            return true
+            if (item.type == ItemType.Weareable) {
+                used = this.player.gear.wear(item)
+                if (used) {
+                    this.removeItem(item)
+                }
+            }
         }
 
-        return false
+        return used
     }
 
     public dropItem(itemId: Items): boolean {
@@ -35,14 +38,14 @@ export default class Bag {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
                 this.player.currentRoom.addItem(this.player.y,this.player.x,item)
                 this.removeItem(item)
+                return true
             }
-            return true
         }
         return false
     }
 
     public addItem(item: ItemBase): boolean {
-        if (item.money) {
+        if (item.type == ItemType.Money) {
             this.coins += item.coins
             return true
         } else {

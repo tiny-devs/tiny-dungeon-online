@@ -9,24 +9,28 @@ import { InitialRoom } from '../board/map/InitialRoom'
 import Bag from '../entities/items/Bag'
 import { ParseItemPick } from '../parser/ParseItemPick'
 import { ParseItemUse } from '../parser/ParseItemUse'
+import { ParseItemRemove } from '../parser/ParseItemRemove'
+import Gear from '../entities/items/Gear'
 
 export class Client {
-    private game: Game
-
+    public loggedIn: boolean
+    public playerName: string
+    public playerId: string
+    public bag: Bag
+    public gear: Gear
+    public currentRoomId: Rooms
+    public game: Game
+    
     private loginScreen: HTMLElement
     private gameScreen: HTMLElement
     private bagElement: HTMLElement
+    private gearElement: HTMLElement
     private coinsElement: HTMLElement
     private up: HTMLElement
     private down: HTMLElement
     private left: HTMLElement
     private right: HTMLElement
     private ws: WebSocket | null
-    private loggedIn: boolean
-    private playerName: string
-    private playerId: string
-    private bag: Bag
-    private currentRoomId: Rooms
     private playerMatrix: number[][]
     private parser: Parser
     private currentRoom: InitialRoom | Woods
@@ -38,9 +42,11 @@ export class Client {
         this.gameScreen = mainElements.gameScreen
         this.bagElement = mainElements.bagElement
         this.coinsElement = mainElements.coinsElement
+        this.gearElement = mainElements.gearElement
         this.gameScreen.style.display = 'none'
         this.bagElement.style.display = 'none'
         this.coinsElement.style.display = 'none'
+        this.gearElement.style.display = 'none'
         this.up = mainElements.mobileUp
         this.up.onclick = () => {
             this.checkKey({ keyCode: 38 })
@@ -64,6 +70,7 @@ export class Client {
         this.playerName = clientConfigs.playerName
         this.playerId = ''
         this.bag = new Bag(this)
+        this.gear = new Gear(this)
         this.currentRoomId = Rooms.Initial
         this.playerMatrix = clientConfigs.playerMatrix
         this.parser = new Parser(this)
@@ -92,6 +99,7 @@ export class Client {
         this.gameScreen.style.display = 'block'
         this.bagElement.style.display = 'block'
         this.coinsElement.style.display = 'block'
+        this.gearElement.style.display = 'block'
         this.loginScreen.style.display = 'none'
         this.pingPong()
     }
@@ -199,6 +207,15 @@ export class Client {
     pickItem(data: ParseItemPick) {
         this.bag.addItem(data.itemId, data.coins, data.playerId)
         this.game.spritesLayer.removeItem(data)
+    }
+
+    removeGear(itemId: ItemsIds) {
+        this.ws!.send(`${Command.ItemRemove},${itemId}`)
+    }
+
+    removedGear(data: ParseItemRemove) {
+        this.gear.removeGear(data.itemId)
+        this.bag.addItem(data.itemId,0,this.playerId)
     }
 
     getRandomPlayerColor() {

@@ -1,7 +1,7 @@
 import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std/ws/mod.ts'
 import { v4 } from 'https://deno.land/std/uuid/mod.ts'
 import { Player } from './entities/player.ts'
-import { Command, Direction, Items } from './Enums.ts'
+import { Command, Direction, Items, GearType } from './Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
@@ -120,6 +120,14 @@ export class ClientHandler {
     }
   }
 
+  public unicastItemRemove(player: Player, itemId: Items): void {
+    player.clientWs.send(`${Command.ItemRemove},${itemId}`)
+  }
+
+  public unicastItemWear(player: Player, itemId: Items, gearType: GearType): void {
+    player.clientWs.send(`${Command.ItemWear},${itemId},${gearType}`)
+  }
+
   private unicastItemsInRoom(player: Player): void {
     const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
     player.clientWs.send(`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
@@ -133,6 +141,10 @@ export class ClientHandler {
   private unicastPlayerStats(player: Player): void {
     const data = JSON.stringify(player.getStats())
     player.clientWs.send(`${Command.ItemUse},${data}`)
+  }
+
+  private unicastPlayerDroped(player: Player, itemId: Items): void {
+    player.clientWs.send(`${Command.ItemDroped},${itemId}`)
   }
 
   private getAllPlayers() {
@@ -202,11 +214,22 @@ export class ClientHandler {
 
         switch (+eventData[0]) {
           case Command.ItemDrop:
-            player.bag.dropItem(+eventData[1])
+            const droped = player.bag.dropItem(+eventData[1])
+            if (droped) {
+              this.unicastPlayerDroped(player, +eventData[1])
+            }
             break
           case Command.ItemUse:
-            player.bag.useItem(+eventData[1])
-            this.unicastPlayerStats(player)
+            const used = player.bag.useItem(+eventData[1])
+            if (used) {
+              this.unicastPlayerStats(player)
+            }
+            break
+          case Command.ItemRemove:
+            const removed = player.gear.remove(+eventData[1])
+            if (removed) {
+              this.unicastItemRemove(player, +eventData[1])
+            }
             break
           case Command.Move:
             this.broadcastPlayerMove(player, +eventData[1])
