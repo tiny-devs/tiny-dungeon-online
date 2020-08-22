@@ -30,8 +30,8 @@
           <button id="confirm-btn">Create Hero</button>
         </div>
       </div>
-      <div class="game-flex-container">
-        <div id="game">
+      <div id="game-container" class="game-flex-container">
+        <div id="game" class="game-flex-item">
           <div id="layers">
             <canvas id="background-layer" width="512" height="512" class="canvas-layer"></canvas>
             <canvas id="solid-layer" width="512" height="512" class="canvas-layer"></canvas>
@@ -50,6 +50,18 @@
           <div id="game-info">
             <p>Players Online:</p>
             <ul id="player-list"></ul>
+          </div>
+        </div>
+        <div class="game-flex-item">
+          <h3 id="coins">Gold: 0</h3>
+          <div id="bag">
+            <div id="items"></div>
+          </div>
+          <div id="gear">
+            <canvas id="head" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <canvas id="weapon" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <canvas id="torso" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <canvas id="legs" width="32" height="32" class="item-btn gear-slot"></canvas>
           </div>
         </div>
       </div>
@@ -71,6 +83,36 @@
 
       .login-flex-item {
         text-align: center;
+      }
+
+      #coins {
+        border: 1px solid black;
+        margin: 0px;
+        font-size: 70%;
+      }
+
+      #bag {
+        border: 1px solid black;
+        width: 128px;
+        height: 192px;
+      }
+
+      #gear {
+        border: 1px solid black;
+        width: 128px;
+        height: 96px;
+        text-align: center;
+      }
+
+      .item-btn {
+        text-align: center;
+        cursor: pointer;
+      }
+
+      .gear-slot {
+        border: 1px solid black;
+        align-self: auto;
+        margin-top: 5px;
       }
 
       #login {
@@ -98,7 +140,7 @@
       }
 
       .game-flex-item {
-        text-align: center;
+        align-self: auto;
       }
 
       .canvas-layer {

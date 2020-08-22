@@ -102,7 +102,7 @@ export class Npc {
     }
 
     clear() {
-        this.layer.ctx.clearRect(this.x, this.y, this.game.gridConfig.cellWidth, this.game.gridConfig.cellHeight)
+        this.layer.ctx.clearRect(this.x * this.game.gridConfig.cellWidth, this.y * this.game.gridConfig.cellHeight, this.game.gridConfig.cellWidth, this.game.gridConfig.cellHeight)
     }
 
     destroy() {

@@ -5,9 +5,17 @@ import { ParseNpcMove } from './ParseNpcMove'
 import { ParseNpcsInRoom } from './ParseNpcsInRoom'
 import { ParsePve } from './ParsePve'
 import { ParseError } from './ParseError'
+import { ParseItemPick } from './ParseItemPick'
+import { ParseItemDrop } from './ParseItemDrop'
+import { ParseItemsInRoom } from './ParseItemsInRoom'
+import { ParseItemUse } from './ParseItemUse'
+import { ParseItemWear } from './ParseItemWear'
+import { ParseItemRemove } from './ParseItemRemove'
+import { ParseItemDroped } from './ParseItemDroped'
+import { Client } from '../startup/Client'
 
 export class Parser {
-    private client: any
+    private client: Client
 
     constructor(client: any) {
         this.client = client
@@ -33,6 +41,27 @@ export class Parser {
                 case Command.Pve:
                     this.parsePve(data)
                     break
+                case Command.ItemsInRoom:
+                    this.parseItemsInRoom(data)
+                    break
+                case Command.ItemDrop:
+                    this.parseItemDrop(data)
+                    break
+                case Command.ItemPick:
+                    this.parseItemPick(data)
+                    break
+                case Command.ItemUse:
+                    this.parseItemUse(data)
+                    break
+                case Command.ItemWear:
+                    this.parseItemWear(data)
+                    break
+                case Command.ItemRemove:
+                    this.parseItemRemove(data)
+                    break
+                case Command.ItemDroped:
+                    this.parseItemDroped(data)
+                    break
                 case Command.Error:
                     this.parseError(data)
                     break
@@ -49,6 +78,8 @@ export class Parser {
         if (this.client.loggedIn === false) {
             this.client.loggedIn = true
             this.client.playerId = loginData.playerId
+            this.client.bag.playerId = loginData.playerId
+            this.client.gear.playerId = loginData.playerId
             this.client.game.applyServerRules(loginData.serverRules)
         }
         this.client.drawSprites()
@@ -85,5 +116,50 @@ export class Parser {
         if (!confirm(errorData.message)) {
             window.location.reload()
         }
+    }
+
+    private parseItemsInRoom(data: string) {
+        const itemsData = new ParseItemsInRoom(data)
+
+        this.client.game.spritesLayer.addItems(itemsData.items)
+    }
+
+    private parseItemDrop(data: string) {
+        const dropData = new ParseItemDrop(data)
+
+        this.client.game.spritesLayer.addItem(dropData)
+    }
+
+    private parseItemDroped(data: string) {
+        const dropData = new ParseItemDroped(data)
+
+        this.client.bag.removeItem(dropData.itemId)
+    }
+
+    private parseItemPick(data: string) {
+        const pickData = new ParseItemPick(data)
+
+        this.client.pickItem(pickData)
+    }
+
+    private parseItemUse(data: string) {
+        const useData = new ParseItemUse(data)
+
+        this.client.applyStats(useData)
+        this.client.bag.removeItem(useData.itemId)
+    }
+
+    private parseItemWear(data: string) {
+        const wearData = new ParseItemWear(data)
+
+        this.client.bag.removeItem(wearData.itemId)
+        this.client.gear.addGear(wearData.itemId, wearData.gearType)
+    }
+
+    private parseItemRemove(data: string) {
+        const removedData = new ParseItemRemove(data)
+
+        this.client.removedGear(removedData)
+        this.client.gear.removeGear(removedData.itemId)
     }
 }

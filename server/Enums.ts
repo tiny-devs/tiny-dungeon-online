@@ -10,6 +10,10 @@ export enum Command {
     ItemsInRoom,
     ItemPick,
     ItemDrop,
+    ItemUse,
+    ItemWear,
+    ItemRemove,
+    ItemDroped
 }
 
 export enum Direction {
@@ -35,7 +39,23 @@ export enum PveAttacker {
 }
 
 export enum Items {
-    Coffee = 0,
+    Empty = 0,
+    Coffee,
     Coins,
     BronzeDagger
+}
+
+export enum ItemType {
+    Money = 0,
+    Consumable,
+    Weareable,
+    Temporary
+}
+
+export enum GearType {
+    None = 0,
+    Head,
+    Torso,
+    Legs,
+    Weapon
 }

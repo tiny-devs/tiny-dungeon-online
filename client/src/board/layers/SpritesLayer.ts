@@ -1,8 +1,10 @@
 import { Game } from '../../startup/Game'
 import { Player } from '../../entities/Player'
 import { Npc } from '../../entities/Npc'
-import { Rooms } from '../../models/Enums'
+import { Rooms, ItemsIds } from '../../models/Enums'
 import { Npcs } from '../../entities/Npcs'
+import { Item } from '../../entities/items/Item'
+import { Items } from '../../entities/items/Items'
 
 export class SpritesLayer {
     public ctx: CanvasRenderingContext2D
@@ -11,6 +13,7 @@ export class SpritesLayer {
     private game: Game
     private playerListElement: HTMLElement
     private npcs: Npc[]
+    private items: any[]
 
     constructor(game: Game) {
         this.game = game
@@ -27,10 +30,12 @@ export class SpritesLayer {
 
         this.players = []
         this.npcs = []
+        this.items = []
     }
 
     draw(clientRoomId: any) {
         this.ctx.clearRect(0, 0, this.game.gridConfig.width, this.game.gridConfig.height)
+        this.drawItems(clientRoomId)
         this.drawPlayers(clientRoomId)
         this.drawNpcs(clientRoomId)
     }
@@ -50,6 +55,24 @@ export class SpritesLayer {
         this.npcs.splice(0, this.npcs.length)
         for (const npc of npcs) {
             this.npcs.push(new Npc(this.game, this, npc, this.getMatrixNpcById(npc.npcId)))
+        }
+    }
+
+    addItems(items: any[]) {
+        this.items.splice(0, this.items.length)
+        for (const item of items) {
+            this.items.push(new Item(this.game, this, item, this.getMatrixItemById(item.itemId)))
+        }
+    }
+
+    addItem(item: any) {
+        this.items.push(new Item(this.game, this, item, this.getMatrixItemById(item.itemId)))
+    }
+
+    removeItem(itemRemoved: any) {
+        const index = this.items.findIndex(item => item.x == itemRemoved.x && item.y == itemRemoved.y)
+        if (index > -1) {
+            this.items.splice(index, 1);
         }
     }
 
@@ -84,6 +107,14 @@ export class SpritesLayer {
         })
     }
 
+    drawItems(clientRoomId: Rooms) {
+        this.items.forEach((item) => {
+            if (item.roomId == clientRoomId) {
+                item.draw()
+            }
+        })
+    }
+
     getPlayerById(id: string) {
         return this.players.find((x) => x.id === id)
     }
@@ -99,5 +130,11 @@ export class SpritesLayer {
         }
 
         return npcMatrix
+    }
+
+    getMatrixItemById(itemId: ItemsIds) {
+        let keyOfItemId = ItemsIds[itemId]
+        let items = Items as any
+        return items[keyOfItemId]
     }
 }

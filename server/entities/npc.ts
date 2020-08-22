@@ -141,7 +141,7 @@ export class Npc {
         tryCount++
 
         if (moveResult.valid) {
-          this.room.clientHandler.broadcastNpcMove(this)
+          this.room.clientHandler.roomcastNpcMove(this)
           break
         }
       }
@@ -159,7 +159,7 @@ export class Npc {
         await this.engage(moveResult.playerHit)
       }
 
-      this.room.clientHandler.broadcastNpcMove(this)
+      this.room.clientHandler.roomcastNpcMove(this)
     } else {
       this.passiveBehaviour()
     }
@@ -177,7 +177,7 @@ export class Npc {
 
     enemyAttackData.damageCaused = damageCaused
     enemyAttackData.damageDefended = playerDefended
-    this.room.clientHandler.broadcastPveFight(enemyAttackData)
+    this.room.clientHandler.roomcastPveFight(enemyAttackData)
 
     await this.delay(1000)
 
@@ -188,7 +188,7 @@ export class Npc {
 
     playerAttackData.damageCaused = damageTaken
     playerAttackData.damageDefended = enemyDefended
-    this.room.clientHandler.broadcastPveFight(playerAttackData)
+    this.room.clientHandler.roomcastPveFight(playerAttackData)
   }
 
   private getAttackDamage(): number {

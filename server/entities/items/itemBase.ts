@@ -1,12 +1,10 @@
-import { Items } from "../../Enums.ts"
+import { Items, ItemType, GearType } from "../../Enums.ts"
 
 export default class ItemBase {
     public id: number
     public itemId: Items
-    public money: boolean
-    public consumable: boolean
-    public wearable: boolean
-    public temporary: boolean
+    public type: ItemType
+    public gearType: GearType
     public despawnTime: number
     public coins: number
     public bonusAttack: number
@@ -16,10 +14,8 @@ export default class ItemBase {
 
     constructor(id: number,
     itemId: Items,
-    money: boolean,
-    consumable: boolean,
-    wearable: boolean,
-    temporary: boolean,
+    type: ItemType,
+    gearType: GearType,
     coins: number,
     despawnTime: number,
     bonusAttack: number,
@@ -28,12 +24,10 @@ export default class ItemBase {
     dropChance: number) {
         this.id = id
         this.itemId = itemId
-        this.money = money
-        this.consumable = consumable
-        this.wearable = wearable
-        this.temporary = temporary
+        this.type = type
+        this.gearType = gearType
         this.despawnTime = despawnTime
-        this.coins = coins
+        this.coins = Math.floor(Math.random() * coins) + 1 
         this.bonusAttack = bonusAttack
         this.bonusDefense = bonusDefense
         this.healthRefuel = healthRefuel
