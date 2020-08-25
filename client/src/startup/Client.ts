@@ -11,6 +11,7 @@ import { ParseItemPick } from '../parser/ParseItemPick'
 import { ParseItemUse } from '../parser/ParseItemUse'
 import { ParseItemRemove } from '../parser/ParseItemRemove'
 import Gear from '../entities/items/Gear'
+import { ParseLogin } from '../parser/ParseLogin'
 
 export class Client {
     public loggedIn: boolean
@@ -26,6 +27,12 @@ export class Client {
     private bagElement: HTMLElement
     private gearElement: HTMLElement
     private coinsElement: HTMLElement
+    private hpTextElement: HTMLElement
+    private xpTextElement: HTMLElement
+    private hpBarElement: HTMLElement
+    private xpBarElement: HTMLElement
+    private atkTextElement: HTMLElement
+    private defTextElement: HTMLElement
     private up: HTMLElement
     private down: HTMLElement
     private left: HTMLElement
@@ -43,10 +50,13 @@ export class Client {
         this.bagElement = mainElements.bagElement
         this.coinsElement = mainElements.coinsElement
         this.gearElement = mainElements.gearElement
-        this.gameScreen.style.display = 'none'
-        this.bagElement.style.display = 'none'
-        this.coinsElement.style.display = 'none'
-        this.gearElement.style.display = 'none'
+        this.hpTextElement = mainElements.hpTextElement
+        this.xpTextElement = mainElements.xpTextElement
+        this.hpBarElement = mainElements.hpBarElement
+        this.xpBarElement = mainElements.xpBarElement
+        this.atkTextElement = mainElements.atkTextElement
+        this.defTextElement = mainElements.defTextElement
+        
         this.up = mainElements.mobileUp
         this.up.onclick = () => {
             this.checkKey({ keyCode: 38 })
@@ -100,7 +110,10 @@ export class Client {
         this.bagElement.style.display = 'block'
         this.coinsElement.style.display = 'block'
         this.gearElement.style.display = 'block'
+        this.hpTextElement.style.display = 'block'
+        this.xpTextElement.style.display = 'block'
         this.loginScreen.style.display = 'none'
+        
         this.pingPong()
     }
 
@@ -183,6 +196,7 @@ export class Client {
         if (pveData.attacker == PveAttacker.Npc) {
             const player = this.game.spritesLayer.getPlayerById(pveData.playerId)!
             player.takeDamage(pveData)
+            this.updateHpElements(player.hp, player.maxHp, pveData.playerId)
         } else {
             const npc = this.game.spritesLayer.getNpcByIdAndRoom(pveData.npcId, pveData.roomId)
             npc!.takeDamage(pveData)
@@ -190,10 +204,12 @@ export class Client {
         this.drawSprites()
     }
 
-    applyStats(data: ParseItemUse) {
+    applyStats(hp: number, maxHp: number, atk: number, def: number) {
         const player = this.game.spritesLayer.getPlayerById(this.playerId)!
-        player.hp = data.stats.hp
-        player.maxHp = data.stats.maxHp
+        player.hp = hp
+        player.maxHp = maxHp
+        this.updateHpElements(player.hp, player.maxHp, this.playerId)
+        this.updateStatsElements(atk, def, this.playerId)
     }
 
     dropItem(itemId: ItemsIds) {
@@ -216,6 +232,29 @@ export class Client {
     removedGear(data: ParseItemRemove) {
         this.gear.removeGear(data.itemId)
         this.bag.addItem(data.itemId,0,this.playerId)
+    }
+
+    updateHpElements(hp: number, maxHp: number, playerId: string) {
+        if (this.playerId == playerId) {
+            this.hpTextElement.innerHTML = `HP: ${hp}/${maxHp}`
+            const barWidth = (hp/maxHp) * 100
+            this.hpBarElement.style.width = `${barWidth}%`
+        }
+    }
+
+    updateStatsElements(atk: number, def: number, playerId: string) {
+        if (this.playerId == playerId) {
+            this.atkTextElement.innerHTML = `atk: ${atk}`
+            this.defTextElement.innerHTML = `def: ${def}`
+        }
+    }
+
+    updateXpElements(level: number, xp: number, maxXp: number, playerId: string) {
+        if (this.playerId == playerId) {
+            this.xpTextElement.innerHTML = `LVL ${level}`
+            const barWidth = (xp/maxXp) * 100
+            this.xpBarElement.style.width = `${barWidth}%`
+        }
     }
 
     getRandomPlayerColor() {

@@ -138,7 +138,9 @@ export class Player {
             matrix: this.matrix,
             currentRoomId: this.currentRoomId,
             hp: this.hp,
-            maxHp: this.maxHp
+            maxHp: this.maxHp,
+            atk: this.totalAttack(),
+            def: this.totalDefense()
         }
     }
 
@@ -171,14 +173,6 @@ export class Player {
 
     public getAttackDamage(): number {
         return Math.floor(Math.random() * (this.totalAttack()))
-    }
-
-    public useItem(itemId: Items): boolean {
-        return this.bag.useItem(itemId)
-    }
-
-    public dropItem(itemId: Items): boolean {
-        return this.bag.dropItem(itemId)
     }
 
     private getDefenseFromDamage(): number {

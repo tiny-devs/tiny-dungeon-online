@@ -12,24 +12,24 @@ export default class Bag {
         this.player = player
     }
 
-    public useItem(itemId: Items): boolean {
+    public useItem(itemId: Items): any {
         const item = this.items.find(i => i.itemId == itemId)
         if (item) {
             if (item.type == ItemType.Consumable) {
                 this.player.addHp(item.healthRefuel)
                 this.removeItem(item)
-                return true
+                return {used:true,wore:false}
             }
             if (item.type == ItemType.Weareable) {
                 const wore = this.player.gear.wear(item)
                 if (wore) {
                     this.removeItem(item)
                 }
-                return false
+                return {used:false,wore:true}
             }
         }
 
-        return false
+        return {used:false,wore:false}
     }
 
     public dropItem(itemId: Items): boolean {

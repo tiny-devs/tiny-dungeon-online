@@ -175,7 +175,7 @@ export class Npc {
     const damageCaused = this.getAttackDamage()
     let playerDefended = player.takeDamage(damageCaused)
 
-    enemyAttackData.damageCaused = damageCaused
+    enemyAttackData.damageCaused =  damageCaused - playerDefended
     enemyAttackData.damageDefended = playerDefended
     this.room.clientHandler.roomcastPveFight(enemyAttackData)
 
@@ -186,7 +186,7 @@ export class Npc {
     const damageTaken = player.getAttackDamage()
     let enemyDefended = this.takeDamage(damageTaken)
 
-    playerAttackData.damageCaused = damageTaken
+    playerAttackData.damageCaused = damageTaken - enemyDefended
     playerAttackData.damageDefended = enemyDefended
     this.room.clientHandler.roomcastPveFight(playerAttackData)
   }

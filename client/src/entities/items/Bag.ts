@@ -65,13 +65,15 @@ export default class Bag {
     }
 
     public removeItem(itemId: ItemsIds) {
-        const index = this.items.map(item => { return item.itemId; }).indexOf(itemId);
-        const canvasId = this.items[index].layer.canvasId
-        if (index > -1) {
-            this.items.splice(index, 1);
+        if (itemId != ItemsIds.Empty) {
+            const index = this.items.map(item => { return item.itemId; }).indexOf(itemId);
+            const canvasId = this.items[index].layer.canvasId
+            if (index > -1) {
+                this.items.splice(index, 1);
+            }
+            const canvasBtn = document.getElementById(canvasId)!
+            this.itemsHolderEl.removeChild(canvasBtn)
         }
-        const canvasBtn = document.getElementById(canvasId)!
-        this.itemsHolderEl.removeChild(canvasBtn)
     }
 
     private getItemSprite(itemId: ItemsIds) {
