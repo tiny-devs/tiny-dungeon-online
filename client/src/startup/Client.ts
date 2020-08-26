@@ -204,12 +204,13 @@ export class Client {
         this.drawSprites()
     }
 
-    applyStats(hp: number, maxHp: number, atk: number, def: number) {
+    applyStats(hp: number, maxHp: number, atk: number, def: number, lvl: number, xp: number, xpNeeded: number) {
         const player = this.game.spritesLayer.getPlayerById(this.playerId)!
         player.hp = hp
         player.maxHp = maxHp
         this.updateHpElements(player.hp, player.maxHp, this.playerId)
         this.updateStatsElements(atk, def, this.playerId)
+        this.updateXpElements(lvl, xp, xpNeeded, this.playerId)
     }
 
     dropItem(itemId: ItemsIds) {
@@ -249,10 +250,10 @@ export class Client {
         }
     }
 
-    updateXpElements(level: number, xp: number, maxXp: number, playerId: string) {
+    updateXpElements(level: number, xp: number, xpNeeded: number, playerId: string) {
         if (this.playerId == playerId) {
             this.xpTextElement.innerHTML = `LVL ${level}`
-            const barWidth = (xp/maxXp) * 100
+            const barWidth = (xp/xpNeeded) * 100
             this.xpBarElement.style.width = `${barWidth}%`
         }
     }

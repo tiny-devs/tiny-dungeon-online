@@ -27,7 +27,7 @@ export default class ItemBase {
         this.type = type
         this.gearType = gearType
         this.despawnTime = despawnTime
-        this.coins = Math.floor(Math.random() * coins) + 1 
+        this.coins = coins
         this.bonusAttack = bonusAttack
         this.bonusDefense = bonusDefense
         this.healthRefuel = healthRefuel

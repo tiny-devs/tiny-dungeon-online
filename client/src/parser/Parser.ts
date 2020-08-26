@@ -88,7 +88,7 @@ export class Parser {
             this.client.game.applyServerRules(loginData.serverRules)
 
             const player = loginData.players.find((p: Player) => p.id == loginData.playerId)
-            this.client.applyStats(player.hp, player.maxHp, player.atk, player.def)
+            this.client.applyStats(player.hp, player.maxHp, player.atk, player.def, 1, 0, player.xpNeed)
         }
         this.client.drawSprites()
     }
@@ -173,6 +173,12 @@ export class Parser {
     private parseStats(data: string) {
         const stats = new ParseStats(data)
 
-        this.client.applyStats(stats.hp, stats.maxHp, stats.attack, stats.defense)
+        this.client.applyStats(stats.hp,
+            stats.maxHp,
+            stats.attack,
+            stats.defense,
+            stats.level,
+            stats.xp,
+            stats.xpNeeded)
     }
 }

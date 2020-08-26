@@ -1,4 +1,4 @@
-import { Direction, PveAttacker } from '../Enums.ts'
+import { Direction, PveAttacker, ItemType } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { Player } from './player.ts'
 import { PveData } from '../pve/pveData.ts'
@@ -28,6 +28,7 @@ export class Npc {
   public maxHp: number
   public attack: number
   public defense: number
+  public xpGiven: number
   public respawnTime: number
   public dead: boolean = false
   public drops: ItemBase[]
@@ -60,6 +61,7 @@ export class Npc {
     this.respawnTime = npcData.respawnTime
     this.attack = npcData.attack
     this.defense = npcData.defense
+    this.xpGiven = npcData.xpGiven
     this.drops = npcData.drops
 
     this.heartBeat()
@@ -189,6 +191,10 @@ export class Npc {
     playerAttackData.damageCaused = damageTaken - enemyDefended
     playerAttackData.damageDefended = enemyDefended
     this.room.clientHandler.roomcastPveFight(playerAttackData)
+
+    if (this.dead) {
+      player.addXp(this.xpGiven)
+    }
   }
 
   private getAttackDamage(): number {
@@ -232,6 +238,9 @@ export class Npc {
       const randomChance = Math.random()
       if (drop.dropChance >= randomChance) {
         if (this.room.itemsLayer[this.y][this.x] == 0) {
+          if (drop.type == ItemType.Money) {
+            drop.coins = Math.floor(Math.random() * drop.coins) + 1 
+          }
           this.room.addItem(this.y,this.x,drop)
         }
       }

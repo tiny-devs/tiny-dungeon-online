@@ -128,6 +128,13 @@ export class ClientHandler {
     player.clientWs.send(`${Command.ItemWear},${itemId},${gearType}`)
   }
 
+  public unicastPlayerStats(player: Player): void {
+    const data = player.getStats()
+    player.clientWs.send(`${Command.Stats},`+
+    `${data.hp},${data.maxHp},${data.attack},${data.defense},`+
+    `${data.level},${data.xp},${data.xpNeeded}`)
+  }
+
   private unicastItemsInRoom(player: Player): void {
     const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
     player.clientWs.send(`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
@@ -140,12 +147,6 @@ export class ClientHandler {
 
   private unicastItemUse(player: Player, itemId: Items): void {
     player.clientWs.send(`${Command.ItemUse},${itemId}`)
-  }
-
-  private unicastPlayerStats(player: Player): void {
-    const data = player.getStats()
-    player.clientWs.send(`${Command.Stats},`+
-    `${data.hp},${data.maxHp},${data.attack},${data.defense}`)
   }
 
   private unicastPlayerDroped(player: Player, itemId: Items): void {
