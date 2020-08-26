@@ -22,7 +22,6 @@ export class Player {
     public level: number = 1
     public xp: number = 0
     public xpNeeded: number = 10
-    public levelUpFactor: number = 1.2
     public bag: Bag = new Bag(this)
     public gear: Gear
     public clientWs: any
@@ -171,7 +170,7 @@ export class Player {
 
         this.xp = isLevelUp ? exceedingXp : (amount + this.xp)
         this.level = isLevelUp ? this.level+1 : this.level
-        this.xpNeeded = isLevelUp ? +((this.xpNeeded)**1.1).toFixed(2) : this.xpNeeded
+        this.xpNeeded = +((this.level**2)+10).toFixed(2)
 
         this.clientHandler.unicastPlayerStats(this)
     }
