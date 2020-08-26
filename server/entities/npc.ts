@@ -28,6 +28,7 @@ export class Npc {
   public maxHp: number
   public attack: number
   public defense: number
+  public level: number
   public xpGiven: number
   public respawnTime: number
   public dead: boolean = false
@@ -61,6 +62,7 @@ export class Npc {
     this.respawnTime = npcData.respawnTime
     this.attack = npcData.attack
     this.defense = npcData.defense
+    this.level = npcData.level
     this.xpGiven = npcData.xpGiven
     this.drops = npcData.drops
 

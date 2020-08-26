@@ -7,6 +7,7 @@ export default class NpcBase {
     public hp: number
     public attack: number
     public defense: number
+    public level: number
     public xpGiven: number
     public respawnTime: number
     public frequency: number
@@ -20,7 +21,7 @@ export default class NpcBase {
     hp: number,
     attack: number,
     defense: number,
-    xpGiven: number,
+    level: number,
     respawnTime: number,
     frequency: number,
     moveChance: number,
@@ -32,7 +33,8 @@ export default class NpcBase {
         this.hp = hp
         this.attack = attack
         this.defense = defense
-        this.xpGiven = xpGiven
+        this.level = level
+        this.xpGiven = +((level**1.1)+5).toFixed(2)
         this.respawnTime = respawnTime
         this.frequency = frequency
         this.moveChance = moveChance
