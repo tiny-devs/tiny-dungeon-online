@@ -171,7 +171,7 @@ export class Player {
 
         this.xp = isLevelUp ? exceedingXp : (amount + this.xp)
         this.level = isLevelUp ? this.level+1 : this.level
-        this.xpNeeded = isLevelUp ? +((this.xpNeeded*this.levelUpFactor)).toFixed(2) : this.xpNeeded
+        this.xpNeeded = isLevelUp ? +((this.xpNeeded)**1.1).toFixed(2) : this.xpNeeded
 
         this.clientHandler.unicastPlayerStats(this)
     }
