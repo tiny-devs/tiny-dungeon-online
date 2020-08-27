@@ -7,6 +7,7 @@ export default class ItemBase {
     public gearType: GearType
     public despawnTime: number
     public coins: number
+    public level: number
     public bonusAttack: number
     public bonusDefense: number
     public healthRefuel: number
@@ -18,6 +19,8 @@ export default class ItemBase {
     gearType: GearType,
     coins: number,
     despawnTime: number,
+    level: number,
+    isDefensive: boolean,
     bonusAttack: number,
     bonusDefense: number,
     healthRefuel: number,
@@ -28,8 +31,9 @@ export default class ItemBase {
         this.gearType = gearType
         this.despawnTime = despawnTime
         this.coins = coins
-        this.bonusAttack = bonusAttack
-        this.bonusDefense = bonusDefense
+        this.level = level
+        this.bonusAttack = !isDefensive ? Math.floor(level/2) + 2 + bonusAttack : 0
+        this.bonusDefense = isDefensive ? Math.floor(level/2) + 2 + bonusDefense : 0
         this.healthRefuel = healthRefuel
         this.dropChance = dropChance
     }

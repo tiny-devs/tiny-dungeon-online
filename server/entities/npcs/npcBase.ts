@@ -18,25 +18,24 @@ export default class NpcBase {
 
     constructor(id: number,
     agressive: boolean,
-    hp: number,
-    attack: number,
-    defense: number,
+    hpBonus: number,
+    attackBonus: number,
+    defenseBonus: number,
     level: number,
     respawnTime: number,
-    frequency: number,
     moveChance: number,
     anger: number,
     fieldOfView: number,
     drops: ItemBase[]) {
         this.id = id
         this.agressive = agressive
-        this.hp = hp
-        this.attack = attack
-        this.defense = defense
         this.level = level
         this.xpGiven = +((level**1.1)+5).toFixed(2)
+        this.hp = (level + 9) + hpBonus
+        this.attack = (level + 2) + attackBonus
+        this.defense = (level + 2) + defenseBonus
         this.respawnTime = respawnTime
-        this.frequency = frequency
+        this.frequency = 500
         this.moveChance = moveChance
         this.anger = anger
         this.fieldOfView = fieldOfView

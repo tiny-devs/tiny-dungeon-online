@@ -198,15 +198,15 @@ export class Player {
     }
 
     private totalDefense() {
-        return this.defense + this.gear.getDefenseBonus() + +(this.level/2).toFixed(0)
+        return this.defense + this.gear.getDefenseBonus() + Math.floor(this.level/5)
     }
 
     private totalAttack() {
-        return this.attack + this.gear.getAttackBonus() + +(this.level/2).toFixed(0)
+        return this.attack + this.gear.getAttackBonus() + Math.floor(this.level/5)
     }
 
     private totalHp() {
-        return this.maxHp - 1 + +(this.level/2).toFixed(0)
+        return this.maxHp + Math.floor(this.level/5)
     }
 
     private respawn() {
@@ -214,6 +214,7 @@ export class Player {
         this.x = 0
         this.y = 0
         this.clientHandler.broadcastPlayerMove(this, Direction.Right)
+        this.clientHandler.unicastPlayerStats(this)
     }
 
     private notCollided(y: number, x: number): boolean {
