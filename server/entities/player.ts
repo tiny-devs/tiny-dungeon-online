@@ -19,6 +19,9 @@ export class Player {
     public maxHp: number = 10
     public attack: number = 4
     public defense: number = 4
+    public level: number = 1
+    public xp: number = 0
+    public xpNeeded: number = 10
     public bag: Bag = new Bag(this)
     public gear: Gear
     public clientWs: any
@@ -138,21 +141,38 @@ export class Player {
             matrix: this.matrix,
             currentRoomId: this.currentRoomId,
             hp: this.hp,
-            maxHp: this.maxHp
+            maxHp: this.totalHp(),
+            atk: this.totalAttack(),
+            def: this.totalDefense(),
+            xpNeed: this.xpNeeded
         }
     }
 
     public getStats() {
         return {
             hp: this.hp,
-            maxHp: this.maxHp,
+            maxHp: this.totalHp(),
             attack: this.totalAttack(),
-            defense: this.totalDefense()
+            defense: this.totalDefense(),
+            level: this.level,
+            xp: +this.xp.toFixed(2),
+            xpNeeded: this.xpNeeded
         }
     }
 
     public addHp(amount: number) {
-        this.hp = ((amount + this.hp) > this.maxHp) ? this.maxHp : (amount + this.hp)
+        this.hp = ((amount + this.hp) > this.totalHp()) ? this.totalHp() : (amount + this.hp)
+    }
+
+    public addXp(amount: number) {
+        const isLevelUp = (amount + this.xp) >= this.xpNeeded
+        const exceedingXp = isLevelUp ? +((amount + this.xp) - this.xpNeeded).toFixed(2) : 0
+
+        this.xp = isLevelUp ? exceedingXp : (amount + this.xp)
+        this.level = isLevelUp ? this.level+1 : this.level
+        this.xpNeeded = +((this.level**2)+10).toFixed(2)
+
+        this.clientHandler.unicastPlayerStats(this)
     }
 
     public takeDamage(dmg: number): number {
@@ -162,7 +182,7 @@ export class Player {
     
         this.hp -= actualDamage < 0 ? 0 : actualDamage
         if (this.hp <= 0) {
-            this.hp = this.maxHp
+            this.hp = this.totalHp()
             this.respawn()
         }
 
@@ -173,24 +193,20 @@ export class Player {
         return Math.floor(Math.random() * (this.totalAttack()))
     }
 
-    public useItem(itemId: Items): boolean {
-        return this.bag.useItem(itemId)
-    }
-
-    public dropItem(itemId: Items): boolean {
-        return this.bag.dropItem(itemId)
-    }
-
     private getDefenseFromDamage(): number {
         return Math.floor(Math.random() * (this.totalDefense()))
     }
 
     private totalDefense() {
-        return this.defense + this.gear.getDefenseBonus()
+        return this.defense + this.gear.getDefenseBonus() + Math.floor(this.level/5)
     }
 
     private totalAttack() {
-        return this.attack + this.gear.getAttackBonus()
+        return this.attack + this.gear.getAttackBonus() + Math.floor(this.level/5)
+    }
+
+    private totalHp() {
+        return this.maxHp + Math.floor(this.level/5)
     }
 
     private respawn() {
@@ -198,6 +214,7 @@ export class Player {
         this.x = 0
         this.y = 0
         this.clientHandler.broadcastPlayerMove(this, Direction.Right)
+        this.clientHandler.unicastPlayerStats(this)
     }
 
     private notCollided(y: number, x: number): boolean {

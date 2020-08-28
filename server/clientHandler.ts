@@ -128,6 +128,13 @@ export class ClientHandler {
     player.clientWs.send(`${Command.ItemWear},${itemId},${gearType}`)
   }
 
+  public unicastPlayerStats(player: Player): void {
+    const data = player.getStats()
+    player.clientWs.send(`${Command.Stats},`+
+    `${data.hp},${data.maxHp},${data.attack},${data.defense},`+
+    `${data.level},${data.xp},${data.xpNeeded}`)
+  }
+
   private unicastItemsInRoom(player: Player): void {
     const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
     player.clientWs.send(`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
@@ -138,9 +145,8 @@ export class ClientHandler {
     player.clientWs.send(`${Command.NpcsInRoom},${data}`)
   }
 
-  private unicastPlayerStats(player: Player, itemId: Items): void {
-    const data = JSON.stringify(player.getStats())
-    player.clientWs.send(`${Command.ItemUse},${itemId},${data}`)
+  private unicastItemUse(player: Player, itemId: Items): void {
+    player.clientWs.send(`${Command.ItemUse},${itemId}`)
   }
 
   private unicastPlayerDroped(player: Player, itemId: Items): void {
@@ -220,15 +226,19 @@ export class ClientHandler {
             }
             break
           case Command.ItemUse:
-            const used = player.bag.useItem(+eventData[1])
-            if (used) {
-              this.unicastPlayerStats(player,+eventData[1])
+            const result = player.bag.useItem(+eventData[1])
+            if (result.used) {
+              this.unicastItemUse(player,+eventData[1])
+              this.unicastPlayerStats(player)
+            } else if (result.wore) {
+              this.unicastPlayerStats(player)
             }
             break
           case Command.ItemRemove:
             const removed = player.gear.remove(+eventData[1])
             if (removed) {
               this.unicastItemRemove(player, +eventData[1])
+              this.unicastPlayerStats(player)
             }
             break
           case Command.Move:
@@ -247,6 +257,7 @@ export class ClientHandler {
             this.broadcastPlayerConnection(playerId)
             this.unicastNpcsInRoom(player)
             this.unicastItemsInRoom(player)
+            this.unicastPlayerStats(player)
             break
           case Command.Ping:
             this.pong(player)

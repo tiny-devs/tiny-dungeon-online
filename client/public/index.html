@@ -53,6 +53,14 @@
           </div>
         </div>
         <div class="game-flex-item">
+          <h3 id="hp-text">HP: 10/10</h3>
+          <h3 id="xp-text">LVL 1</h3>
+          <div class="progress hp-progress">
+            <div id="hp-bar" class="bar" style="width:100%"></div>
+          </div>
+          <div class="progress xp-progress">
+            <div id="xp-bar" class="bar" style="width:0%"></div>
+          </div>
           <h3 id="coins">Gold: 0</h3>
           <div id="bag">
             <div id="items"></div>
@@ -62,6 +70,8 @@
             <canvas id="weapon" width="32" height="32" class="item-btn gear-slot"></canvas>
             <canvas id="torso" width="32" height="32" class="item-btn gear-slot"></canvas>
             <canvas id="legs" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <h3 id="atk-text">atk: 0</h3>
+            <h3 id="def-text">def: 0</h3>
           </div>
         </div>
       </div>
@@ -85,10 +95,13 @@
         text-align: center;
       }
 
+      h3 {
+        font-size: 70%;
+      }
+
       #coins {
         border: 1px solid black;
         margin: 0px;
-        font-size: 70%;
       }
 
       #bag {
@@ -100,7 +113,7 @@
       #gear {
         border: 1px solid black;
         width: 128px;
-        height: 96px;
+        height: auto;
         text-align: center;
       }
 
@@ -147,7 +160,7 @@
         position: absolute;
       }
 
-      p, li {
+      h3, p, li {
         cursor: default;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -155,6 +168,59 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
+      }
+
+      .progress {
+        margin:10px auto;
+        padding:0;
+        width:90%;
+        height:10px;
+        overflow:hidden;
+      }
+
+      .hp-progress {
+        background:#FF004D;
+      }
+
+      .xp-progress {
+        background:#FFF1E8;
+      }
+
+      .bar {
+        position:relative;
+        float:left;
+        min-width:1%;
+        height:100%;
+      }
+
+      #hp-bar {
+        background:#008751;
+      }
+
+      #xp-bar {
+        background:#C2C3C7;
+      }
+
+      .percent {
+        position:absolute;
+        top:50%;
+        left:50%;
+        transform:translate(-50%,-50%);
+        margin:0;
+        font-family:tahoma,arial,helvetica;
+        font-size:11px;
+        color:#000000;
+      }
+
+      .d {
+        position:absolute;
+        top: 30px;
+        left:50%;
+        transform:translate(-50%,-50%);
+        margin:0;
+        font-family:tahoma,arial,helvetica;
+        font-size:12px;
+        color:black;
       }
     </style>
   </body>

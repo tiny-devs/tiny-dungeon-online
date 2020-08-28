@@ -21,6 +21,7 @@ export enum Command {
     ItemWear = 13,
     ItemRemove = 14,
     ItemDroped = 15,
+    Stats = 16,
 }
 
 export enum Rooms {

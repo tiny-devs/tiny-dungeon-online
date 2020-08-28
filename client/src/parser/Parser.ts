@@ -12,7 +12,9 @@ import { ParseItemUse } from './ParseItemUse'
 import { ParseItemWear } from './ParseItemWear'
 import { ParseItemRemove } from './ParseItemRemove'
 import { ParseItemDroped } from './ParseItemDroped'
+import { ParseStats } from './ParseStats'
 import { Client } from '../startup/Client'
+import { Player } from '../entities/Player'
 
 export class Parser {
     private client: Client
@@ -62,6 +64,9 @@ export class Parser {
                 case Command.ItemDroped:
                     this.parseItemDroped(data)
                     break
+                case Command.Stats:
+                        this.parseStats(data)
+                        break
                 case Command.Error:
                     this.parseError(data)
                     break
@@ -81,6 +86,9 @@ export class Parser {
             this.client.bag.playerId = loginData.playerId
             this.client.gear.playerId = loginData.playerId
             this.client.game.applyServerRules(loginData.serverRules)
+
+            const player = loginData.players.find((p: Player) => p.id == loginData.playerId)
+            this.client.applyStats(player.hp, player.maxHp, player.atk, player.def, 1, 0, player.xpNeed)
         }
         this.client.drawSprites()
     }
@@ -145,7 +153,6 @@ export class Parser {
     private parseItemUse(data: string) {
         const useData = new ParseItemUse(data)
 
-        this.client.applyStats(useData)
         this.client.bag.removeItem(useData.itemId)
     }
 
@@ -161,5 +168,17 @@ export class Parser {
 
         this.client.removedGear(removedData)
         this.client.gear.removeGear(removedData.itemId)
+    }
+
+    private parseStats(data: string) {
+        const stats = new ParseStats(data)
+
+        this.client.applyStats(stats.hp,
+            stats.maxHp,
+            stats.attack,
+            stats.defense,
+            stats.level,
+            stats.xp,
+            stats.xpNeeded)
     }
 }

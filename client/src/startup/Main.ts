@@ -17,6 +17,12 @@ export class Main {
     public bagElement: HTMLElement
     public gearElement: HTMLElement
     public coinsElement: HTMLElement
+    public hpTextElement: HTMLElement
+    public xpTextElement: HTMLElement
+    public hpBarElement: HTMLElement
+    public xpBarElement: HTMLElement
+    public atkTextElement: HTMLElement
+    public defTextElement: HTMLElement
     public layersParentElement: HTMLElement
 
     public drawingGrid: DrawingCanvas
@@ -42,12 +48,20 @@ export class Main {
         this.bagElement = document.getElementById('bag')!
         this.gearElement = document.getElementById('gear')!
         this.coinsElement = document.getElementById('coins')!
+        this.hpTextElement = document.getElementById('hp-text')!
+        this.xpTextElement = document.getElementById('xp-text')!
+        this.hpBarElement = document.getElementById('hp-bar')!
+        this.xpBarElement = document.getElementById('xp-bar')!
+        this.atkTextElement = document.getElementById('atk-text')!
+        this.defTextElement = document.getElementById('def-text')!
         this.layersParentElement = document.getElementById('layers')!
 
         this.gameScreen.style.display = 'none'
         this.bagElement.style.display = 'none'
         this.coinsElement.style.display = 'none'
         this.gearElement.style.display = 'none'
+        this.hpTextElement.style.display = 'none'
+        this.xpTextElement.style.display = 'none'
 
         if (this.isMobile()) {
             this.setupMobile()

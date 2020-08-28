@@ -13,7 +13,8 @@ export enum Command {
     ItemUse,
     ItemWear,
     ItemRemove,
-    ItemDroped
+    ItemDroped,
+    Stats
 }
 
 export enum Direction {
