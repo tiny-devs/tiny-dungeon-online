@@ -3,6 +3,7 @@ import { Rooms } from '../../models/Enums'
 import { Tiles } from './tiles/Tiles'
 import { Tile } from './tiles/Tile'
 import { Color } from './tiles/Color'
+import { SolidLayers } from '../../../../shared/solidLayers'
 
 export class InitialRoom {
     public id: Rooms
@@ -45,24 +46,7 @@ export class InitialRoom {
     }
 
     getSolidLayerShape() {
-        return [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Tiles.Tree, 0, Tiles.Tree],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, Tiles.SmallTree, Tiles.Tree, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, Tiles.Tree, 0, 0, 0, 0, 0, 0, 0, Tiles.SmallTree, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Tiles.SmallTree, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, Tiles.Tree, 0, 0, 0, 0, Tiles.Tree, 0, 0, Tiles.SmallTree],
-            [0, 0, Tiles.Tree, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, Tiles.SmallTree, 0, 0, 0, 0, Tiles.Tree, 0, 0, Tiles.SmallTree, 0],
-            [Tiles.Tree, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [Tiles.SmallTree, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [Tiles.Tree, Tiles.Tree, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, Tiles.Tree],
-        ]
+        return SolidLayers.InitialRoom
     }
 
     initTiles() {
@@ -73,9 +57,12 @@ export class InitialRoom {
                     this.tiles.push(new Tile(this.game, this.game.backgroundLayer, column, line, tileToDrawBackground))
                 }
 
-                const tileToDraw = this.solidLayerShape[line][column] as any
+                const tileToDraw = this.solidLayerShape[line][column] as number
                 if (tileToDraw != 0) {
-                    this.tiles.push(new Tile(this.game, this.game.solidLayer, column, line, tileToDraw))
+                    const tiles = Tiles as any
+                    const tile = tiles[Object.keys(Tiles)[tileToDraw-1]]
+
+                    this.tiles.push(new Tile(this.game, this.game.solidLayer, column, line, tile))
                 }
             }
         }
