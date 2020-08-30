@@ -1,5 +1,5 @@
 import Room from './room.ts'
-import { Rooms, Npcs } from '../../Enums.ts'
+import { Rooms } from '../../Enums.ts'
 import Exits from "./exits.ts"
 import { ClientHandler } from '../../clientHandler.ts'
 import Spider from '../../entities/npcs/spider.ts'
