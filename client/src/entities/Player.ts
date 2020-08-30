@@ -67,10 +67,6 @@ export class Player {
             this.hp = this.maxHp
             this.isFighting = false
         }
-
-        if (pveData.npcHp <= 1) {
-            this.isFighting = false
-        }
     }
 
     drawHp() {
