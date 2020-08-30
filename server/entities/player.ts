@@ -217,7 +217,7 @@ export class Player {
         this.clientHandler.unicastPlayerStats(this)
     }
 
-    private notCollided(y: number, x: number): boolean {
+    private notCollided(y: number, x: number): boolean {        
         const notSolidTile = this.currentRoom.solidLayer[y][x] === 0
         const notNpc = !this.hasNpc(y,x)
 

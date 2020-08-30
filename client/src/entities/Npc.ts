@@ -61,10 +61,6 @@ export class Npc {
             this.hp = this.maxHp
             this.isFighting = false
         }
-
-        if (pveData.playerHp <= 1) {
-            this.isFighting = false
-        }
     }
 
     drawHp() {
