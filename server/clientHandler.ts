@@ -120,6 +120,10 @@ export class ClientHandler {
     }
   }
 
+  public unicastMessage(player: Player, message: string): void {
+    player.clientWs.send(`${Command.Message},${message}`)
+  }
+
   public unicastItemRemove(player: Player, itemId: Items): void {
     player.clientWs.send(`${Command.ItemRemove},${itemId}`)
   }

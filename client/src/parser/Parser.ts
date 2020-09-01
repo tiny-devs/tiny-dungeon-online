@@ -15,6 +15,7 @@ import { ParseItemDroped } from './ParseItemDroped'
 import { ParseStats } from './ParseStats'
 import { Client } from '../startup/Client'
 import { Player } from '../entities/Player'
+import { ParseMessage } from './ParseMessage'
 
 export class Parser {
     private client: Client
@@ -66,6 +67,9 @@ export class Parser {
                     break
                 case Command.Stats:
                         this.parseStats(data)
+                        break
+                case Command.Message:
+                        this.parseMessage(data)
                         break
                 case Command.Error:
                     this.parseError(data)
@@ -180,5 +184,11 @@ export class Parser {
             stats.level,
             stats.xp,
             stats.xpNeeded)
+    }
+
+    private parseMessage(data: string) {
+        const messageData = new ParseMessage(data)
+
+        this.client.displayMessage(messageData.message)
     }
 }

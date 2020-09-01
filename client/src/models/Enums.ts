@@ -22,6 +22,7 @@ export enum Command {
     ItemRemove = 14,
     ItemDroped = 15,
     Stats = 16,
+    Message = 17,
 }
 
 export enum Rooms {

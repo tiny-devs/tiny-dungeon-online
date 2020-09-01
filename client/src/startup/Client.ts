@@ -8,10 +8,8 @@ import { Woods } from '../board/map/Woods'
 import { InitialRoom } from '../board/map/InitialRoom'
 import Bag from '../entities/items/Bag'
 import { ParseItemPick } from '../parser/ParseItemPick'
-import { ParseItemUse } from '../parser/ParseItemUse'
 import { ParseItemRemove } from '../parser/ParseItemRemove'
 import Gear from '../entities/items/Gear'
-import { ParseLogin } from '../parser/ParseLogin'
 
 export class Client {
     public loggedIn: boolean
@@ -33,6 +31,8 @@ export class Client {
     private xpBarElement: HTMLElement
     private atkTextElement: HTMLElement
     private defTextElement: HTMLElement
+    private messageElement: HTMLElement
+    private isShowingMessage: boolean
     private up: HTMLElement
     private down: HTMLElement
     private left: HTMLElement
@@ -56,6 +56,8 @@ export class Client {
         this.xpBarElement = mainElements.xpBarElement
         this.atkTextElement = mainElements.atkTextElement
         this.defTextElement = mainElements.defTextElement
+        this.messageElement = mainElements.messageElement
+        this.isShowingMessage = false
         
         this.up = mainElements.mobileUp
         this.up.onclick = () => {
@@ -255,6 +257,17 @@ export class Client {
             this.xpTextElement.innerHTML = `LVL ${level}`
             const barWidth = (xp/xpNeeded) * 100
             this.xpBarElement.style.width = `${barWidth}%`
+        }
+    }
+
+    displayMessage(message: string) {
+        if (!this.isShowingMessage) {
+            this.isShowingMessage = true
+            this.messageElement.innerHTML = message
+            setTimeout(() => {
+                this.isShowingMessage = false
+                this.messageElement.innerHTML = ''
+            }, 5000)
         }
     }
 
