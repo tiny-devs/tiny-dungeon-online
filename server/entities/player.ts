@@ -230,10 +230,12 @@ export class Player {
 
     private pickupAnyItemAtCoords(y: number, x: number): boolean {
         const item = this.currentRoom.itemsLayer[y][x]
-        if (item && this.bag.items.length < this.bag.size) {
-            this.bag.addItem(item)
-            this.currentRoom.removeItem(y,x,this.id)
-            return true
+        if (item) {
+            const gotItem = this.bag.addItem(item)
+            if (gotItem) {
+                this.currentRoom.removeItem(y,x,this.id)
+                return true
+            }
         }
         return false
     }
