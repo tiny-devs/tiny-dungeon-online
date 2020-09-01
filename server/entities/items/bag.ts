@@ -5,7 +5,7 @@ import { Player } from "../player.ts"
 export default class Bag {
     public items: ItemBase[] = []
     public coins: number = 0
-    public size: number = 10
+    public size: number = 24
     private player: Player
 
     constructor(player: Player) { 

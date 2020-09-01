@@ -14,7 +14,8 @@ export enum Command {
     ItemWear,
     ItemRemove,
     ItemDroped,
-    Stats
+    Stats,
+    Message
 }
 
 export enum Direction {

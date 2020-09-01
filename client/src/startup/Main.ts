@@ -24,6 +24,7 @@ export class Main {
     public atkTextElement: HTMLElement
     public defTextElement: HTMLElement
     public layersParentElement: HTMLElement
+    public messageElement: HTMLElement
 
     public drawingGrid: DrawingCanvas
 
@@ -55,6 +56,7 @@ export class Main {
         this.atkTextElement = document.getElementById('atk-text')!
         this.defTextElement = document.getElementById('def-text')!
         this.layersParentElement = document.getElementById('layers')!
+        this.messageElement = document.getElementById('message')!
 
         this.gameScreen.style.display = 'none'
         this.bagElement.style.display = 'none'

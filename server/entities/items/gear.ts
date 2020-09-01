@@ -17,30 +17,47 @@ export default class Gear {
     }
 
     public wear(item: ItemBase): boolean {
+        let hasMinimumLevel = true
         let wore = false
         switch (item.gearType) {
             case GearType.Head:
                 if (this.head == null) {
-                    this.head = item
-                    wore = true
+                    if (item.level <= this.player.level) {
+                        this.head = item
+                        wore = true
+                    } else {
+                        hasMinimumLevel = false
+                    }
                 }
                 break;
             case GearType.Torso:
                 if (this.torso == null) {
-                    this.torso = item
-                    wore = true
+                    if (item.level <= this.player.level) {
+                        this.torso = item
+                        wore = true
+                    } else {
+                        hasMinimumLevel = false
+                    }
                 }
                 break;
             case GearType.Legs:
                 if (this.legs == null) {
-                    this.legs = item
-                    wore = true
+                    if (item.level <= this.player.level) {
+                        this.legs = item
+                        wore = true
+                    } else {
+                        hasMinimumLevel = false
+                    }
                 }
                 break;
             case GearType.Weapon:
                 if (this.weapon == null) {
-                    this.weapon = item
-                    wore = true
+                    if (item.level <= this.player.level) {
+                        this.weapon = item
+                        wore = true
+                    } else {
+                        hasMinimumLevel = false
+                    }
                 }
                 break;
             default:
@@ -49,6 +66,8 @@ export default class Gear {
 
         if (wore) {
             this.clientHandler.unicastItemWear(this.player, item.itemId, item.gearType)
+        } else if (!hasMinimumLevel) {
+            this.clientHandler.unicastMessage(this.player, `"You need LVL ${item.level} to wear this"`)
         }
 
         return wore
