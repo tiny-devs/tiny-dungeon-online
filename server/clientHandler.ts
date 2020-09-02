@@ -12,12 +12,32 @@ export class ClientHandler {
   public boardRows: number = 16
   public playerNames: string[] = []
   public map: Map
+  private topPlayers: {name:string,level:number}[]
 
   constructor(serverConfigs: any) {
     this.boardRows = serverConfigs.boardRows
     this.boardColumns = serverConfigs.boardColumns
 
     this.map = new Map(this)
+
+    this.topPlayers = []
+    this.topPlayers.push({name:'',level:0})
+    this.topPlayers.push({name:'',level:0})
+    this.topPlayers.push({name:'',level:0})
+  }
+
+  private broadcastRank(): void {
+    for (const room of this.map.rooms) {
+      for (const player of room.players) {
+        player.clientWs.send(`${Command.Rank},`+
+        `${this.topPlayers[0].name},`+
+        `${this.topPlayers[0].level},`+
+        `${this.topPlayers[1].name},`+
+        `${this.topPlayers[1].level},`+
+        `${this.topPlayers[2].name},`+
+        `${this.topPlayers[2].level}`)
+      }
+    }
   }
 
   private broadcastPlayerConnection(playerId: string): void {
@@ -157,6 +177,38 @@ export class ClientHandler {
     player.clientWs.send(`${Command.ItemDroped},${itemId}`)
   }
 
+  public updateRank() {
+    let updated = false
+    let players = []
+    for (const room of this.map.rooms) {
+      for (const player of room.players) {
+        players.push(player)
+      }
+    }
+    players.sort((a, b) => { 
+      return b.level - a.level;
+    })
+
+    const limitForTop3OrLess = players.length > 3 ? 3 : players.length
+    for (let i=0;i<limitForTop3OrLess;i++) {
+      if (updated) {
+        this.topPlayers[i].name = players[i].name
+        this.topPlayers[i].level = players[i].level
+      } else {
+        if ((players[i].level>this.topPlayers[i].level)) {
+          this.topPlayers[i].name = players[i].name
+          this.topPlayers[i].level = players[i].level
+          updated = true
+        }
+      }
+    }
+
+    players.splice(0, players.length)
+    if (updated) {
+      this.broadcastRank()
+    }
+  }
+
   private getAllPlayers() {
     let playersReturn = []
     for (const room of this.map.rooms) {
@@ -262,6 +314,7 @@ export class ClientHandler {
             this.unicastNpcsInRoom(player)
             this.unicastItemsInRoom(player)
             this.unicastPlayerStats(player)
+            this.updateRank()
             break
           case Command.Ping:
             this.pong(player)

@@ -25,6 +25,13 @@ export class Main {
     public defTextElement: HTMLElement
     public layersParentElement: HTMLElement
     public messageElement: HTMLElement
+    public showRankBtn: HTMLButtonElement
+    public showPlayersBtn: HTMLButtonElement
+    public rankElement: HTMLElement
+    public playersElement: HTMLElement
+    public top1Element: HTMLElement
+    public top2Element: HTMLElement
+    public top3Element: HTMLElement
 
     public drawingGrid: DrawingCanvas
 
@@ -57,6 +64,13 @@ export class Main {
         this.defTextElement = document.getElementById('def-text')!
         this.layersParentElement = document.getElementById('layers')!
         this.messageElement = document.getElementById('message')!
+        this.showRankBtn = document.getElementById('show-rank')! as HTMLButtonElement
+        this.showPlayersBtn = document.getElementById('show-players')! as HTMLButtonElement
+        this.rankElement = document.getElementById('game-rank')!
+        this.playersElement = document.getElementById('game-info')!
+        this.top1Element = document.getElementById('top1')!
+        this.top2Element = document.getElementById('top2')!
+        this.top3Element = document.getElementById('top3')!
 
         this.gameScreen.style.display = 'none'
         this.bagElement.style.display = 'none'

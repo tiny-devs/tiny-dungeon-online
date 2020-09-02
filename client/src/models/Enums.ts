@@ -23,6 +23,8 @@ export enum Command {
     ItemDroped = 15,
     Stats = 16,
     Message = 17,
+    Dialog = 18,
+    Rank = 19
 }
 
 export enum Rooms {

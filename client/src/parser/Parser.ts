@@ -16,6 +16,7 @@ import { ParseStats } from './ParseStats'
 import { Client } from '../startup/Client'
 import { Player } from '../entities/Player'
 import { ParseMessage } from './ParseMessage'
+import { ParseRank } from './ParseRank'
 
 export class Parser {
     private client: Client
@@ -66,11 +67,14 @@ export class Parser {
                     this.parseItemDroped(data)
                     break
                 case Command.Stats:
-                        this.parseStats(data)
-                        break
+                    this.parseStats(data)
+                    break
+                case Command.Rank:
+                    this.parseRank(data)
+                    break
                 case Command.Message:
-                        this.parseMessage(data)
-                        break
+                    this.parseMessage(data)
+                    break
                 case Command.Error:
                     this.parseError(data)
                     break
@@ -184,6 +188,12 @@ export class Parser {
             stats.level,
             stats.xp,
             stats.xpNeeded)
+    }
+
+    private parseRank(data: string) {
+        const rank = new ParseRank(data)
+
+        this.client.updateRank(rank)
     }
 
     private parseMessage(data: string) {

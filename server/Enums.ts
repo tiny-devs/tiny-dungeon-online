@@ -15,7 +15,9 @@ export enum Command {
     ItemRemove,
     ItemDroped,
     Stats,
-    Message
+    Message,
+    Dialog,
+    Rank
 }
 
 export enum Direction {

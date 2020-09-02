@@ -50,6 +50,16 @@
           <div id="game-messages">
             <p id="message"></p>
           </div>
+          <input type="button" value="show rank" id="show-rank"></input>
+          <input type="button" value="show players" id="show-players"></input>
+          <div id="game-rank">
+            <p>Top players:</p>
+            <ul>
+              <li id="top1"></li>
+              <li id="top2"></li>
+              <li id="top3"></li>
+            </ul>
+          </div>
           <div id="game-info">
             <p>Players Online:</p>
             <ul id="player-list"></ul>
@@ -102,7 +112,7 @@
         font-size: 70%;
       }
       
-      #game-info {
+      #game-info, #game-rank {
         display: none;
       }
 
