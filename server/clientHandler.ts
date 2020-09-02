@@ -196,9 +196,8 @@ export class ClientHandler {
         this.topPlayers[i].level = players[i].level
       } else {
         if ((players[i].level>this.topPlayers[i].level)) {
-          this.topPlayers[i].name = players[i].name
-          this.topPlayers[i].level = players[i].level
           updated = true
+          i = -1
         }
       }
     }
