@@ -10,6 +10,7 @@ import Bag from '../entities/items/Bag'
 import { ParseItemPick } from '../parser/ParseItemPick'
 import { ParseItemRemove } from '../parser/ParseItemRemove'
 import Gear from '../entities/items/Gear'
+import { ParseRank } from '../parser/ParseRank'
 
 export class Client {
     public loggedIn: boolean
@@ -32,11 +33,20 @@ export class Client {
     private atkTextElement: HTMLElement
     private defTextElement: HTMLElement
     private messageElement: HTMLElement
+    private showRankBtn: HTMLButtonElement
+    private showPlayersBtn: HTMLButtonElement
+    private rankElement: HTMLElement
+    private playersElement: HTMLElement
+    private top1Element: HTMLElement
+    private top2Element: HTMLElement
+    private top3Element: HTMLElement
     private isShowingMessage: boolean
     private up: HTMLElement
     private down: HTMLElement
     private left: HTMLElement
     private right: HTMLElement
+    private isShowingRank: boolean
+    private isShowingPlayerList: boolean
     private ws: WebSocket | null
     private playerMatrix: number[][]
     private parser: Parser
@@ -57,6 +67,11 @@ export class Client {
         this.atkTextElement = mainElements.atkTextElement
         this.defTextElement = mainElements.defTextElement
         this.messageElement = mainElements.messageElement
+        this.rankElement = mainElements.rankElement
+        this.playersElement = mainElements.playersElement
+        this.top1Element = mainElements.top1Element
+        this.top2Element = mainElements.top2Element
+        this.top3Element = mainElements.top3Element
         this.isShowingMessage = false
         
         this.up = mainElements.mobileUp
@@ -74,6 +89,17 @@ export class Client {
         this.right = mainElements.mobileRight
         this.right.onclick = () => {
             this.checkKey({ keyCode: 39 })
+        }
+
+        this.isShowingRank = false
+        this.showRankBtn = mainElements.showRankBtn
+        this.showRankBtn.onclick = () => {
+            this.toggleRank()
+        }
+        this.isShowingPlayerList = false
+        this.showPlayersBtn = mainElements.showPlayersBtn
+        this.showPlayersBtn.onclick = () => {
+            this.togglePlayers()
         }
 
         this.game = game
@@ -104,6 +130,9 @@ export class Client {
     initWebSocket() {
         this.ws!.onopen = () => this.successfulConection()
         this.ws!.addEventListener('message', this.onReceiveMessage.bind(this))
+        window.onbeforeunload = () => {
+            this.ws!.close()
+        }
     }
 
     successfulConection() {
@@ -268,6 +297,39 @@ export class Client {
                 this.isShowingMessage = false
                 this.messageElement.innerHTML = ''
             }, 5000)
+        }
+    }
+
+    updateRank(rank: ParseRank) {
+        const top1Text = rank.top1Level != 0 ? `${rank.top1Name}: LVL ${rank.top1Level}` : ''
+        const top2Text = rank.top2Level != 0 ? `${rank.top2Name}: LVL ${rank.top2Level}` : ''
+        const top3Text = rank.top3Level != 0 ? `${rank.top3Name}: LVL ${rank.top3Level}` : ''
+        this.top1Element.innerHTML = `${top1Text}`
+        this.top2Element.innerHTML = `${top2Text}`
+        this.top3Element.innerHTML = `${top3Text}`
+    }
+
+    toggleRank() {
+        if(!this.isShowingRank) {
+            this.isShowingRank = true
+            this.showRankBtn.value = 'hide rank'
+            this.rankElement.style.display = 'block'
+        } else {
+            this.isShowingRank = false
+            this.showRankBtn.value = 'show rank'
+            this.rankElement.style.display = 'none'
+        }
+    }
+
+    togglePlayers() {
+        if(!this.isShowingPlayerList) {
+            this.isShowingPlayerList = true
+            this.showPlayersBtn.value = 'hide players'
+            this.playersElement.style.display = 'block'
+        } else {
+            this.isShowingPlayerList = false
+            this.showPlayersBtn.value = 'show players'
+            this.playersElement.style.display = 'none'
         }
     }
 

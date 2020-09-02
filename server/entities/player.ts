@@ -173,6 +173,9 @@ export class Player {
         this.xpNeeded = +((this.level**2)+10).toFixed(2)
 
         this.clientHandler.unicastPlayerStats(this)
+        if (isLevelUp) {
+            this.clientHandler.updateRank()
+        }
     }
 
     public takeDamage(dmg: number): number {
