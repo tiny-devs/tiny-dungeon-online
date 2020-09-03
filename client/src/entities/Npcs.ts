@@ -21,4 +21,12 @@ export const Npcs = {
         [Color.DarkGrey, 0, Color.DarkGrey, 0, 0, Color.DarkGrey, 0, Color.DarkGrey],
         [Color.DarkGrey, 0, Color.DarkGrey, 0, 0, Color.DarkGrey, 0, Color.DarkGrey],
     ],
+    Zero: [[0               ,0               ,0               ,Color.DarkGrey  ,Color.DarkGrey  ,0               ,0               ,0               ],
+	[0               ,0               ,0               ,Color.DarkGrey  ,Color.DarkGrey  ,0               ,0               ,0               ],
+	[0               ,0               ,Color.DarkGrey  ,Color.DarkGrey  ,Color.DarkGrey  ,Color.DarkGrey  ,0               ,0               ],
+	[0               ,0               ,Color.DarkGrey  ,Color.DarkGrey  ,Color.DarkGrey  ,Color.DarkGrey  ,0               ,0               ],
+	[0               ,0               ,Color.DarkGrey  ,Color.DarkGrey  ,Color.DarkGrey  ,Color.DarkGrey  ,0               ,0               ],
+	[0               ,0               ,Color.DarkGrey  ,Color.DarkGrey  ,Color.DarkGrey  ,Color.DarkGrey  ,0               ,0               ],
+	[0               ,0               ,Color.DarkGrey  ,Color.DarkGrey  ,Color.DarkGrey  ,Color.DarkGrey  ,0               ,0               ],
+	[0               ,0               ,Color.DarkGrey  ,0               ,0               ,Color.DarkGrey  ,0               ,0               ],],
 } as any

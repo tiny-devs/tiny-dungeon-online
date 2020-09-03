@@ -27,154 +27,245 @@ export class ClientHandler {
   }
 
   private broadcastRank(): void {
-    for (const room of this.map.rooms) {
+    try{
+      for (const room of this.map.rooms) {
+        for (const player of room.players) {
+          player.clientWs.send(`${Command.Rank},`+
+          `${this.topPlayers[0].name},`+
+          `${this.topPlayers[0].level},`+
+          `${this.topPlayers[1].name},`+
+          `${this.topPlayers[1].level},`+
+          `${this.topPlayers[2].name},`+
+          `${this.topPlayers[2].level}`)
+        }
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  private broadcastPlayerConnection(playerId: string): void {
+    try{
+      const data = JSON.stringify(this.getAllPlayers())
+
+      for (const room of this.map.rooms) {
+        for (const player of room.players) {
+          player.clientWs.send(`${Command.Login},`+
+          `${playerId},`+
+          `${this.boardRows},`+
+          `${this.boardColumns},`+
+          `${data}`)
+        }
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
+    try{
+      let isValid = playerMoved.move(direction)
+      if (playerMoved.changedRoom()) {
+        const newRoom = this.map.getRoomById(playerMoved.currentRoomId)
+        this.switchRooms(playerMoved, newRoom)
+      }
+    
+      if (isValid) {
+        for (const room of this.map.rooms) {
+          for (const player of room.players) {
+            player.clientWs.send(`${Command.Move},`+
+            `${playerMoved.id},`+
+            `${playerMoved.x},`+
+            `${playerMoved.y},`+
+            `${playerMoved.currentRoomId}`)
+          }
+        }
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public roomcastNpcMove(npcMoved: Npc): void {
+    try{
+      for (const player of npcMoved.room.players) {
+        player.clientWs.send(`${Command.NpcMove},`+
+        `${npcMoved.id},` +
+        `${npcMoved.npcId},`+
+        `${npcMoved.x},`+
+        `${npcMoved.y},` +
+        `${npcMoved.roomId}`)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public roomcastPveFight(pveData: PveData): void {
+    try{
+      for (const player of pveData.room.players) {
+        player.clientWs.send(`${Command.Pve},`+
+        `${pveData.attacker},` +
+        `${pveData.damageCaused},`+
+        `${pveData.npc.hp},` +
+        `${pveData.npc.id},` +
+        `${pveData.player.hp},` +
+        `${pveData.player.id},` +
+        `${pveData.room.id}`)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public roomcastItemDrop(itemData: any, roomId: number, y: number, x: number): void {
+    try{
+      const room = this.map.getRoomById(roomId)
+      
       for (const player of room.players) {
-        player.clientWs.send(`${Command.Rank},`+
+        player.clientWs.send(`${Command.ItemDrop},`+
+        `${itemData.id},` +
+        `${itemData.itemId},`+
+        `${roomId},` +
+        `${x},${y}`)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public roomcastItemPick(roomId: number, y: number, x: number, itemId: Items, coins: number, playerId: string): void {
+    try{
+      const room = this.map.getRoomById(roomId)
+
+      for (const player of room.players) {
+        player.clientWs.send(`${Command.ItemPick},`+
+        `${playerId},`+
+        `${itemId},${coins},`+
+        `${x},${y}`)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  private switchRooms(player: Player, newRoom: Room) {
+    try{
+      player.currentRoom.removePlayer(player)
+
+      player.currentRoomId = newRoom.id
+      player.currentRoom = newRoom
+      newRoom.addPlayer(player)
+
+      this.unicastNpcsInRoom(player)
+      this.unicastItemsInRoom(player)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  private roomcastItemsInRoom(room: Room): void {
+    try{
+      const data = JSON.stringify(room.getAllItemsInRoom())
+
+      for (const player of room.players) {
+        player.clientWs.send(`${Command.ItemsInRoom},${data}`)
+      }
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public unicastMessage(player: Player, message: string): void {
+    try{
+      player.clientWs.send(`${Command.Message},${message}`)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public unicastItemRemove(player: Player, itemId: Items): void {
+    try{
+      player.clientWs.send(`${Command.ItemRemove},${itemId}`)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public unicastItemWear(player: Player, itemId: Items, gearType: GearType): void {
+    try{
+      player.clientWs.send(`${Command.ItemWear},${itemId},${gearType}`)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public unicastPlayerStats(player: Player): void {
+    try{
+      const data = player.getStats()
+      player.clientWs.send(`${Command.Stats},`+
+      `${data.hp},${data.maxHp},${data.attack},${data.defense},`+
+      `${data.level},${data.xp},${data.xpNeeded}`)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  public unicastDialog(player: Player, dialog: string) {
+    try {
+      player.clientWs.send(`${Command.Dialog},`+
+      `"${dialog}"`)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  private unicastItemsInRoom(player: Player): void {
+    try{
+      const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
+      player.clientWs.send(`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  private unicastNpcsInRoom(player: Player): void {
+    try{
+      const data = JSON.stringify(player.currentRoom.getAllNpcsInRoom())
+      player.clientWs.send(`${Command.NpcsInRoom},${data}`)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  private unicastItemUse(player: Player, itemId: Items): void {
+    try{
+      player.clientWs.send(`${Command.ItemUse},${itemId}`)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  private unicastPlayerDroped(player: Player, itemId: Items): void {
+    try{
+      player.clientWs.send(`${Command.ItemDroped},${itemId}`)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
+  private unicastRank(player: Player): void {
+    try{
+      player.clientWs.send(`${Command.Rank},`+
         `${this.topPlayers[0].name},`+
         `${this.topPlayers[0].level},`+
         `${this.topPlayers[1].name},`+
         `${this.topPlayers[1].level},`+
         `${this.topPlayers[2].name},`+
         `${this.topPlayers[2].level}`)
-      }
+    } catch (e) {
+      console.log(e)
     }
-  }
-
-  private broadcastPlayerConnection(playerId: string): void {
-    const data = JSON.stringify(this.getAllPlayers())
-
-    for (const room of this.map.rooms) {
-      for (const player of room.players) {
-        player.clientWs.send(`${Command.Login},`+
-        `${playerId},`+
-        `${this.boardRows},`+
-        `${this.boardColumns},`+
-        `${data}`)
-      }
-    }
-  }
-
-  public broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
-    let isValid = playerMoved.move(direction)
-    if (playerMoved.changedRoom()) {
-      const newRoom = this.map.getRoomById(playerMoved.currentRoomId)
-      this.switchRooms(playerMoved, newRoom)
-    }
-  
-    if (isValid) {
-      for (const room of this.map.rooms) {
-        for (const player of room.players) {
-          player.clientWs.send(`${Command.Move},`+
-          `${playerMoved.id},`+
-          `${playerMoved.x},`+
-          `${playerMoved.y},`+
-          `${playerMoved.currentRoomId}`)
-        }
-      }
-    }
-  }
-
-  public roomcastNpcMove(npcMoved: Npc): void {
-    for (const player of npcMoved.room.players) {
-      player.clientWs.send(`${Command.NpcMove},`+
-      `${npcMoved.id},` +
-      `${npcMoved.npcId},`+
-      `${npcMoved.x},`+
-      `${npcMoved.y},` +
-      `${npcMoved.roomId}`)
-    }
-  }
-
-  public roomcastPveFight(pveData: PveData): void {
-    for (const player of pveData.room.players) {
-      player.clientWs.send(`${Command.Pve},`+
-      `${pveData.attacker},` +
-      `${pveData.damageCaused},`+
-      `${pveData.npc.hp},` +
-      `${pveData.npc.id},` +
-      `${pveData.player.hp},` +
-      `${pveData.player.id},` +
-      `${pveData.room.id}`)
-    }
-  }
-
-  public roomcastItemDrop(itemData: any, roomId: number, y: number, x: number): void {
-    const room = this.map.getRoomById(roomId)
-    
-    for (const player of room.players) {
-      player.clientWs.send(`${Command.ItemDrop},`+
-      `${itemData.id},` +
-      `${itemData.itemId},`+
-      `${roomId},` +
-      `${x},${y}`)
-    }
-  }
-
-  public roomcastItemPick(roomId: number, y: number, x: number, itemId: Items, coins: number, playerId: string): void {
-    const room = this.map.getRoomById(roomId)
-
-    for (const player of room.players) {
-      player.clientWs.send(`${Command.ItemPick},`+
-      `${playerId},`+
-      `${itemId},${coins},`+
-      `${x},${y}`)
-    }
-  }
-
-  private switchRooms(player: Player, newRoom: Room) {
-    player.currentRoom.removePlayer(player)
-
-    player.currentRoomId = newRoom.id
-    player.currentRoom = newRoom
-    newRoom.addPlayer(player)
-
-    this.unicastNpcsInRoom(player)
-    this.unicastItemsInRoom(player)
-  }
-
-  private roomcastItemsInRoom(room: Room): void {
-    const data = JSON.stringify(room.getAllItemsInRoom())
-
-    for (const player of room.players) {
-      player.clientWs.send(`${Command.ItemsInRoom},${data}`)
-    }
-  }
-
-  public unicastMessage(player: Player, message: string): void {
-    player.clientWs.send(`${Command.Message},${message}`)
-  }
-
-  public unicastItemRemove(player: Player, itemId: Items): void {
-    player.clientWs.send(`${Command.ItemRemove},${itemId}`)
-  }
-
-  public unicastItemWear(player: Player, itemId: Items, gearType: GearType): void {
-    player.clientWs.send(`${Command.ItemWear},${itemId},${gearType}`)
-  }
-
-  public unicastPlayerStats(player: Player): void {
-    const data = player.getStats()
-    player.clientWs.send(`${Command.Stats},`+
-    `${data.hp},${data.maxHp},${data.attack},${data.defense},`+
-    `${data.level},${data.xp},${data.xpNeeded}`)
-  }
-
-  private unicastItemsInRoom(player: Player): void {
-    const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
-    player.clientWs.send(`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
-  }
-
-  private unicastNpcsInRoom(player: Player): void {
-    const data = JSON.stringify(player.currentRoom.getAllNpcsInRoom())
-    player.clientWs.send(`${Command.NpcsInRoom},${data}`)
-  }
-
-  private unicastItemUse(player: Player, itemId: Items): void {
-    player.clientWs.send(`${Command.ItemUse},${itemId}`)
-  }
-
-  private unicastPlayerDroped(player: Player, itemId: Items): void {
-    player.clientWs.send(`${Command.ItemDroped},${itemId}`)
   }
 
   public updateRank() {
@@ -191,13 +282,20 @@ export class ClientHandler {
 
     const limitForTop3OrLess = players.length > 3 ? 3 : players.length
     for (let i=0;i<limitForTop3OrLess;i++) {
-      if (updated) {
-        this.topPlayers[i].name = players[i].name
-        this.topPlayers[i].level = players[i].level
-      } else {
-        if ((players[i].level>this.topPlayers[i].level)) {
+      for (let j=0;j<3;j++) {
+        if ((players[i].level>this.topPlayers[j].level)) {
+          const indexTopPlayer = this.topPlayers.map(p => p.name).indexOf(players[i].name)
+          if (indexTopPlayer>-1) {
+            this.topPlayers[j].level = players[i].level
+            this.topPlayers.splice(j, 0, this.topPlayers.splice(indexTopPlayer, 1)[0]);
+          } else {
+            this.topPlayers.splice(j, 0, {name:players[i].name,level:players[i].level});
+            if(this.topPlayers.length > 3) {
+              this.topPlayers.pop()
+            }
+          }
+          j = 3
           updated = true
-          i = -1
         }
       }
     }
@@ -206,6 +304,8 @@ export class ClientHandler {
     if (updated) {
       this.broadcastRank()
     }
+
+    return updated
   }
 
   private getAllPlayers() {
@@ -313,7 +413,10 @@ export class ClientHandler {
             this.unicastNpcsInRoom(player)
             this.unicastItemsInRoom(player)
             this.unicastPlayerStats(player)
-            this.updateRank()
+            const updatedRank = this.updateRank()
+            if (!updatedRank) {
+              this.unicastRank(player)
+            }
             break
           case Command.Ping:
             this.pong(player)

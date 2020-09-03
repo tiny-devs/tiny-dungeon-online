@@ -41,6 +41,7 @@ export class Client {
     private top2Element: HTMLElement
     private top3Element: HTMLElement
     private isShowingMessage: boolean
+    private messageTimeout: number
     private up: HTMLElement
     private down: HTMLElement
     private left: HTMLElement
@@ -73,6 +74,7 @@ export class Client {
         this.top2Element = mainElements.top2Element
         this.top3Element = mainElements.top3Element
         this.isShowingMessage = false
+        this.messageTimeout = 0
         
         this.up = mainElements.mobileUp
         this.up.onclick = () => {
@@ -295,6 +297,16 @@ export class Client {
             this.messageElement.innerHTML = message
             setTimeout(() => {
                 this.isShowingMessage = false
+                this.messageElement.innerHTML = ''
+            }, 5000)
+        }
+    }
+
+    displayDialog(message: string) {
+        if (!this.isShowingMessage) {
+            clearTimeout(this.messageTimeout)
+            this.messageElement.innerHTML = message
+            this.messageTimeout = setTimeout(() => {
                 this.messageElement.innerHTML = ''
             }, 5000)
         }

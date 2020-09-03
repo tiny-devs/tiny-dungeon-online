@@ -61,6 +61,9 @@ export class Player {
                         if (this.notCollided(this.y,this.x + 1)) {
                             this.x++
                             validMove = true
+                        } else if (this.hasNpc(this.y,this.x + 1)) {
+                            const npc = this.getNpc(this.y,this.x + 1)
+                            npc!.talkTo(this)
                         }
                     } else {
                         const result = this.currentRoom.goEast()
@@ -76,6 +79,9 @@ export class Player {
                         if (this.notCollided(this.y + 1,this.x)) {
                             this.y++
                             validMove = true
+                        } else if (this.hasNpc(this.y + 1,this.x)) {
+                            const npc = this.getNpc(this.y + 1,this.x)
+                            npc!.talkTo(this)
                         }
                     } else {
                         const result = this.currentRoom.goSouth()
@@ -91,6 +97,9 @@ export class Player {
                         if (this.notCollided(this.y,this.x - 1)) {
                             this.x--
                             validMove = true
+                        } else if (this.hasNpc(this.y,this.x - 1)) {
+                            const npc = this.getNpc(this.y,this.x - 1)
+                            npc!.talkTo(this)
                         }
                     } else {
                         const result = this.currentRoom.goWest()
@@ -106,6 +115,9 @@ export class Player {
                         if (this.notCollided(this.y - 1,this.x)) {
                             this.y--
                             validMove = true
+                        } else if (this.hasNpc(this.y - 1,this.x)) {
+                            const npc = this.getNpc(this.y - 1,this.x)
+                            npc!.talkTo(this)
                         }
                     } else {
                         const result = this.currentRoom.goNorth()
@@ -229,6 +241,10 @@ export class Player {
 
     private hasNpc(y: number, x: number) {
         return this.currentRoom.npcs.some(npc => npc.x == x && npc.y == y)
+    }
+
+    private getNpc(y: number, x: number) {
+        return this.currentRoom.npcs.find(npc => npc.x == x && npc.y == y)
     }
 
     private pickupAnyItemAtCoords(y: number, x: number): boolean {

@@ -4,6 +4,7 @@ import { Player } from './player.ts'
 import { PveData } from '../pve/pveData.ts'
 import NpcBase from './npcs/npcBase.ts'
 import ItemBase from './items/itemBase.ts'
+import DialogBase from "./npcs/humans/dialogs/dialogBase.ts"
 
 export class Npc {
   public id: number
@@ -32,6 +33,7 @@ export class Npc {
   public xpGiven: number
   public respawnTime: number
   public dead: boolean = false
+  public dialog: DialogBase | null
   public drops: ItemBase[]
 
   constructor(id: number,
@@ -64,6 +66,7 @@ export class Npc {
     this.defense = npcData.defense
     this.level = npcData.level
     this.xpGiven = npcData.xpGiven
+    this.dialog = npcData.dialog
     this.drops = npcData.drops
 
     this.heartBeat()
@@ -127,6 +130,23 @@ export class Npc {
       roomId: this.roomId,
       hp: this.hp,
       maxHp: this.maxHp
+    }
+  }
+
+  public talkTo(player: Player) {
+    if (this.dialog != null) {
+      const hasEverTalked = this.dialog.playerCurrentLine.some(d => d.playerId == player.id)
+      if (hasEverTalked) {
+        var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+        this.dialog.playerCurrentLine[index].line += 1
+        if (this.dialog.playerCurrentLine[index].line >= this.dialog.playerCurrentLine[index].totalLines) {
+          this.dialog.playerCurrentLine[index].line = 0
+        }
+        this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
+      } else {
+        this.dialog.playerCurrentLine.push({playerId:player.id, line:0,totalLines:this.dialog.dialogs.length})
+        this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[0])
+      }
     }
   }
 
