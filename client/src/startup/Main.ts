@@ -85,6 +85,7 @@ export class Main {
             configs.game.height = configs.game.height / 2
         }
 
+        this.messageElement.style.maxWidth = `${configs.game.width}px`
         this.layersParentElement.style.width = `${configs.game.width}px`
         this.layersParentElement.style.height = `${configs.game.height}px`
 

@@ -17,6 +17,7 @@ import { Client } from '../startup/Client'
 import { Player } from '../entities/Player'
 import { ParseMessage } from './ParseMessage'
 import { ParseRank } from './ParseRank'
+import { ParseDialog } from './ParseDialog'
 
 export class Parser {
     private client: Client
@@ -71,6 +72,9 @@ export class Parser {
                     break
                 case Command.Rank:
                     this.parseRank(data)
+                    break
+                case Command.Dialog:
+                    this.parseDialog(data)
                     break
                 case Command.Message:
                     this.parseMessage(data)
@@ -200,5 +204,11 @@ export class Parser {
         const messageData = new ParseMessage(data)
 
         this.client.displayMessage(messageData.message)
+    }
+
+    private parseDialog(data: string) {
+        const dialogData = new ParseDialog(data)
+
+        this.client.displayDialog(dialogData.message)
     }
 }

@@ -3,6 +3,7 @@ import { Rooms } from '../../Enums.ts'
 import Exits from './exits.ts'
 import { ClientHandler } from '../../clientHandler.ts'
 import Dog from '../../entities/npcs/dog.ts'
+import Zero from '../../entities/npcs/humans/zero.ts'
 import { SolidLayers } from '../../../shared/solidLayers.ts'
 
 export default class InitialRoom extends Room{
@@ -29,7 +30,7 @@ export default class InitialRoom extends Room{
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,new Dog(),0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,new Zero(),0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
   }
 

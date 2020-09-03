@@ -1,5 +1,6 @@
 import { Npcs } from "../../Enums.ts"
 import ItemBase from "../items/itemBase.ts"
+import DialogBase from "./humans/dialogs/dialogBase.ts"
 
 export default class NpcBase {
     public id: Npcs
@@ -14,6 +15,7 @@ export default class NpcBase {
     public moveChance: number
     public anger: number
     public fieldOfView: number
+    public dialog: DialogBase | null
     public drops: ItemBase[]
 
     constructor(id: number,
@@ -26,6 +28,7 @@ export default class NpcBase {
     moveChance: number,
     anger: number,
     fieldOfView: number,
+    dialog: DialogBase | null, 
     drops: ItemBase[]) {
         this.id = id
         this.agressive = agressive
@@ -39,6 +42,7 @@ export default class NpcBase {
         this.moveChance = moveChance
         this.anger = anger
         this.fieldOfView = fieldOfView
+        this.dialog = dialog
         this.drops = drops
     }
 }

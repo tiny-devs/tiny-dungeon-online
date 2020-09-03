@@ -211,6 +211,15 @@ export class ClientHandler {
     }
   }
 
+  public unicastDialog(player: Player, dialog: string) {
+    try {
+      player.clientWs.send(`${Command.Dialog},`+
+      `"${dialog}"`)
+    } catch (e) {
+      console.log(e)
+    }
+  }
+
   private unicastItemsInRoom(player: Player): void {
     try{
       const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
@@ -281,6 +290,9 @@ export class ClientHandler {
             this.topPlayers.splice(j, 0, this.topPlayers.splice(indexTopPlayer, 1)[0]);
           } else {
             this.topPlayers.splice(j, 0, {name:players[i].name,level:players[i].level});
+            if(this.topPlayers.length > 3) {
+              this.topPlayers.pop()
+            }
           }
           j = 3
           updated = true
