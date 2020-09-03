@@ -1,6 +1,6 @@
 import { Npcs } from '../../../Enums.ts'
 import NpcBase from '../npcBase.ts'
-import ZeroDialog from "./dialogs/zerodialog.ts"
+import ZeroDialog from "./dialogs/zeroDialog.ts"
 
 export default class Zero extends NpcBase {
     constructor() {
