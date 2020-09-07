@@ -126,8 +126,12 @@ export class Main {
     }
 
     onConfirmName() {
+        if(!this.validUsername(this.playerNameInput.value)) {
+            alert('Insert a valid username (max length: 10)')
+        }
+
         if (!this.hasConfirmedName) {
-            if (this.playerNameInput.value) {
+            if (this.playerNameInput.value && this.validUsername(this.playerNameInput.value)) {
                 this.playerConfig.playerName = this.playerNameInput.value
                 const hasDraw = this.drawingGrid.drawingMatrix.some((line) => line.some((collumn) => collumn === 1))
                 if (hasDraw) {
@@ -149,6 +153,10 @@ export class Main {
     private startGame() {
         this.game = new Game(this.gameConfig, this)
         this.client = new Client(this.game, this.playerConfig, this)
+    }
+
+    private validUsername(username: string) {
+        return username.match(/^\w+$/) && (username.length <= 10)
     }
 
     public isMobile(): boolean {

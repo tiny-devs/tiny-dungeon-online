@@ -132,8 +132,7 @@ export class Parser {
 
     private parseError(data: string) {
         const errorData = new ParseError(data)
-
-        if (!confirm(errorData.message)) {
+        if (confirm(errorData.message)) {
             window.location.reload()
         }
     }

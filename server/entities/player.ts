@@ -3,6 +3,7 @@ import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'
 import Gear from './items/gear.ts'
+import { WebSocket } from "https://deno.land/std/ws/mod.ts"
 
 export class Player {
     public id: string
@@ -24,7 +25,7 @@ export class Player {
     public xpNeeded: number = 10
     public bag: Bag = new Bag(this)
     public gear: Gear
-    public clientWs: any
+    public clientWs: WebSocket
     private canMove: boolean = true
     private clientHandler: ClientHandler
 
