@@ -32,17 +32,13 @@ export class ClientHandler {
       for (const room of this.map.rooms) {
         for (const player of room.players) {
           currentPlayer = player
-          if (!player.clientWs.isClosed) {
-            player.clientWs.send(`${Command.Rank},`+
+          this.send(player,`${Command.Rank},`+
             `${this.topPlayers[0].name},`+
             `${this.topPlayers[0].level},`+
             `${this.topPlayers[1].name},`+
             `${this.topPlayers[1].level},`+
             `${this.topPlayers[2].name},`+
             `${this.topPlayers[2].level}`)
-          } else {
-            this.logPlayerOut(player)
-          }
         }
       }
     } catch (e) {
@@ -61,15 +57,11 @@ export class ClientHandler {
       for (const room of this.map.rooms) {
         for (const player of room.players) {
           currentPlayer = player
-          if (!player.clientWs.isClosed) {
-            player.clientWs.send(`${Command.Login},`+
+          this.send(player,`${Command.Login},`+
             `${playerId},`+
             `${this.boardRows},`+
             `${this.boardColumns},`+
             `${data}`)
-          } else {
-            this.logPlayerOut(player)
-          }
         }
       }
     } catch (e) {
@@ -93,15 +85,11 @@ export class ClientHandler {
         for (const room of this.map.rooms) {
           for (const player of room.players) {
             currentPlayer = player
-            if (!player.clientWs.isClosed) {
-              player.clientWs.send(`${Command.Move},`+
+            this.send(player,`${Command.Move},`+
               `${playerMoved.id},`+
               `${playerMoved.x},`+
               `${playerMoved.y},`+
               `${playerMoved.currentRoomId}`)
-            } else {
-              this.logPlayerOut(player)
-            }
           }
         }
       }
@@ -118,16 +106,12 @@ export class ClientHandler {
     try{
       for (const player of npcMoved.room.players) {
         currentPlayer = player
-        if (!player.clientWs.isClosed) {
-          player.clientWs.send(`${Command.NpcMove},`+
+        this.send(player,`${Command.NpcMove},`+
           `${npcMoved.id},` +
           `${npcMoved.npcId},`+
           `${npcMoved.x},`+
           `${npcMoved.y},` +
           `${npcMoved.roomId}`)
-        } else {
-          this.logPlayerOut(player)
-        }
       }
     } catch (e) {
       const success = this.handleExceptions(e, currentPlayer, 'roomcastNpcMove')
@@ -142,8 +126,7 @@ export class ClientHandler {
     try{
       for (const player of pveData.room.players) {
         currentPlayer = player
-        if (!player.clientWs.isClosed) {
-          player.clientWs.send(`${Command.Pve},`+
+        this.send(player,`${Command.Pve},`+
           `${pveData.attacker},` +
           `${pveData.damageCaused},`+
           `${pveData.npc.hp},` +
@@ -151,9 +134,6 @@ export class ClientHandler {
           `${pveData.player.hp},` +
           `${pveData.player.id},` +
           `${pveData.room.id}`)
-        } else {
-          this.logPlayerOut(player)
-        }
       }
     } catch (e) {
       const success = this.handleExceptions(e,currentPlayer, 'roomcastPveFight')
@@ -170,15 +150,11 @@ export class ClientHandler {
       
       for (const player of room.players) {
         currentPlayer = player
-        if (!player.clientWs.isClosed) {
-          player.clientWs.send(`${Command.ItemDrop},`+
+        this.send(player,`${Command.ItemDrop},`+
           `${itemData.id},` +
           `${itemData.itemId},`+
           `${roomId},` +
           `${x},${y}`)
-        } else {
-          this.logPlayerOut(player)
-        }
       }
     } catch (e) {
       const success = this.handleExceptions(e, currentPlayer, 'roomcastItemDrop')
@@ -195,14 +171,10 @@ export class ClientHandler {
 
       for (const player of room.players) {
         currentPlayer = player
-        if (!player.clientWs.isClosed) {
-          player.clientWs.send(`${Command.ItemPick},`+
+        this.send(player,`${Command.ItemPick},`+
           `${playerId},`+
           `${itemId},${coins},`+
           `${x},${y}`)
-        } else {
-          this.logPlayerOut(player)
-        }
       }
     } catch (e) {
       const success = this.handleExceptions(e, currentPlayer, 'roomcastItemPick')
@@ -234,11 +206,7 @@ export class ClientHandler {
 
       for (const player of room.players) {
         currentPlayer = player
-        if (!player.clientWs.isClosed) {
-          player.clientWs.send(`${Command.ItemsInRoom},${data}`)
-        } else {
-          this.logPlayerOut(player)
-        }
+        this.send(player,`${Command.ItemsInRoom},${data}`)
       }
     } catch (e) {
       this.handleExceptions(e, currentPlayer, 'roomcastItemsInRoom')
@@ -247,11 +215,7 @@ export class ClientHandler {
 
   public unicastMessage(player: Player, message: string): void {
     try{
-      if (!player.clientWs.isClosed) {
-        player.clientWs.send(`${Command.Message},${message}`)
-      } else {
-        this.logPlayerOut(player)
-      }
+      this.send(player,`${Command.Message},${message}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastMessage')
     }
@@ -259,11 +223,7 @@ export class ClientHandler {
 
   public unicastItemRemove(player: Player, itemId: Items): void {
     try{
-      if (!player.clientWs.isClosed) {
-        player.clientWs.send(`${Command.ItemRemove},${itemId}`)
-      } else {
-        this.logPlayerOut(player)
-      }
+      this.send(player,`${Command.ItemRemove},${itemId}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastItemRemove')
     }
@@ -271,11 +231,7 @@ export class ClientHandler {
 
   public unicastItemWear(player: Player, itemId: Items, gearType: GearType): void {
     try{
-      if (!player.clientWs.isClosed) {
-        player.clientWs.send(`${Command.ItemWear},${itemId},${gearType}`)
-      } else {
-        this.logPlayerOut(player)
-      }
+      this.send(player,`${Command.ItemWear},${itemId},${gearType}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastItemWear')
     }
@@ -284,13 +240,9 @@ export class ClientHandler {
   public unicastPlayerStats(player: Player): void {
     try{
       const data = player.getStats()
-      if (!player.clientWs.isClosed) {
-        player.clientWs.send(`${Command.Stats},`+
+      this.send(player,`${Command.Stats},`+
         `${data.hp},${data.maxHp},${data.attack},${data.defense},`+
         `${data.level},${data.xp},${data.xpNeeded}`)
-      } else {
-        this.logPlayerOut(player)
-      }
     } catch (e) {
       this.handleExceptions(e, player, 'unicastPlayerStats')
     }
@@ -298,12 +250,7 @@ export class ClientHandler {
 
   public unicastDialog(player: Player, dialog: string) {
     try {
-      if (!player.clientWs.isClosed) {
-        player.clientWs.send(`${Command.Dialog},`+
-        `"${dialog}"`)
-      } else {
-        this.logPlayerOut(player)
-      }
+      this.send(player,`${Command.Dialog},"${dialog}"`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastDialog')
     }
@@ -312,11 +259,7 @@ export class ClientHandler {
   private unicastItemsInRoom(player: Player): void {
     try{
       const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
-      if (!player.clientWs.isClosed) {
-        player.clientWs.send(`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
-      } else {
-        this.logPlayerOut(player)
-      }
+      this.send(player,`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastItemsInRoom')
     }
@@ -325,11 +268,7 @@ export class ClientHandler {
   private unicastNpcsInRoom(player: Player): void {
     try{
       const data = JSON.stringify(player.currentRoom.getAllNpcsInRoom())
-      if (!player.clientWs.isClosed) {
-        player.clientWs.send(`${Command.NpcsInRoom},${data}`)
-      } else {
-        this.logPlayerOut(player)
-      }
+      this.send(player,`${Command.NpcsInRoom},${data}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastNpcsInRoom')
     }
@@ -337,11 +276,7 @@ export class ClientHandler {
 
   private unicastItemUse(player: Player, itemId: Items): void {
     try{
-      if (!player.clientWs.isClosed) {
-        player.clientWs.send(`${Command.ItemUse},${itemId}`)
-      } else {
-        this.logPlayerOut(player)
-      }
+      this.send(player,`${Command.ItemUse},${itemId}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastItemUse')
     }
@@ -349,11 +284,7 @@ export class ClientHandler {
 
   private unicastPlayerDroped(player: Player, itemId: Items): void {
     try{
-      if (!player.clientWs.isClosed) {
-        player.clientWs.send(`${Command.ItemDroped},${itemId}`)
-      } else {
-        this.logPlayerOut(player)
-      }
+      this.send(player,`${Command.ItemDroped},${itemId}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastPlayerDroped')
     }
@@ -361,17 +292,13 @@ export class ClientHandler {
 
   private unicastRank(player: Player): void {
     try{
-      if (!player.clientWs.isClosed) {
-        player.clientWs.send(`${Command.Rank},`+
-          `${this.topPlayers[0].name},`+
-          `${this.topPlayers[0].level},`+
-          `${this.topPlayers[1].name},`+
-          `${this.topPlayers[1].level},`+
-          `${this.topPlayers[2].name},`+
-          `${this.topPlayers[2].level}`)
-      } else {
-        this.logPlayerOut(player)
-      }
+      this.send(player,`${Command.Rank},`+
+        `${this.topPlayers[0].name},`+
+        `${this.topPlayers[0].level},`+
+        `${this.topPlayers[1].name},`+
+        `${this.topPlayers[1].level},`+
+        `${this.topPlayers[2].name},`+
+        `${this.topPlayers[2].level}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastRank')
     }
@@ -395,6 +322,7 @@ export class ClientHandler {
         if ((players[i].level>this.topPlayers[j].level)) {
           const indexTopPlayer = this.topPlayers.map(p => p.name).indexOf(players[i].name)
           if (indexTopPlayer>-1) {
+            this.topPlayers[j].name = players[i].name
             this.topPlayers[j].level = players[i].level
             this.topPlayers.splice(j, 0, this.topPlayers.splice(indexTopPlayer, 1)[0]);
           } else {
@@ -408,6 +336,9 @@ export class ClientHandler {
         }
       }
     }
+    this.topPlayers.sort((a, b) => { 
+      return b.level - a.level;
+    })
 
     players.splice(0, players.length)
     if (updated) {
@@ -426,9 +357,7 @@ export class ClientHandler {
         success = this.removeAllClosedSockets()
       }
       else if (e.name.includes('SyntaxError')) {
-        if (!player!.clientWs.isClosed) {
-          player!.clientWs.send(`${Command.Error},"An error has occured"`)
-        }
+        this.send(player!,`${Command.Error},"An error has occured"`)
         success = this.logPlayerOut(player!)
       }
   
@@ -478,8 +407,7 @@ export class ClientHandler {
     try {
       let nameExists = this.playerNames.some(pName => pName == name)
       if (nameExists) {
-        player.clientWs?.send(`${Command.Error},"Name already exists"`)
-        return true
+        return this.send(player, `${Command.Error},"Name already exists"`)
       }
       return false
     } catch (e) {
@@ -505,11 +433,7 @@ export class ClientHandler {
 
   private pong(player: Player): void {
     try {
-      if (!player.clientWs.isClosed) {
-        player.clientWs?.send(`${Command.Pong}`)
-      } else {
-        this.logPlayerOut(player)
-      }
+      this.send(player,`${Command.Pong}`)
     } catch (e) {
       console.log('source: pong')
       console.log(e)
@@ -530,6 +454,22 @@ export class ClientHandler {
     }
 
     return eventData
+  }
+
+  private send(player: Player, message: string):boolean {
+    try {
+      if (!player.clientWs.isClosed) {
+        player.clientWs.send(message)
+        return true
+      } else {
+        this.logPlayerOut(player)
+        return false
+      }
+    } catch (e) {
+      console.log('source: send')
+      console.log(e)
+    }
+    return false
   }
 
   public async handleClient(ws: WebSocket): Promise<void> {
