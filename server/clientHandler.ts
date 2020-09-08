@@ -27,42 +27,53 @@ export class ClientHandler {
   }
 
   private broadcastRank(): void {
+    let currentPlayer = null
     try{
       for (const room of this.map.rooms) {
         for (const player of room.players) {
-          player.clientWs.send(`${Command.Rank},`+
-          `${this.topPlayers[0].name},`+
-          `${this.topPlayers[0].level},`+
-          `${this.topPlayers[1].name},`+
-          `${this.topPlayers[1].level},`+
-          `${this.topPlayers[2].name},`+
-          `${this.topPlayers[2].level}`)
+          currentPlayer = player
+          this.send(player,`${Command.Rank},`+
+            `${this.topPlayers[0].name},`+
+            `${this.topPlayers[0].level},`+
+            `${this.topPlayers[1].name},`+
+            `${this.topPlayers[1].level},`+
+            `${this.topPlayers[2].name},`+
+            `${this.topPlayers[2].level}`)
         }
       }
     } catch (e) {
-      console.log(e)
+      const success = this.handleExceptions(e, currentPlayer, 'broadcastRank')
+      if (success) {
+        this.broadcastRank()
+      }
     }
   }
 
   private broadcastPlayerConnection(playerId: string): void {
+    let currentPlayer = null
     try{
       const data = JSON.stringify(this.getAllPlayers())
 
       for (const room of this.map.rooms) {
         for (const player of room.players) {
-          player.clientWs.send(`${Command.Login},`+
-          `${playerId},`+
-          `${this.boardRows},`+
-          `${this.boardColumns},`+
-          `${data}`)
+          currentPlayer = player
+          this.send(player,`${Command.Login},`+
+            `${playerId},`+
+            `${this.boardRows},`+
+            `${this.boardColumns},`+
+            `${data}`)
         }
       }
     } catch (e) {
-      console.log(e)
+      const success = this.handleExceptions(e, currentPlayer, 'broadcastPlayerConnection')
+      if (success) {
+        this.broadcastPlayerConnection(playerId)
+      }
     }
   }
 
   public broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
+    let currentPlayer = null
     try{
       let isValid = playerMoved.move(direction)
       if (playerMoved.changedRoom()) {
@@ -73,79 +84,103 @@ export class ClientHandler {
       if (isValid) {
         for (const room of this.map.rooms) {
           for (const player of room.players) {
-            player.clientWs.send(`${Command.Move},`+
-            `${playerMoved.id},`+
-            `${playerMoved.x},`+
-            `${playerMoved.y},`+
-            `${playerMoved.currentRoomId}`)
+            currentPlayer = player
+            this.send(player,`${Command.Move},`+
+              `${playerMoved.id},`+
+              `${playerMoved.x},`+
+              `${playerMoved.y},`+
+              `${playerMoved.currentRoomId}`)
           }
         }
       }
     } catch (e) {
-      console.log(e)
+      const success = this.handleExceptions(e, currentPlayer, 'broadcastPlayerMove')
+      if (success) {
+        this.broadcastPlayerMove(playerMoved,direction)
+      }
     }
   }
 
   public roomcastNpcMove(npcMoved: Npc): void {
+    let currentPlayer = null
     try{
       for (const player of npcMoved.room.players) {
-        player.clientWs.send(`${Command.NpcMove},`+
-        `${npcMoved.id},` +
-        `${npcMoved.npcId},`+
-        `${npcMoved.x},`+
-        `${npcMoved.y},` +
-        `${npcMoved.roomId}`)
+        currentPlayer = player
+        this.send(player,`${Command.NpcMove},`+
+          `${npcMoved.id},` +
+          `${npcMoved.npcId},`+
+          `${npcMoved.x},`+
+          `${npcMoved.y},` +
+          `${npcMoved.roomId}`)
       }
     } catch (e) {
-      console.log(e)
+      const success = this.handleExceptions(e, currentPlayer, 'roomcastNpcMove')
+      if (success) {
+        this.roomcastNpcMove(npcMoved)
+      }
     }
   }
 
   public roomcastPveFight(pveData: PveData): void {
+    let currentPlayer = null
     try{
       for (const player of pveData.room.players) {
-        player.clientWs.send(`${Command.Pve},`+
-        `${pveData.attacker},` +
-        `${pveData.damageCaused},`+
-        `${pveData.npc.hp},` +
-        `${pveData.npc.id},` +
-        `${pveData.player.hp},` +
-        `${pveData.player.id},` +
-        `${pveData.room.id}`)
+        currentPlayer = player
+        this.send(player,`${Command.Pve},`+
+          `${pveData.attacker},` +
+          `${pveData.damageCaused},`+
+          `${pveData.npc.hp},` +
+          `${pveData.npc.id},` +
+          `${pveData.player.hp},` +
+          `${pveData.player.id},` +
+          `${pveData.room.id}`)
       }
     } catch (e) {
-      console.log(e)
+      const success = this.handleExceptions(e,currentPlayer, 'roomcastPveFight')
+      if (success) {
+        this.roomcastPveFight(pveData)
+      }
     }
   }
 
   public roomcastItemDrop(itemData: any, roomId: number, y: number, x: number): void {
+    let currentPlayer = null
     try{
       const room = this.map.getRoomById(roomId)
       
       for (const player of room.players) {
-        player.clientWs.send(`${Command.ItemDrop},`+
-        `${itemData.id},` +
-        `${itemData.itemId},`+
-        `${roomId},` +
-        `${x},${y}`)
+        currentPlayer = player
+        this.send(player,`${Command.ItemDrop},`+
+          `${itemData.id},` +
+          `${itemData.itemId},`+
+          `${roomId},` +
+          `${x},${y}`)
       }
     } catch (e) {
-      console.log(e)
+      const success = this.handleExceptions(e, currentPlayer, 'roomcastItemDrop')
+      if (success) {
+        this.roomcastItemDrop(itemData,roomId,y,x)
+      }
     }
   }
 
   public roomcastItemPick(roomId: number, y: number, x: number, itemId: Items, coins: number, playerId: string): void {
+    let currentPlayer = null
     try{
       const room = this.map.getRoomById(roomId)
 
       for (const player of room.players) {
-        player.clientWs.send(`${Command.ItemPick},`+
-        `${playerId},`+
-        `${itemId},${coins},`+
-        `${x},${y}`)
+        currentPlayer = player
+        this.send(player,`${Command.ItemPick},`+
+          `${playerId},`+
+          `${itemId},${coins},`+
+          `${x},${y}`)
       }
     } catch (e) {
-      console.log(e)
+      const success = this.handleExceptions(e, currentPlayer, 'roomcastItemPick')
+      if (success) {
+        this.roomcastItemPick(roomId,y,x,itemId,coins,playerId)
+      }
     }
   }
 
@@ -160,103 +195,104 @@ export class ClientHandler {
       this.unicastNpcsInRoom(player)
       this.unicastItemsInRoom(player)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'switchRooms')
     }
   }
 
   private roomcastItemsInRoom(room: Room): void {
+    let currentPlayer = null
     try{
       const data = JSON.stringify(room.getAllItemsInRoom())
 
       for (const player of room.players) {
-        player.clientWs.send(`${Command.ItemsInRoom},${data}`)
+        currentPlayer = player
+        this.send(player,`${Command.ItemsInRoom},${data}`)
       }
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, currentPlayer, 'roomcastItemsInRoom')
     }
   }
 
   public unicastMessage(player: Player, message: string): void {
     try{
-      player.clientWs.send(`${Command.Message},${message}`)
+      this.send(player,`${Command.Message},${message}`)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'unicastMessage')
     }
   }
 
   public unicastItemRemove(player: Player, itemId: Items): void {
     try{
-      player.clientWs.send(`${Command.ItemRemove},${itemId}`)
+      this.send(player,`${Command.ItemRemove},${itemId}`)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'unicastItemRemove')
     }
   }
 
   public unicastItemWear(player: Player, itemId: Items, gearType: GearType): void {
     try{
-      player.clientWs.send(`${Command.ItemWear},${itemId},${gearType}`)
+      this.send(player,`${Command.ItemWear},${itemId},${gearType}`)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'unicastItemWear')
     }
   }
 
   public unicastPlayerStats(player: Player): void {
     try{
       const data = player.getStats()
-      player.clientWs.send(`${Command.Stats},`+
-      `${data.hp},${data.maxHp},${data.attack},${data.defense},`+
-      `${data.level},${data.xp},${data.xpNeeded}`)
+      this.send(player,`${Command.Stats},`+
+        `${data.hp},${data.maxHp},${data.attack},${data.defense},`+
+        `${data.level},${data.xp},${data.xpNeeded}`)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'unicastPlayerStats')
     }
   }
 
   public unicastDialog(player: Player, dialog: string) {
     try {
-      player.clientWs.send(`${Command.Dialog},`+
-      `"${dialog}"`)
+      this.send(player,`${Command.Dialog},"${dialog}"`)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'unicastDialog')
     }
   }
 
   private unicastItemsInRoom(player: Player): void {
     try{
       const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
-      player.clientWs.send(`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
+      this.send(player,`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'unicastItemsInRoom')
     }
   }
 
   private unicastNpcsInRoom(player: Player): void {
     try{
       const data = JSON.stringify(player.currentRoom.getAllNpcsInRoom())
-      player.clientWs.send(`${Command.NpcsInRoom},${data}`)
+      this.send(player,`${Command.NpcsInRoom},${data}`)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'unicastNpcsInRoom')
     }
   }
 
   private unicastItemUse(player: Player, itemId: Items): void {
     try{
-      player.clientWs.send(`${Command.ItemUse},${itemId}`)
+      this.send(player,`${Command.ItemUse},${itemId}`)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'unicastItemUse')
     }
   }
 
   private unicastPlayerDroped(player: Player, itemId: Items): void {
     try{
-      player.clientWs.send(`${Command.ItemDroped},${itemId}`)
+      this.send(player,`${Command.ItemDroped},${itemId}`)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'unicastPlayerDroped')
     }
   }
 
   private unicastRank(player: Player): void {
     try{
-      player.clientWs.send(`${Command.Rank},`+
+      this.send(player,`${Command.Rank},`+
         `${this.topPlayers[0].name},`+
         `${this.topPlayers[0].level},`+
         `${this.topPlayers[1].name},`+
@@ -264,7 +300,7 @@ export class ClientHandler {
         `${this.topPlayers[2].name},`+
         `${this.topPlayers[2].level}`)
     } catch (e) {
-      console.log(e)
+      this.handleExceptions(e, player, 'unicastRank')
     }
   }
 
@@ -286,6 +322,7 @@ export class ClientHandler {
         if ((players[i].level>this.topPlayers[j].level)) {
           const indexTopPlayer = this.topPlayers.map(p => p.name).indexOf(players[i].name)
           if (indexTopPlayer>-1) {
+            this.topPlayers[j].name = players[i].name
             this.topPlayers[j].level = players[i].level
             this.topPlayers.splice(j, 0, this.topPlayers.splice(indexTopPlayer, 1)[0]);
           } else {
@@ -299,6 +336,9 @@ export class ClientHandler {
         }
       }
     }
+    this.topPlayers.sort((a, b) => { 
+      return b.level - a.level;
+    })
 
     players.splice(0, players.length)
     if (updated) {
@@ -306,6 +346,51 @@ export class ClientHandler {
     }
 
     return updated
+  }
+
+  private handleExceptions(e: Error, player: Player | null, src: string): boolean {
+    try {
+      console.log(`source: ${src}`)
+      console.log(e)
+      let success = false
+      if (e.name.includes('ConnectionReset')) {
+        success = this.removeAllClosedSockets()
+      }
+      else if (e.name.includes('SyntaxError')) {
+        this.send(player!,`${Command.Error},"An error has occured"`)
+        success = this.logPlayerOut(player!)
+      }
+  
+      if (success) {
+        console.log('--- FIXED ---')
+      }
+      return success
+    } catch (e) {
+      console.log('source: handleExceptions')
+      console.log(e)
+    }
+    return false
+  }
+
+  private removeAllClosedSockets(): boolean {
+    let success = false
+    let currentPlayer = null
+    for (const room of this.map.rooms) {
+      for (const player of room.players) {
+        try {
+          currentPlayer = player
+          if (player.clientWs.isClosed) {
+            this.logPlayerOut(player)
+            success = true
+          }
+        } catch (e) {
+          console.log('source: removeAllClosedSockets')
+          console.log(e)
+        }
+      }
+    }
+
+    return success
   }
 
   private getAllPlayers() {
@@ -318,24 +403,41 @@ export class ClientHandler {
     return playersReturn
   }
 
-  private checkNameDuplicate(name: string, playerWs: WebSocket): boolean {
-    let nameExists = this.playerNames.some(pName => pName == name)
-    if (nameExists) {
-      playerWs.send(`${Command.Error},"Name already exists"`)
-      return true
+  private checkNameDuplicate(name: string, player: Player): boolean {
+    try {
+      let nameExists = this.playerNames.some(pName => pName == name)
+      if (nameExists) {
+        return this.send(player, `${Command.Error},"Name already exists"`)
+      }
+      return false
+    } catch (e) {
+      this.handleExceptions(e, player, 'checkNameDuplicate')
     }
     return false
   }
 
-  private logPlayerOut(player: Player, playerId: string) {
-    const room = this.map.getRoomById(player.currentRoom.id)
-    room.removePlayer(player)
-    this.playerNames = this.playerNames.filter(e => e !== player.name);
-    this.broadcastPlayerConnection(playerId)
+  private logPlayerOut(player: Player): boolean {
+    try{
+      const room = this.map.getRoomById(player.currentRoom.id)
+      room.removePlayer(player)
+      this.playerNames = this.playerNames.filter(e => e !== player.name);
+      if (!player.clientWs.isClosed) {
+        player.clientWs?.close()
+      }
+      return true
+    } catch (e) {
+      this.handleExceptions(e, player, 'logPlayerOut')
+    }
+    return false
   }
 
   private pong(player: Player): void {
-    player.clientWs?.send(`${Command.Pong}`)
+    try {
+      this.send(player,`${Command.Pong}`)
+    } catch (e) {
+      console.log('source: pong')
+      console.log(e)
+    }
   }
 
   private parseEventDataString(eventDataString: string): string[] {
@@ -354,84 +456,106 @@ export class ClientHandler {
     return eventData
   }
 
-  public async handleClient(ws: WebSocket): Promise<void> {
-    let duplicatedName = false
-    const initialRoom = this.map.rooms[0]
-    const playerId = v4.generate()
-    const player = new Player(playerId, '', '', 0, 0, initialRoom, this.boardRows, this.boardColumns, ws, this)
-
-    initialRoom.addPlayer(player)
-  
-    for await (const event of ws) {
-      const eventDataString = event as string
-
-      if (isWebSocketCloseEvent(event)) {
-        this.logPlayerOut(player, playerId)
-        break
+  private send(player: Player, message: string):boolean {
+    try {
+      if (!player.clientWs.isClosed) {
+        player.clientWs.send(message)
+        return true
+      } else {
+        this.logPlayerOut(player)
+        return false
       }
+    } catch (e) {
+      console.log('source: send')
+      console.log(e)
+    }
+    return false
+  }
 
-      try {
-        let eventData = this.parseEventDataString(eventDataString);
+  public async handleClient(ws: WebSocket): Promise<void> {
+    try {
+      let duplicatedName = false
+      const initialRoom = this.map.rooms[0]
+      const playerId = v4.generate()
+      const player = new Player(playerId, '', '', 0, 0, initialRoom, this.boardRows, this.boardColumns, ws, this)
 
-        switch (+eventData[0]) {
-          case Command.ItemDrop:
-            const droped = player.bag.dropItem(+eventData[1])
-            if (droped) {
-              this.unicastPlayerDroped(player, +eventData[1])
-            }
-            break
-          case Command.ItemUse:
-            const result = player.bag.useItem(+eventData[1])
-            if (result.used) {
-              this.unicastItemUse(player,+eventData[1])
-              this.unicastPlayerStats(player)
-            } else if (result.wore) {
-              this.unicastPlayerStats(player)
-            }
-            break
-          case Command.ItemRemove:
-            const removed = player.gear.remove(+eventData[1])
-            if (removed) {
-              this.unicastItemRemove(player, +eventData[1])
-              this.unicastPlayerStats(player)
-            }
-            break
-          case Command.Move:
-            this.broadcastPlayerMove(player, +eventData[1])
-            break
-          case Command.Login:
-            duplicatedName = this.checkNameDuplicate(eventData[1], ws)
-            if (duplicatedName) {
-              break
-            }
+      initialRoom.addPlayer(player)
+    
+      for await (const event of ws) {
+        const eventDataString = event as string
 
-            this.playerNames.push(eventData[1])
-            player.name = eventData[1]
-            player.color = eventData[2]
-            player.matrix = JSON.parse(eventData[3])
-            this.broadcastPlayerConnection(playerId)
-            this.unicastNpcsInRoom(player)
-            this.unicastItemsInRoom(player)
-            this.unicastPlayerStats(player)
-            const updatedRank = this.updateRank()
-            if (!updatedRank) {
-              this.unicastRank(player)
-            }
-            break
-          case Command.Ping:
-            this.pong(player)
-            break
-        }
-
-        if (duplicatedName) {
-          this.logPlayerOut(player, playerId)
+        if (isWebSocketCloseEvent(event)) {
+          this.logPlayerOut(player)
+          this.broadcastPlayerConnection(playerId)
           break
         }
 
-      } catch(e) {
-        console.log(e)
+        try {
+          let eventData = this.parseEventDataString(eventDataString);
+
+          switch (+eventData[0]) {
+            case Command.ItemDrop:
+              const droped = player.bag.dropItem(+eventData[1])
+              if (droped) {
+                this.unicastPlayerDroped(player, +eventData[1])
+              }
+              break
+            case Command.ItemUse:
+              const result = player.bag.useItem(+eventData[1])
+              if (result.used) {
+                this.unicastItemUse(player,+eventData[1])
+                this.unicastPlayerStats(player)
+              } else if (result.wore) {
+                this.unicastPlayerStats(player)
+              }
+              break
+            case Command.ItemRemove:
+              const removed = player.gear.remove(+eventData[1])
+              if (removed) {
+                this.unicastItemRemove(player, +eventData[1])
+                this.unicastPlayerStats(player)
+              }
+              break
+            case Command.Move:
+              this.broadcastPlayerMove(player, +eventData[1])
+              break
+            case Command.Login:
+              duplicatedName = this.checkNameDuplicate(eventData[1], player)
+              if (duplicatedName) {
+                initialRoom.removePlayer(player)
+                break
+              }
+
+              this.playerNames.push(eventData[1])
+              player.name = eventData[1]
+              player.color = eventData[2]
+              player.matrix = JSON.parse(eventData[3])
+              this.broadcastPlayerConnection(playerId)
+              this.unicastNpcsInRoom(player)
+              this.unicastItemsInRoom(player)
+              this.unicastPlayerStats(player)
+              const updatedRank = this.updateRank()
+              if (!updatedRank) {
+                this.unicastRank(player)
+              }
+              break
+            case Command.Ping:
+              this.pong(player)
+              break
+          }
+
+          if (duplicatedName) {
+            this.logPlayerOut(player)
+            break
+          }
+
+        } catch(e) {
+          this.handleExceptions(e,player, 'main loop')
+        }
       }
-      
+    } catch (e) {
+      console.log('source: main loop')
+      console.log(e)
     }
   }
 }

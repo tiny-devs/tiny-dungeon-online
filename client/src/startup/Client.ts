@@ -209,11 +209,13 @@ export class Client {
                 direction = Direction.Right
             }
 
-            const player = this.game.spritesLayer.getPlayerById(this.playerId)!
-            const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape)
-
-            if (this.loggedIn && isValidMove) {
-                this.ws!.send(`${Command.Move},${direction}`)
+            if (this.loggedIn) {
+                const player = this.game.spritesLayer.getPlayerById(this.playerId)!
+                const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape)
+    
+                if (isValidMove) {
+                    this.ws!.send(`${Command.Move},${direction}`)
+                }
             }
         }
     }
