@@ -29,8 +29,11 @@ export enum Command {
 
 export enum Rooms {
     Initial = 0,
-    Woods = 1,
-    Woods2 = 2,
+    Woods,
+    Woods2,
+    Woods9,
+    Woods10,
+    Woods11,
 }
 
 export enum PveAttacker {

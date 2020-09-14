@@ -31,6 +31,9 @@ export enum Rooms {
     Initial = 0,
     Woods,
     Woods2,
+    Woods9,
+    Woods10,
+    Woods11
 }
 
 export enum Npcs {
