@@ -13,7 +13,8 @@ export class Npc {
   public fieldOfView: number
   public anger: number
   public maxAnger: number
-  public chasing: boolean = false
+  public isChasing: boolean = false
+  public fightingPlayer: null | Player = null
   public spawnX: number
   public spawnY: number
   public x: number
@@ -152,7 +153,7 @@ export class Npc {
 
   private passiveBehaviour() {
     let randomChance = Math.random()
-    if (this.chasing && (this.anger > 0)) {
+    if (this.isChasing && (this.anger > 0)) {
       this.anger--
       randomChance = this.moveChance
     }
@@ -175,11 +176,15 @@ export class Npc {
   private async agressiveBehaviour() {
     const result = this.checkSurroundings()
     if (result.found) {
-      this.chasing = true
+      this.isChasing = true
       this.anger = this.maxAnger
 
       let moveResult = this.move(result.direction)
       if (moveResult.playerHit) {
+        this.fightingPlayer = moveResult.playerHit
+        if (moveResult.playerHit.fightingNpcId == null) {
+          moveResult.playerHit.fightingNpcId = this.id
+        }
         await this.engage(moveResult.playerHit)
       }
 
@@ -205,17 +210,21 @@ export class Npc {
 
     await this.delay(1000)
 
-    let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
+    if (player.fightingNpcId == this.id) {
+      let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
 
-    const damageTaken = player.getAttackDamage()
-    let enemyDefended = this.takeDamage(damageTaken)
-
-    playerAttackData.damageCaused = damageTaken - enemyDefended
-    playerAttackData.damageDefended = enemyDefended
-    this.room.clientHandler.roomcastPveFight(playerAttackData)
+      const damageTaken = player.getAttackDamage()
+      let enemyDefended = this.takeDamage(damageTaken)
+  
+      playerAttackData.damageCaused = damageTaken - enemyDefended
+      playerAttackData.damageDefended = enemyDefended
+      this.room.clientHandler.roomcastPveFight(playerAttackData)
+    }
 
     if (this.dead) {
+      player.fightingNpcId = null
       player.addXp(this.xpGiven)
+      this.fightingPlayer = null
     }
   }
 
@@ -270,11 +279,27 @@ export class Npc {
   }
 
   private checkSurroundings() {
+    let playerInRange = null as null | Player
     let result = {found: false, direction: 0}
 
-    let playerInRange = this.room.players.find(player => 
-      (Math.pow(player.x - this.x,2) + Math.pow(player.y - this.y,2)) <= this.fieldOfView
-    )
+    if (this.fightingPlayer == null) {
+      let playersInRange = this.room.players.filter(player => 
+        ((Math.pow(player.x - this.x,2) + Math.pow(player.y - this.y,2)) <= this.fieldOfView)
+      )
+  
+      playersInRange?.sort((a, b) => { 
+        return (Math.pow(a.x - this.x,2) + Math.pow(a.y - this.y,2)) -
+        (Math.pow(b.x - this.x,2) + Math.pow(b.y - this.y,2));
+      })
+  
+      playerInRange = playersInRange[0]
+    } else {
+      if (this.fightingPlayer.currentRoomId == this.roomId) {
+        playerInRange = this.fightingPlayer
+      } else {
+        this.fightingPlayer = null
+      }
+    }
 
     if (playerInRange) {
       result.found = true

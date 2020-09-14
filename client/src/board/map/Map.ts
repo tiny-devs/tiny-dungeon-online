@@ -1,6 +1,7 @@
 import { Game } from '../../startup/Game'
 import { Rooms } from '../../models/Enums'
 import { Woods } from './Woods'
+import { Woods2 } from './Woods2'
 import { InitialRoom } from './InitialRoom'
 
 export class Map {
@@ -17,6 +18,6 @@ export class Map {
     }
 
     private buildMap() {
-        return [new InitialRoom(this.game, Rooms.Initial), new Woods(this.game, Rooms.Woods)]
+        return [new InitialRoom(this.game, Rooms.Initial), new Woods(this.game, Rooms.Woods), new Woods2(this.game, Rooms.Woods2)]
     }
 }

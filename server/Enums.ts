@@ -30,6 +30,7 @@ export enum Direction {
 export enum Rooms {
     Initial = 0,
     Woods,
+    Woods2,
 }
 
 export enum Npcs {

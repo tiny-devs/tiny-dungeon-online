@@ -1,4 +1,4 @@
-export enum ColorOld {
+enum ColorOld {
     Black = '#000000',
     DarkBlue = '#1D2B53',
     DarkPurple = '#7E2553',

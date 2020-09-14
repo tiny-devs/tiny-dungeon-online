@@ -16,6 +16,7 @@ export class Player {
     public boardColumns: number
     public currentRoomId: number
     public currentRoom: Room
+    public fightingNpcId: null | number = null
     public hp: number = 10
     public maxHp: number = 10
     public attack: number = 4
@@ -132,6 +133,9 @@ export class Player {
             }
 
             if (validMove) {
+                if (this.changedRoom()){
+                    this.fightingNpcId = null
+                }
                 this.delayMove()
                 this.pickupAnyItemAtCoords(this.y,this.x)
             }
@@ -226,6 +230,7 @@ export class Player {
     }
 
     private respawn() {
+        this.fightingNpcId = null
         this.currentRoomId = Rooms.Initial
         this.x = 0
         this.y = 0
