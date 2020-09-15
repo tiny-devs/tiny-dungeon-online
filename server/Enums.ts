@@ -31,6 +31,13 @@ export enum Rooms {
     Initial = 0,
     Woods,
     Woods2,
+    Woods3,
+    Woods4,
+    Woods5,
+    Woods6,
+    Woods7,
+    Woods8,
+    River14,
     Woods9,
     Woods10,
     Woods11
