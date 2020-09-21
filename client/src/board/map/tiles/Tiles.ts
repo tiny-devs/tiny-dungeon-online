@@ -1,7 +1,6 @@
 import { Color } from './Color'
-
-export const Tiles = {
-    Tree: [[0               ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,0               ],
+export const SolidTiles = {
+		Tree: [[0               ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,0               ],
 	[Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ],
 	[Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ],
 	[Color.DarkGreen2,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen2],
@@ -66,13 +65,13 @@ export const Tiles = {
 	[0               ,0               ,Color.DarkGreen ,Color.DarkGreen ,Color.DarkGreen ,0               ,0               ,0               ],
 	[0               ,0               ,0               ,Color.DarkGreen ,Color.DarkGreen ,0               ,0               ,0               ],],
 	GnomeHouse: [[0               ,0               ,0               ,0               ,0               ,0               ,0               ,0               ],
-		[0               ,0               ,0               ,Color.DarkGreen2,Color.DarkGreen2,0               ,0               ,0               ],
-		[0               ,0               ,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,0               ,0               ],
-		[0               ,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,0               ],
-		[Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.Brown     ,Color.Brown     ,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2],
-		[Color.DarkGreen2,Color.DarkGreen2,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.DarkGreen2,Color.DarkGreen2],
-		[0               ,Color.Brown     ,Color.Brown     ,Color.LightBrown,Color.LightBrown,Color.Brown     ,Color.Brown     ,0               ],
-		[0               ,Color.Brown     ,Color.Brown     ,Color.LightBrown,Color.LightBrown,Color.Brown     ,Color.Brown     ,0               ],],
+	[0               ,0               ,0               ,Color.DarkGreen2,Color.DarkGreen2,0               ,0               ,0               ],
+	[0               ,0               ,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,0               ,0               ],
+	[0               ,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,0               ],
+	[Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.Brown     ,Color.Brown     ,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2],
+	[Color.DarkGreen2,Color.DarkGreen2,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.DarkGreen2,Color.DarkGreen2],
+	[0               ,Color.Brown     ,Color.Brown     ,Color.LightBrown,Color.LightBrown,Color.Brown     ,Color.Brown     ,0               ],
+	[0               ,Color.Brown     ,Color.Brown     ,Color.LightBrown,Color.LightBrown,Color.Brown     ,Color.Brown     ,0               ],],
   	Wood: [[Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ],
 	[Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ],
 	[Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ,Color.Brown     ],
@@ -97,6 +96,8 @@ export const Tiles = {
 	[Color.LightBrown,Color.Brown     ,Color.Brown     ,Color.LightBrown,Color.LightBrown,Color.Brown     ,Color.Brown     ,Color.LightBrown],
 	[Color.LightBrown,Color.LightBrown,Color.LightBrown,Color.LightBrown,Color.LightBrown,Color.Brown     ,Color.Brown     ,Color.LightBrown],
 	[Color.LightBrown,Color.LightBrown,Color.LightBrown,Color.LightBrown,Color.LightBrown,Color.Brown     ,Color.Brown     ,Color.LightBrown],],
+}
+export const Tiles = {
     FlatGrass: [[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
 	[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
 	[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
@@ -121,7 +122,7 @@ export const Tiles = {
 	[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
 	[Color.Green     ,Color.Green4    ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
 	[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],],
-	Grass3: [[Color.Green     ,Color.Green4    ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
+		Grass3: [[Color.Green     ,Color.Green4    ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
 	[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
 	[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green4    ,Color.Green     ],
 	[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
@@ -145,7 +146,7 @@ export const Tiles = {
 	[Color.Green     ,Color.Green     ,Color.Green4    ,Color.Green     ,Color.Green4    ,Color.Green     ,Color.Green     ,Color.Green     ],
 	[Color.Green     ,Color.Green4    ,Color.Green     ,Color.Green4    ,Color.Green4    ,Color.Green     ,Color.Green4    ,Color.Green     ],
 	[Color.Green     ,Color.Green     ,Color.Green4    ,Color.Green4    ,Color.Green4    ,Color.Green4    ,Color.Green     ,Color.Green     ],],
-	TallGrass3: [[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
+		TallGrass3: [[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
 	[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green4    ,Color.Green     ,Color.Green     ],
 	[Color.Green4    ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green4    ,Color.Green     ,Color.Green     ,Color.Green     ],
 	[Color.Green     ,Color.Green4    ,Color.Green     ,Color.Green     ,Color.Green4    ,Color.Green     ,Color.Green     ,Color.Green     ],
