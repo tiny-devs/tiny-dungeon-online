@@ -4,10 +4,10 @@ import Exits from "./exits.ts"
 import { ClientHandler } from '../../clientHandler.ts'
 import { SolidLayers } from "../../../shared/solidLayers.ts"
 
-export default class Woods7 extends Room{
+export default class River12 extends Room{
   constructor(id: number, clientHandler: ClientHandler) {
-    super (id, new Exits(-1, Rooms.River12, Rooms.Woods6, Rooms.Woods8), clientHandler)
-    this.solidLayer = SolidLayers.Woods7
+    super (id, new Exits(Rooms.Woods7, -1, Rooms.Woods13, Rooms.DeepLake), clientHandler)
+    this.solidLayer = SolidLayers.River12
     this.npcSpawns = this.buildNpcSpawns()
     this.spawnNpcs()
   }

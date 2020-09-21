@@ -6,7 +6,7 @@ import { SolidLayers } from "../../../shared/solidLayers.ts"
 
 export default class Woods3 extends Room{
   constructor(id: number, clientHandler: ClientHandler) {
-    super (id, new Exits(-1, -1, Rooms.Woods2, Rooms.Woods4), clientHandler)
+    super (id, new Exits(-1, Rooms.Gnomes1, Rooms.Woods2, Rooms.Woods4), clientHandler)
     this.solidLayer = SolidLayers.Woods3
     this.npcSpawns = this.buildNpcSpawns()
     this.spawnNpcs()
