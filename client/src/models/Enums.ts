@@ -48,6 +48,16 @@ export enum Rooms {
     River12,
     DeepLake,
     River13,
+    Woods14,
+    Woods15,
+    Woods16,
+    Gnomes3,
+    Gnomes4,
+    Woods17,
+    River10,
+    River11,
+    Plains1,
+    Plains2,
 }
 
 export enum PveAttacker {

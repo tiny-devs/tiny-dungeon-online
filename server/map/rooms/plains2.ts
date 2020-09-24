@@ -2,13 +2,12 @@ import Room from './room.ts'
 import { Rooms } from '../../Enums.ts'
 import Exits from "./exits.ts"
 import { ClientHandler } from '../../clientHandler.ts'
-import Spider from '../../entities/npcs/spider.ts'
 import { SolidLayers } from "../../../shared/solidLayers.ts"
 
-export default class Woods10 extends Room{
+export default class Plains2 extends Room{
   constructor(id: number, clientHandler: ClientHandler) {
-    super (id, new Exits(Rooms.Woods, Rooms.Woods15, Rooms.Woods9, Rooms.Woods11), clientHandler)
-    this.solidLayer = SolidLayers.Woods10
+    super (id, new Exits(Rooms.River13, -1, Rooms.Plains1, -1), clientHandler)
+    this.solidLayer = SolidLayers.Plains2
     this.npcSpawns = this.buildNpcSpawns()
     this.spawnNpcs()
   }
@@ -16,14 +15,14 @@ export default class Woods10 extends Room{
   private buildNpcSpawns(): any {
     return [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,new Spider(),0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,new Spider(),0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
