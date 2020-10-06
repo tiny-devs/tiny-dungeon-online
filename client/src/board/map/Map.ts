@@ -40,6 +40,15 @@ import { Plains3 } from './Plains3'
 import { Plains4 } from './Plains4'
 import { Plains5 } from './Plains5'
 import { GoblinCamp } from './GoblinCamp'
+import { Woods23 } from './Woods23'
+import { River4 } from './River4'
+import { River5 } from './River5'
+import { River6 } from './River6'
+import { River7 } from './River7'
+import { Plains6 } from './Plains6'
+import { Plains7 } from './Plains7'
+import { Plains8 } from './Plains8'
+import { Plains9 } from './Plains9'
 import { InitialRoom } from './InitialRoom'
 
 export class Map {
@@ -60,6 +69,6 @@ export class Map {
         new Woods9(this.game, Rooms.Woods9), new Woods10(this.game, Rooms.Woods10), new Woods11(this.game, Rooms.Woods11), new Gnomes1(this.game, Rooms.Gnomes1), new Gnomes2(this.game, Rooms.Gnomes2), new Woods12(this.game, Rooms.Woods12), new Woods13(this.game, Rooms.Woods13), new River12(this.game, Rooms.River12), new DeepLake(this.game, Rooms.DeepLake), new River13(this.game, Rooms.River13),
         new Woods14(this.game, Rooms.Woods14), new Woods15(this.game, Rooms.Woods15), new Woods16(this.game, Rooms.Woods16), new Gnomes3(this.game, Rooms.Gnomes3), new Gnomes4(this.game, Rooms.Gnomes4), new Woods17(this.game, Rooms.Woods17), new River10(this.game, Rooms.River10), new River11(this.game, Rooms.River11), new Plains1(this.game, Rooms.Plains1), new Plains2(this.game, Rooms.Plains2),
         new Woods18(this.game, Rooms.Woods18), new Woods19(this.game, Rooms.Woods19), new Woods20(this.game, Rooms.Woods20), new Woods21(this.game, Rooms.Woods21), new Woods22(this.game, Rooms.Woods22), new River8(this.game, Rooms.River8), new River9(this.game, Rooms.River9), new Plains3(this.game, Rooms.Plains3), new Plains4(this.game, Rooms.Plains4), new Plains5(this.game, Rooms.Plains5),
-        new GoblinCamp(this.game, Rooms.GoblinCamp),]
+        new GoblinCamp(this.game, Rooms.GoblinCamp), new Woods23(this.game, Rooms.Woods23), new River4(this.game, Rooms.River4), new River5(this.game, Rooms.River5), new River6(this.game, Rooms.River6), new River7(this.game, Rooms.River7), new Plains6(this.game, Rooms.Plains6), new Plains7(this.game, Rooms.Plains7), new Plains8(this.game, Rooms.Plains8), new Plains9(this.game, Rooms.Plains9)]
     }
 }

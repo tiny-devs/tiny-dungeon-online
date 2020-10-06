@@ -282,4 +282,12 @@ export const Tiles = {
 	[Color.LightGreen6,Color.LightGreen6,Color.LightGreen6,Color.Green     ,Color.LightGreen6,Color.Green     ,Color.LightGreen6,Color.LightGreen6],
 	[Color.LightGreen6,Color.Green     ,Color.LightGreen6,Color.Green     ,Color.Green     ,Color.LightGreen6,Color.LightGreen6,Color.Green     ],
 	[Color.LightGreen6,Color.LightGreen6,Color.Green     ,Color.Green     ,Color.Green     ,Color.LightGreen6,Color.Green     ,Color.LightGreen6],],
+		Sand: [[Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2],
+	[Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2],
+	[Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2],
+	[Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2],
+	[Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2],
+	[Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2],
+	[Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2],
+	[Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2,Color.LightYellow2],],
 }

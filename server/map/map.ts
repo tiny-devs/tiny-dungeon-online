@@ -39,6 +39,15 @@ import Plains3 from './rooms/plains3.ts'
 import Plains4 from './rooms/plains4.ts'
 import Plains5 from './rooms/plains5.ts'
 import GoblinCamp from './rooms/goblinCamp.ts'
+import Woods23 from './rooms/woods23.ts'
+import River4 from './rooms/river4.ts'
+import River5 from './rooms/river5.ts'
+import River6 from './rooms/river6.ts'
+import River7 from './rooms/river7.ts'
+import Plains6 from './rooms/plains6.ts'
+import Plains7 from './rooms/plains7.ts'
+import Plains8 from './rooms/plains8.ts'
+import Plains9 from './rooms/plains9.ts'
 import Room from './rooms/room.ts'
 import { Rooms } from '../Enums.ts'
 import { ClientHandler } from '../clientHandler.ts'
@@ -63,6 +72,6 @@ export default class Map {
       new Woods9(Rooms.Woods9, this.clientHandler), new Woods10(Rooms.Woods10, this.clientHandler), new Woods11(Rooms.Woods11, this.clientHandler), new Gnomes1(Rooms.Gnomes1, this.clientHandler), new Gnomes2(Rooms.Gnomes2, this.clientHandler), new Woods12(Rooms.Woods12, this.clientHandler), new Woods13(Rooms.Woods13, this.clientHandler), new River12(Rooms.River12, this.clientHandler), new DeepLake(Rooms.DeepLake, this.clientHandler), new River13(Rooms.River13, this.clientHandler),
       new Woods14(Rooms.Woods14, this.clientHandler), new Woods15(Rooms.Woods15, this.clientHandler), new Woods16(Rooms.Woods16, this.clientHandler), new Gnomes3(Rooms.Gnomes3, this.clientHandler), new Gnomes4(Rooms.Gnomes4, this.clientHandler), new Woods17(Rooms.Woods17, this.clientHandler), new River10(Rooms.River10, this.clientHandler), new River11(Rooms.River11, this.clientHandler), new Plains1(Rooms.Plains1, this.clientHandler), new Plains2(Rooms.Plains2, this.clientHandler),
       new Woods18(Rooms.Woods18, this.clientHandler), new Woods19(Rooms.Woods19, this.clientHandler), new Woods20(Rooms.Woods20, this.clientHandler), new Woods21(Rooms.Woods21, this.clientHandler), new Woods22(Rooms.Woods22, this.clientHandler), new River8(Rooms.River8, this.clientHandler), new River9(Rooms.River9, this.clientHandler), new Plains3(Rooms.Plains3, this.clientHandler), new Plains4(Rooms.Plains4, this.clientHandler), new Plains5(Rooms.Plains5, this.clientHandler),
-      new GoblinCamp(Rooms.GoblinCamp, this.clientHandler)]
+      new GoblinCamp(Rooms.GoblinCamp, this.clientHandler), new Woods23(Rooms.Woods23, this.clientHandler), new River4(Rooms.River4, this.clientHandler), new River5(Rooms.River5, this.clientHandler), new River6(Rooms.River6, this.clientHandler), new River7(Rooms.River7, this.clientHandler), new Plains6(Rooms.Plains6, this.clientHandler), new Plains7(Rooms.Plains7, this.clientHandler), new Plains8(Rooms.Plains8, this.clientHandler), new Plains9(Rooms.Plains9, this.clientHandler)]
   }
 }

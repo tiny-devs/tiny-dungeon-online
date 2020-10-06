@@ -69,6 +69,15 @@ export enum Rooms {
     Plains4,
     Plains5,
     GoblinCamp,
+    Woods23,
+    River4,
+    River5,
+    River6,
+    River7,
+    Plains6,
+    Plains7,
+    Plains8,
+    Plains9,
 }
 
 export enum PveAttacker {
