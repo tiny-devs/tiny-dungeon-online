@@ -112,6 +112,14 @@ export const SolidTiles = {
 	[0               ,0               ,Color.Green4    ,Color.Green4    ,Color.Green4    ,Color.Green4    ,0               ,0               ],
 	[0               ,0               ,0               ,Color.LightBrown,Color.LightBrown,0               ,0               ,0               ],
 	[0               ,0               ,0               ,Color.LightBrown,Color.LightBrown,0               ,0               ,0               ],],
+	GoblinHouse: [[0               ,0               ,0               ,0               ,0               ,0               ,0               ,0               ],
+	[0               ,0               ,0               ,0               ,0               ,0               ,0               ,0               ],
+	[0               ,0               ,0               ,0               ,Color.Green4    ,0               ,0               ,0               ],
+	[0               ,0               ,0               ,Color.Green4    ,Color.Green4    ,0               ,0               ,0               ],
+	[0               ,0               ,Color.Green4    ,Color.Green4    ,Color.Green4    ,Color.Green4    ,0               ,0               ],
+	[0               ,0               ,Color.Green4    ,Color.DarkGreen    ,Color.DarkGreen2,Color.Green4    ,0               ,0               ],
+	[0               ,Color.Green4    ,Color.Green4    ,Color.DarkGreen2,Color.DarkGreen2,Color.Green4    ,Color.Green4    ,0               ],
+	[Color.Green4    ,Color.Green4    ,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.DarkGreen2,Color.Green4    ,Color.Green4    ],],
 }
 export const Tiles = {
     FlatGrass: [[Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ,Color.Green     ],
