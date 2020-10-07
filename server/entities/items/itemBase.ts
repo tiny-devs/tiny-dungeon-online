@@ -32,8 +32,8 @@ export default class ItemBase {
         this.despawnTime = despawnTime
         this.coins = coins
         this.level = level
-        this.bonusAttack = !isDefensive ? Math.floor(level/2) + 2 + bonusAttack : 0
-        this.bonusDefense = isDefensive ? Math.floor(level/2) + 2 + bonusDefense : 0
+        this.bonusAttack = !isDefensive ? Math.floor(level/2) + 2 + bonusAttack : bonusAttack
+        this.bonusDefense = isDefensive ? Math.floor(level/2) + 1 + bonusDefense : bonusDefense
         this.healthRefuel = healthRefuel
         this.dropChance = dropChance
     }

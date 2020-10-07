@@ -87,9 +87,33 @@ export enum PveAttacker {
 
 export enum ItemsIds {
     Empty = 0,
-    Coffee = 1,
-    Coin = 2,
-    BronzeDagger = 3
+    Coffee,
+    Coin,
+    BronzeDagger,
+    BronzeSword,
+    IronDagger,
+    IronSword,
+    BluriteDagger,
+    BluriteSword,
+    AdamantDagger,
+    AdamantSword,
+    FireDagger,
+    FireSword,
+    BronzeHelm,
+    IronHelm,
+    BluriteHelm,
+    AdamantHelm,
+    FireHelm,
+    BronzeArmour,
+    IronArmour,
+    BluriteArmour,
+    AdamantArmour,
+    FireArmour,
+    BronzeLegs,
+    IronLegs,
+    BluriteLegs,
+    AdamantLegs,
+    FireLegs,
 }
 
 export enum GearType {
