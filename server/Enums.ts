@@ -86,6 +86,15 @@ export enum Npcs {
     ImpMeelee,
     ImpArcher,
     ImpMage,
+    Slime,
+    Bee,
+    Witch,
+    Goblin,
+    Goblin2,
+    Goblin3,
+    Ligneus,
+    Skeleton,
+    SkeletonKnight,
     Zero,
 }
 
