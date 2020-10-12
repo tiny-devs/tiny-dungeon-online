@@ -2,7 +2,12 @@ import Room from './room.ts'
 import { Rooms } from '../../Enums.ts'
 import Exits from "./exits.ts"
 import { ClientHandler } from '../../clientHandler.ts'
-import { SolidLayers } from "../../../shared/solidLayers.ts"
+import { SolidLayers } from '../../../shared/solidLayers.ts'
+import Nestor from '../../entities/npcs/passive/gnomes/nestor.ts'
+import Deri from '../../entities/npcs/passive/gnomes/deri.ts'
+import Horvyn from '../../entities/npcs/passive/gnomes/horvyn.ts'
+import Feemlunk from '../../entities/npcs/passive/gnomes/feemlunk.ts'
+import Mytklash from '../../entities/npcs/passive/gnomes/mytklash.ts'
 
 export default class Gnomes2 extends Room{
   constructor(id: number, clientHandler: ClientHandler) {
@@ -16,16 +21,16 @@ export default class Gnomes2 extends Room{
     return [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,new Nestor(),0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,new Deri(),0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,new Horvyn(),0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,new Mytklash(),0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,new Feemlunk(),0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
