@@ -1,6 +1,6 @@
 import { Npcs } from "../../Enums.ts"
 import ItemBase from "../items/itemBase.ts"
-import DialogBase from "./humans/dialogs/dialogBase.ts"
+import DialogBase from "./passive/dialogs/dialogBase.ts"
 
 export default class NpcBase {
     public id: Npcs

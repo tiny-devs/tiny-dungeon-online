@@ -96,6 +96,14 @@ export enum Npcs {
     Skeleton,
     SkeletonKnight,
     Zero,
+    FemaleGnome,
+    MaleGnome,
+    AncientGnome,
+    WhiteMaleFarmer,
+    BlackMaleFarmer,
+    WhiteFemaleFarmer,
+    BlackFemaleFarmer,
+    OldMan,
 }
 
 export enum PveAttacker {

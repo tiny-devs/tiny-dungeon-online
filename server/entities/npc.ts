@@ -4,7 +4,7 @@ import { Player } from './player.ts'
 import { PveData } from '../pve/pveData.ts'
 import NpcBase from './npcs/npcBase.ts'
 import ItemBase from './items/itemBase.ts'
-import DialogBase from "./npcs/humans/dialogs/dialogBase.ts"
+import DialogBase from "./npcs/passive/dialogs/dialogBase.ts"
 
 export class Npc {
   public id: number
