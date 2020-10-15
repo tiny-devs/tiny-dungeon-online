@@ -189,4 +189,12 @@ export const Npcs = {
         [0               ,Color.DarkPurple,Color.DarkPurple,Color.LightGrey ,Color.LightGrey ,Color.DarkPurple,Color.DarkPurple,Color.LightYellow],
         [0               ,0               ,Color.DarkGreenBlue,Color.DarkGreenBlue,Color.LightGrey ,Color.DarkGreenBlue,0               ,Color.Brown     ],
         [0               ,0               ,Color.DarkGreenBlue,Color.DarkGreenBlue,Color.DarkGreenBlue,Color.DarkGreenBlue,0               ,Color.Brown     ],],
+    MytklashsFlower: [[0               ,0               ,0               ,0               ,0               ,0               ,0               ,0               ],
+        [0               ,0               ,Color.DarkPink  ,Color.DarkPink2 ,Color.DarkPink  ,Color.DarkPink2 ,Color.DarkPink  ,0               ],
+        [0               ,0               ,0               ,Color.DarkPink  ,Color.DarkPink  ,Color.DarkPink  ,0               ,0               ],
+        [0               ,0               ,0               ,0               ,Color.DarkPurple,0               ,0               ,0               ],
+        [0               ,0               ,0               ,0               ,Color.Purple    ,0               ,0               ,0               ],
+        [0               ,0               ,Color.DarkGreen ,0               ,Color.Purple    ,0               ,0               ,0               ],
+        [0               ,0               ,0               ,Color.Purple    ,0               ,0               ,0               ,0               ],
+        [0               ,0               ,0               ,Color.Purple    ,0               ,0               ,0               ,0               ],],
 } as any

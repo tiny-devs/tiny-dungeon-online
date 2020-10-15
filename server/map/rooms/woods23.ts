@@ -3,6 +3,7 @@ import { Rooms } from '../../Enums.ts'
 import Exits from "./exits.ts"
 import { ClientHandler } from '../../clientHandler.ts'
 import { SolidLayers } from "../../../shared/solidLayers.ts"
+import MytklashsFlower from "../../entities/npcs/passive/gnomes/mytklashsFlower.ts"
 
 export default class Woods23 extends Room{
   constructor(id: number, clientHandler: ClientHandler) {
@@ -27,7 +28,7 @@ export default class Woods23 extends Room{
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,new MytklashsFlower(),0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
   }
 }

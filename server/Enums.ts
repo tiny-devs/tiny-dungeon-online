@@ -104,6 +104,7 @@ export enum Npcs {
     WhiteFemaleFarmer,
     BlackFemaleFarmer,
     OldMan,
+    MytklashsFlower,
 }
 
 export enum PveAttacker {
@@ -160,4 +161,20 @@ export enum GearType {
     Torso,
     Legs,
     Weapon
+}
+
+export enum Quests {
+    FlowerForMytklash,
+    HelpTheVillage
+}
+
+export enum StepType {
+    MonstersToKill,
+    NpcToTalk,
+    LevelToReach
+}
+
+export enum RewardType {
+    Xp,
+    Item
 }

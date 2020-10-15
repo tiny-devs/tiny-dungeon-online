@@ -5,6 +5,8 @@ import { PveData } from '../pve/pveData.ts'
 import NpcBase from './npcs/npcBase.ts'
 import ItemBase from './items/itemBase.ts'
 import DialogBase from "./npcs/passive/dialogs/dialogBase.ts"
+import QuestBase from "./npcs/quests/questBase.ts"
+import Quest from "./npcs/quests/quest.ts"
 
 export class Npc {
   public id: number
@@ -36,6 +38,8 @@ export class Npc {
   public dead: boolean = false
   public dialog: DialogBase | null
   public drops: ItemBase[]
+  public name: string
+  public quest: QuestBase | null
 
   constructor(id: number,
       npcData: NpcBase,
@@ -69,6 +73,8 @@ export class Npc {
     this.xpGiven = npcData.xpGiven
     this.dialog = npcData.dialog
     this.drops = npcData.drops
+    this.name = npcData.name
+    this.quest = npcData.quest
 
     this.heartBeat()
   }
@@ -135,15 +141,35 @@ export class Npc {
   }
 
   public talkTo(player: Player) {
+    const playerQuest = player.quests.find(q => q.id == this.quest?.id)
+    const npcFromQuestStep = player.quests.find(q => q.steps.find(s => s.npcToTalk == this.name))
+
     if (this.dialog != null) {
       const hasEverTalked = this.dialog.playerCurrentLine.some(d => d.playerId == player.id)
       if (hasEverTalked) {
-        var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
-        this.dialog.playerCurrentLine[index].line += 1
-        if (this.dialog.playerCurrentLine[index].line >= this.dialog.playerCurrentLine[index].totalLines) {
-          this.dialog.playerCurrentLine[index].line = 0
+        if (npcFromQuestStep) {
+          let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
+          if (newLine != '') {
+            this.room.clientHandler.unicastDialog(player, newLine)
+          } else {
+            var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+            this.dialog.playerCurrentLine[index].line += 1
+            if (this.dialog.playerCurrentLine[index].line >= this.dialog.playerCurrentLine[index].totalLines) {
+              this.dialog.playerCurrentLine[index].line = 0
+            }
+            this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
+          }
+        } else {
+          var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+          this.dialog.playerCurrentLine[index].line += 1
+          if (this.dialog.playerCurrentLine[index].line >= this.dialog.playerCurrentLine[index].totalLines) {
+            if (this.quest != null && !playerQuest){
+              player.getNewQuest(this.quest)
+            }
+            this.dialog.playerCurrentLine[index].line = 0
+          }
+          this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
         }
-        this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
       } else {
         this.dialog.playerCurrentLine.push({playerId:player.id, line:0,totalLines:this.dialog.dialogs.length})
         this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[0])
@@ -225,6 +251,9 @@ export class Npc {
       player.fightingNpcId = null
       player.addXp(this.xpGiven)
       this.fightingPlayer = null
+      for (const quest of player.quests) {
+        quest.checkMonsterKill(this.npcId, player)
+      }
     }
   }
 
