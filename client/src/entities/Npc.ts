@@ -65,9 +65,9 @@ export class Npc {
 
     drawHp() {
         this.layer.ctx.beginPath()
-        this.layer.ctx.fillStyle = Color.Red
+        this.layer.ctx.fillStyle = Color.DarkRed
         this.layer.ctx.fillRect(this.x * this.game.gridConfig.cellWidth, this.y * this.game.gridConfig.cellHeight - 7, this.game.gridConfig.cellWidth, 5)
-        this.layer.ctx.fillStyle = Color.DarkGreen
+        this.layer.ctx.fillStyle = Color.LightGreen6
         this.layer.ctx.fillRect(this.x * this.game.gridConfig.cellWidth, this.y * this.game.gridConfig.cellHeight - 7, (this.game.gridConfig.cellWidth * this.hp) / this.maxHp, 5)
         this.layer.ctx.fill()
 

@@ -27,24 +27,30 @@ export default class Step {
     }
 
     public checkLevelToReach(level: number) {
-        if (level >= this.levelToReach) {
-            return true
+        if (this.type == StepType.LevelToReach) {
+            if (level >= this.levelToReach) {
+                return true
+            }
         }
         return false
     }
 
     public checkMonsterKill(monster: Npcs): { validMonster: boolean } {
-        const monsterToKill = this.monstersToKill.find(m => (m.monster == monster) && m.amount > 0)
-        if (monsterToKill) {
-            monsterToKill.amount -= 1
-            return { validMonster: true }
+        if (this.type == StepType.MonstersToKill) {
+            const monsterToKill = this.monstersToKill.find(m => (m.monster == monster) && m.amount > 0)
+            if (monsterToKill) {
+                monsterToKill.amount -= 1
+                return { validMonster: true }
+            }
         }
         return { validMonster: false }
     }
 
     public checkNpcDialog(npc: string): {validNpc: boolean,line:string } {
-        if (npc == this.npcToTalk) {
-            return { validNpc: true, line: this.npcLines[this.playerCurrentLine] }
+        if (this.type == StepType.NpcToTalk) {
+            if (npc == this.npcToTalk) {
+                return { validNpc: true, line: this.npcLines[this.playerCurrentLine] }
+            }
         }
         return { validNpc: false, line: '' }
     }

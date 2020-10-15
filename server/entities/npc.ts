@@ -140,9 +140,11 @@ export class Npc {
     }
   }
 
+  // all dialog logic was done in quite a rush to finish
+  // please dont mind this messy code
   public talkTo(player: Player) {
     const playerQuest = player.quests.find(q => q.id == this.quest?.id)
-    const npcFromQuestStep = player.quests.find(q => q.steps.find(s => s.npcToTalk == this.name))
+    const npcFromQuestStep = player.quests.find(q => q.steps.some(s => s.npcToTalk == this.name))
 
     if (this.dialog != null) {
       const hasEverTalked = this.dialog.playerCurrentLine.some(d => d.playerId == player.id)

@@ -4,6 +4,7 @@ import Exits from "./exits.ts"
 import { ClientHandler } from '../../clientHandler.ts'
 import Spider from '../../entities/npcs/spider.ts'
 import { SolidLayers } from "../../../shared/solidLayers.ts"
+import Slime from "../../entities/npcs/slime.ts"
 
 export default class Woods extends Room{
   constructor(id: number, clientHandler: ClientHandler) {
@@ -26,7 +27,7 @@ export default class Woods extends Room{
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,new Slime(),0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]

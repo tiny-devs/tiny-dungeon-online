@@ -20,6 +20,6 @@ export default class HelpTheLakeVillage extends QuestBase {
             RewardType.Item,
             new AdamantArmour(1),
             0,
-            'Thank you for all your help')
+            'Thank you for all your help!')
     }
 }

@@ -3,6 +3,9 @@ import { Rooms } from '../../Enums.ts'
 import Exits from "./exits.ts"
 import { ClientHandler } from '../../clientHandler.ts'
 import { SolidLayers } from "../../../shared/solidLayers.ts"
+import Skeleton from "../../entities/npcs/skeleton.ts"
+import SkeletonKnight from "../../entities/npcs/skeletonKnight.ts"
+import Witch from "../../entities/npcs/witch.ts"
 
 export default class Plains9 extends Room{
   constructor(id: number, clientHandler: ClientHandler) {
@@ -16,6 +19,7 @@ export default class Plains9 extends Room{
     return [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,new Skeleton(),0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -23,11 +27,10 @@ export default class Plains9 extends Room{
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,new SkeletonKnight(),0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,new Witch(),0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
   }
 }

@@ -3,6 +3,9 @@ import { Rooms } from '../../Enums.ts'
 import Exits from "./exits.ts"
 import { ClientHandler } from '../../clientHandler.ts'
 import { SolidLayers } from "../../../shared/solidLayers.ts"
+import Slime from "../../entities/npcs/slime.ts"
+import ImpMeelee from "../../entities/npcs/impMeelee.ts"
+import Witch from "../../entities/npcs/witch.ts"
 
 export default class River6 extends Room{
   constructor(id: number, clientHandler: ClientHandler) {
@@ -14,6 +17,9 @@ export default class River6 extends Room{
 
   private buildNpcSpawns(): any {
     return [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,new ImpMeelee(),0,0,0,0,0,0,new ImpMeelee(),0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,new Slime(),0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -21,12 +27,9 @@ export default class River6 extends Room{
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,new ImpMeelee(),0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,new Witch(),0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]]
   }

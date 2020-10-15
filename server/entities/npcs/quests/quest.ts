@@ -8,7 +8,7 @@ export default class Quest {
     public id: Quests
     public isCompleted: boolean
     public steps: Step[]
-    public nextStep: number
+    public currentStep: number
     public reward: RewardType
     public itemReward: ItemBase | null
     public xpReward: number
@@ -18,7 +18,7 @@ export default class Quest {
         this.id = questData.id
         this.isCompleted = false
         this.steps = questData.steps
-        this.nextStep = 0
+        this.currentStep = 0
         this.reward = questData.reward
         this.itemReward = questData.itemReward
         this.xpReward = questData.xpReward
@@ -26,7 +26,7 @@ export default class Quest {
     }
 
     public checkLevelToReach(player: Player) {
-        const reachedLevel = this.steps[this.nextStep].checkLevelToReach(player.level)
+        const reachedLevel = this.steps[this.currentStep].checkLevelToReach(player.level)
         if (reachedLevel) {
             this.goToNextStep(player)
         }
@@ -37,9 +37,9 @@ export default class Quest {
             return
         }
 
-        const stepReturn = this.steps[this.nextStep].checkMonsterKill(monster)
+        const stepReturn = this.steps[this.currentStep].checkMonsterKill(monster)
         if (stepReturn.validMonster) {
-            const stepCompleted = !this.steps[this.nextStep].monstersToKill.some(m => m.amount > 0)
+            const stepCompleted = !this.steps[this.currentStep].monstersToKill.some(m => m.amount > 0)
             if (stepCompleted) {
                 this.goToNextStep(player)
             }
@@ -48,20 +48,20 @@ export default class Quest {
 
     public checkNpcDialog(npc: string, player: Player) {
         if (this.isCompleted) {
-            return ''
+            return this.newDialogAfterComplete
         }
 
-        const stepReturn = this.steps[this.nextStep].checkNpcDialog(npc)
+        const stepReturn = this.steps[this.currentStep].checkNpcDialog(npc)
         if (stepReturn.validNpc) {
             if (this.isCompleted) {
                 return this.newDialogAfterComplete
             }
 
-            if (this.steps[this.nextStep].npcLines.length <= this.steps[this.nextStep].playerCurrentLine+1) {
+            if (this.steps[this.currentStep].npcLines.length <= this.steps[this.currentStep].playerCurrentLine+1) {
                 this.goToNextStep(player)
-                this.steps[this.nextStep].playerCurrentLine = 0
+                this.steps[this.currentStep].playerCurrentLine = 0
             } else {
-                this.steps[this.nextStep].playerCurrentLine += 1
+                this.steps[this.currentStep].playerCurrentLine += 1
             }
 
             return stepReturn.line
@@ -75,11 +75,11 @@ export default class Quest {
             return
         }
 
-        this.steps[this.nextStep].isCompleted = true
-        if (this.nextStep+1 == this.steps.length) {
+        this.steps[this.currentStep].isCompleted = true
+        if (this.currentStep+1 == this.steps.length) {
             this.completeQuest(player)
         } else {
-            this.nextStep += 1
+            this.currentStep += 1
         }
     }
 
