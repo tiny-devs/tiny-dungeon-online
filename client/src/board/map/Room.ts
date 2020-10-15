@@ -1,6 +1,6 @@
 import { Game } from '../../startup/Game'
 import { Rooms } from '../../models/Enums'
-import { Tiles } from './tiles/Tiles'
+import { SolidTiles } from './tiles/Tiles'
 import { Tile } from './tiles/Tile'
 import { Color } from './tiles/Color'
 
@@ -33,8 +33,8 @@ export class Room {
 
                 const tileToDraw = this.solidLayerShape[line][column] as number
                 if (tileToDraw != 0) {
-                    const tiles = Tiles as any
-                    const tile = tiles[Object.keys(Tiles)[tileToDraw-1]]
+                    const tiles = SolidTiles as any
+                    const tile = tiles[Object.keys(SolidTiles)[tileToDraw-1]]
 
                     this.tiles.push(new Tile(this.game, this.game.solidLayer, column, line, tile))
                 }

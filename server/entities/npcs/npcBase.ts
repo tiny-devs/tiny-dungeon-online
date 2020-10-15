@@ -1,10 +1,12 @@
 import { Npcs } from "../../Enums.ts"
 import ItemBase from "../items/itemBase.ts"
-import DialogBase from "./humans/dialogs/dialogBase.ts"
+import DialogBase from "./passive/dialogs/dialogBase.ts"
+import QuestBase from "./quests/questBase.ts"
 
 export default class NpcBase {
     public id: Npcs
     public agressive: boolean
+    public name: string
     public hp: number
     public attack: number
     public defense: number
@@ -17,9 +19,11 @@ export default class NpcBase {
     public fieldOfView: number
     public dialog: DialogBase | null
     public drops: ItemBase[]
+    public quest: QuestBase | null
 
     constructor(id: number,
     agressive: boolean,
+    name: string,
     hpBonus: number,
     attackBonus: number,
     defenseBonus: number,
@@ -29,9 +33,11 @@ export default class NpcBase {
     anger: number,
     fieldOfView: number,
     dialog: DialogBase | null, 
-    drops: ItemBase[]) {
+    drops: ItemBase[],
+    quest: QuestBase | null) {
         this.id = id
         this.agressive = agressive
+        this.name = name
         this.level = level
         this.xpGiven = +((level**1.1)+5).toFixed(2)
         this.hp = (level + 9) + hpBonus
@@ -44,5 +50,6 @@ export default class NpcBase {
         this.fieldOfView = fieldOfView
         this.dialog = dialog
         this.drops = drops
+        this.quest = quest
     }
 }

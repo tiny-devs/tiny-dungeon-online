@@ -4,7 +4,9 @@ import { Player } from './player.ts'
 import { PveData } from '../pve/pveData.ts'
 import NpcBase from './npcs/npcBase.ts'
 import ItemBase from './items/itemBase.ts'
-import DialogBase from "./npcs/humans/dialogs/dialogBase.ts"
+import DialogBase from "./npcs/passive/dialogs/dialogBase.ts"
+import QuestBase from "./npcs/quests/questBase.ts"
+import Quest from "./npcs/quests/quest.ts"
 
 export class Npc {
   public id: number
@@ -13,7 +15,8 @@ export class Npc {
   public fieldOfView: number
   public anger: number
   public maxAnger: number
-  public chasing: boolean = false
+  public isChasing: boolean = false
+  public fightingPlayer: null | Player = null
   public spawnX: number
   public spawnY: number
   public x: number
@@ -35,6 +38,8 @@ export class Npc {
   public dead: boolean = false
   public dialog: DialogBase | null
   public drops: ItemBase[]
+  public name: string
+  public quest: QuestBase | null
 
   constructor(id: number,
       npcData: NpcBase,
@@ -68,6 +73,8 @@ export class Npc {
     this.xpGiven = npcData.xpGiven
     this.dialog = npcData.dialog
     this.drops = npcData.drops
+    this.name = npcData.name
+    this.quest = npcData.quest
 
     this.heartBeat()
   }
@@ -133,16 +140,38 @@ export class Npc {
     }
   }
 
+  // all dialog logic was done in quite a rush to finish
+  // please dont mind this messy code
   public talkTo(player: Player) {
+    const playerQuest = player.quests.find(q => q.id == this.quest?.id)
+    const npcFromQuestStep = player.quests.find(q => q.steps.some(s => s.npcToTalk == this.name))
+
     if (this.dialog != null) {
       const hasEverTalked = this.dialog.playerCurrentLine.some(d => d.playerId == player.id)
       if (hasEverTalked) {
-        var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
-        this.dialog.playerCurrentLine[index].line += 1
-        if (this.dialog.playerCurrentLine[index].line >= this.dialog.playerCurrentLine[index].totalLines) {
-          this.dialog.playerCurrentLine[index].line = 0
+        if (npcFromQuestStep) {
+          let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
+          if (newLine != '') {
+            this.room.clientHandler.unicastDialog(player, newLine)
+          } else {
+            var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+            this.dialog.playerCurrentLine[index].line += 1
+            if (this.dialog.playerCurrentLine[index].line >= this.dialog.playerCurrentLine[index].totalLines) {
+              this.dialog.playerCurrentLine[index].line = 0
+            }
+            this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
+          }
+        } else {
+          var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+          this.dialog.playerCurrentLine[index].line += 1
+          if (this.dialog.playerCurrentLine[index].line >= this.dialog.playerCurrentLine[index].totalLines) {
+            if (this.quest != null && !playerQuest){
+              player.getNewQuest(this.quest)
+            }
+            this.dialog.playerCurrentLine[index].line = 0
+          }
+          this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
         }
-        this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
       } else {
         this.dialog.playerCurrentLine.push({playerId:player.id, line:0,totalLines:this.dialog.dialogs.length})
         this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[0])
@@ -152,7 +181,7 @@ export class Npc {
 
   private passiveBehaviour() {
     let randomChance = Math.random()
-    if (this.chasing && (this.anger > 0)) {
+    if (this.isChasing && (this.anger > 0)) {
       this.anger--
       randomChance = this.moveChance
     }
@@ -175,11 +204,15 @@ export class Npc {
   private async agressiveBehaviour() {
     const result = this.checkSurroundings()
     if (result.found) {
-      this.chasing = true
+      this.isChasing = true
       this.anger = this.maxAnger
 
       let moveResult = this.move(result.direction)
       if (moveResult.playerHit) {
+        this.fightingPlayer = moveResult.playerHit
+        if (moveResult.playerHit.fightingNpcId == null) {
+          moveResult.playerHit.fightingNpcId = this.id
+        }
         await this.engage(moveResult.playerHit)
       }
 
@@ -205,17 +238,24 @@ export class Npc {
 
     await this.delay(1000)
 
-    let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
+    if (player.fightingNpcId == this.id) {
+      let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
 
-    const damageTaken = player.getAttackDamage()
-    let enemyDefended = this.takeDamage(damageTaken)
-
-    playerAttackData.damageCaused = damageTaken - enemyDefended
-    playerAttackData.damageDefended = enemyDefended
-    this.room.clientHandler.roomcastPveFight(playerAttackData)
+      const damageTaken = player.getAttackDamage()
+      let enemyDefended = this.takeDamage(damageTaken)
+  
+      playerAttackData.damageCaused = damageTaken - enemyDefended
+      playerAttackData.damageDefended = enemyDefended
+      this.room.clientHandler.roomcastPveFight(playerAttackData)
+    }
 
     if (this.dead) {
+      player.fightingNpcId = null
       player.addXp(this.xpGiven)
+      this.fightingPlayer = null
+      for (const quest of player.quests) {
+        quest.checkMonsterKill(this.npcId, player)
+      }
     }
   }
 
@@ -270,11 +310,27 @@ export class Npc {
   }
 
   private checkSurroundings() {
+    let playerInRange = null as null | Player
     let result = {found: false, direction: 0}
 
-    let playerInRange = this.room.players.find(player => 
-      (Math.pow(player.x - this.x,2) + Math.pow(player.y - this.y,2)) <= this.fieldOfView
-    )
+    if (this.fightingPlayer == null) {
+      let playersInRange = this.room.players.filter(player => 
+        ((Math.pow(player.x - this.x,2) + Math.pow(player.y - this.y,2)) <= this.fieldOfView)
+      )
+  
+      playersInRange?.sort((a, b) => { 
+        return (Math.pow(a.x - this.x,2) + Math.pow(a.y - this.y,2)) -
+        (Math.pow(b.x - this.x,2) + Math.pow(b.y - this.y,2));
+      })
+  
+      playerInRange = playersInRange[0]
+    } else {
+      if (this.fightingPlayer.currentRoomId == this.roomId) {
+        playerInRange = this.fightingPlayer
+      } else {
+        this.fightingPlayer = null
+      }
+    }
 
     if (playerInRange) {
       result.found = true

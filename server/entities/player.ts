@@ -3,7 +3,10 @@ import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'
 import Gear from './items/gear.ts'
-import { WebSocket } from "https://deno.land/std/ws/mod.ts"
+import { WebSocket } from 'https://deno.land/std/ws/mod.ts'
+import Quest from './npcs/quests/quest.ts'
+import QuestBase from "./npcs/quests/questBase.ts"
+import ItemBase from "./items/itemBase.ts"
 
 export class Player {
     public id: string
@@ -16,6 +19,7 @@ export class Player {
     public boardColumns: number
     public currentRoomId: number
     public currentRoom: Room
+    public fightingNpcId: null | number = null
     public hp: number = 10
     public maxHp: number = 10
     public attack: number = 4
@@ -25,6 +29,7 @@ export class Player {
     public xpNeeded: number = 10
     public bag: Bag = new Bag(this)
     public gear: Gear
+    public quests: Quest[] = []
     public clientWs: WebSocket
     private canMove: boolean = true
     private clientHandler: ClientHandler
@@ -132,6 +137,9 @@ export class Player {
             }
 
             if (validMove) {
+                if (this.changedRoom()){
+                    this.fightingNpcId = null
+                }
                 this.delayMove()
                 this.pickupAnyItemAtCoords(this.y,this.x)
             }
@@ -173,6 +181,23 @@ export class Player {
         }
     }
 
+    public getNewQuest(quest: QuestBase){
+        const alreadyHasQuest = this.quests.some(q => q.id == quest.id)
+        if (!alreadyHasQuest) {
+            this.quests.push(new Quest(quest))
+        }
+    }
+
+    public getItemFromQuest(item: ItemBase): boolean {
+        if (item) {
+            const gotItem = this.bag.addItem(item)
+            if (gotItem) {
+                return true
+            }
+        }
+        return false
+    }
+
     public addHp(amount: number) {
         this.hp = ((amount + this.hp) > this.totalHp()) ? this.totalHp() : (amount + this.hp)
     }
@@ -188,6 +213,9 @@ export class Player {
         this.clientHandler.unicastPlayerStats(this)
         if (isLevelUp) {
             this.clientHandler.updateRank()
+            for (const quest of this.quests) {
+                quest.checkLevelToReach(this)
+            }
         }
     }
 
@@ -226,6 +254,7 @@ export class Player {
     }
 
     private respawn() {
+        this.fightingNpcId = null
         this.currentRoomId = Rooms.Initial
         this.x = 0
         this.y = 0
