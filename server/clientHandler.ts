@@ -12,7 +12,7 @@ export class ClientHandler {
   public boardRows: number = 16
   public playerNames: string[] = []
   public map: Map
-  private topPlayers: {name:string,level:number}[]
+  private topPlayers: {id:string,name:string,level:number}[]
 
   constructor(serverConfigs: any) {
     this.boardRows = serverConfigs.boardRows
@@ -21,9 +21,9 @@ export class ClientHandler {
     this.map = new Map(this)
 
     this.topPlayers = []
-    this.topPlayers.push({name:'',level:0})
-    this.topPlayers.push({name:'',level:0})
-    this.topPlayers.push({name:'',level:0})
+    this.topPlayers.push({id:'',name:'',level:0})
+    this.topPlayers.push({id:'',name:'',level:0})
+    this.topPlayers.push({id:'',name:'',level:0})
   }
 
   private broadcastRank(): void {
@@ -306,7 +306,7 @@ export class ClientHandler {
 
   public updateRank() {
     let updated = false
-    let players = []
+    let players = [] as any[]
     for (const room of this.map.rooms) {
       for (const player of room.players) {
         players.push(player)
@@ -318,30 +318,26 @@ export class ClientHandler {
 
     const limitForTop3OrLess = players.length > 3 ? 3 : players.length
     for (let i=0;i<limitForTop3OrLess;i++) {
-      for (let j=0;j<3;j++) {
-        if ((players[i].level>this.topPlayers[j].level)) {
-          const indexTopPlayer = this.topPlayers.map(p => p.name).indexOf(players[i].name)
-          if (indexTopPlayer>-1) {
-            this.topPlayers[j].name = players[i].name
-            this.topPlayers[j].level = players[i].level
-            this.topPlayers.splice(j, 0, this.topPlayers.splice(indexTopPlayer, 1)[0]);
-          } else {
-            this.topPlayers.splice(j, 0, {name:players[i].name,level:players[i].level});
-            if(this.topPlayers.length > 3) {
-              this.topPlayers.pop()
-            }
-          }
-          j = 3
+      const topPlayer = this.topPlayers.find(p => p.id == players[i].id)
+      if (!topPlayer) {
+        this.topPlayers.push({id:players[i].id,name:players[i].name,level:players[i].level})
+        updated = true
+      } else {
+        if (topPlayer.level != players[i].level) {
+          const index = this.topPlayers.map(p => p.id).indexOf(players[i].id)
+          this.topPlayers[index].level = players[i].level
           updated = true
         }
       }
     }
+
     this.topPlayers.sort((a, b) => { 
       return b.level - a.level;
     })
 
     players.splice(0, players.length)
     if (updated) {
+      this.topPlayers.splice(3)
       this.broadcastRank()
     }
 

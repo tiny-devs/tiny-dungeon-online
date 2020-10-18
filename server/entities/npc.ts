@@ -155,20 +155,28 @@ export class Npc {
             this.room.clientHandler.unicastDialog(player, newLine)
           } else {
             var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
-            this.dialog.playerCurrentLine[index].line += 1
-            if (this.dialog.playerCurrentLine[index].line >= this.dialog.playerCurrentLine[index].totalLines) {
+            if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
               this.dialog.playerCurrentLine[index].line = 0
+            } else {
+              this.dialog.playerCurrentLine[index].line += 1
             }
             this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
           }
         } else {
           var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
-          this.dialog.playerCurrentLine[index].line += 1
-          if (this.dialog.playerCurrentLine[index].line >= this.dialog.playerCurrentLine[index].totalLines) {
+          if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines-1) {
             if (this.quest != null && !playerQuest){
               player.getNewQuest(this.quest)
             }
-            this.dialog.playerCurrentLine[index].line = 0
+
+            if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
+              this.dialog.playerCurrentLine[index].line = 0
+            } else {
+              this.dialog.playerCurrentLine[index].line += 1
+            }
+          }
+          else {
+            this.dialog.playerCurrentLine[index].line += 1
           }
           this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
         }
@@ -364,8 +372,13 @@ export class Npc {
   private notCollided(y: number, x: number): boolean {
     const notSolidTile = this.room.solidLayer[y][x] === 0
     const notPlayer = !this.getPlayerAtCoords(y, x)
+    const notNpc = !this.hasNpc(y, x)
 
-    return notSolidTile && notPlayer
+    return notSolidTile && notPlayer && notNpc
+  }
+
+  private hasNpc(y: number, x: number) {
+    return this.room.npcs.some(npc => npc.x == x && npc.y == y)
   }
 
   private getPlayerAtCoords(y: number, x: number): Player | undefined{

@@ -3,7 +3,7 @@ import { Game } from './Game'
 import { Main } from './Main'
 import { Parser } from '../parser/Parser'
 import { Command, PveAttacker, Rooms, Direction, ItemsIds } from '../models/Enums'
-import { PlayerColors } from '../board/map/tiles/Color'
+import { Color, PlayerColors } from '../board/map/tiles/Color'
 import { Woods } from '../board/map/Woods'
 import { InitialRoom } from '../board/map/InitialRoom'
 import Bag from '../entities/items/Bag'
@@ -304,10 +304,17 @@ export class Client {
         }
     }
 
-    displayDialog(message: string) {
+    displayDialog(message: string, isQuestStart: boolean) {
         if (!this.isShowingMessage) {
             clearTimeout(this.messageTimeout)
+            
+            if (isQuestStart) {
+                this.messageElement.style.color = Color.LightRed
+            } else {
+                this.messageElement.style.color = 'black'
+            }
             this.messageElement.innerHTML = message
+
             this.messageTimeout = setTimeout(() => {
                 this.messageElement.innerHTML = ''
             }, 5000)
