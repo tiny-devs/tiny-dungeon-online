@@ -10,6 +10,8 @@
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
   </head>
   <body>
+    <span id="forkongithub"><a href="https://github.com/tiny-devs/tiny-dungeon-online/" target="_blank">Fork me on GitHub</a></span>
+    
     <div id="content">
       <div class="title" id="title-content">
         <h1 id="title">Tiny Dungeon Online</h1>
@@ -90,9 +92,12 @@
       </div>
     </div>
     <script src="js/bundle.js"></script>
+    <style>#forkongithub a{background:#000;color:#fff;text-decoration:none;font-family:arial,sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;line-height:2rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:#c11;color:#fff;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;top:1px;left:0;height:1px;background:#fff;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:fixed;display:block;top:0;right:0;width:200px;overflow:hidden;height:200px;z-index:9999;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);-o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}</style>
     <style>
       body {
         font-family: "Press Start 2P";
+        color: #e5e5e5;
+        background-color: #121212;
       }
 
       .title {
@@ -127,18 +132,18 @@
       }
 
       #coins {
-        border: 1px solid black;
+        border: 1px solid #e5e5e5;
         margin: 0px;
       }
 
       #bag {
-        border: 1px solid black;
+        border: 1px solid #e5e5e5;
         width: 128px;
         height: 192px;
       }
 
       #gear {
-        border: 1px solid black;
+        border: 1px solid #e5e5e5;
         width: 128px;
         height: auto;
         text-align: center;
@@ -150,7 +155,7 @@
       }
 
       .gear-slot {
-        border: 1px solid black;
+        border: 1px solid #e5e5e5;
         align-self: auto;
         margin-top: 5px;
       }
@@ -247,7 +252,7 @@
         margin:0;
         font-family:tahoma,arial,helvetica;
         font-size:12px;
-        color:black;
+        color:#e5e5e5;
       }
     </style>
   </body>

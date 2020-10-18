@@ -311,7 +311,7 @@ export class Client {
             if (isQuestStart) {
                 this.messageElement.style.color = Color.LightRed
             } else {
-                this.messageElement.style.color = 'black'
+                this.messageElement.style.color = '#e5e5e5'
             }
             this.messageElement.innerHTML = message
 
