@@ -85,6 +85,7 @@ export class SpritesLayer {
             const li = document.createElement('li')
             li.appendChild(document.createTextNode(player.name))
             li.style.color = player.color
+            li.style.textShadow = `1px 1px 2px white`
             this.playerListElement.appendChild(li)
 
             if (player.currentRoomId == clientRoomId) {

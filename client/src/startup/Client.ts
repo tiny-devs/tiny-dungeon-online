@@ -375,7 +375,7 @@ export class Client {
             this.chatTimeout-=1
             if (this.chatTimeout < 0) {
                 this.chatTimeout = 5
-                this.chatBtn.value = `${this.chatTimeout}`
+                this.chatBtn.value = `send`
                 this.chatBtn.disabled = false
                 this.canChat = true
             } else {
