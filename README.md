@@ -6,8 +6,12 @@ Play now (TODO: Deploy)
 
 Install Deno: [installation guide](https://deno.land/manual/getting_started/installation)  
 
-Run the game server  
+Run the game server (you'll need 2 terminals)  
+Server: (From the root folder)
 `deno run --allow-net=:3000 --allow-read main.ts --port=3000`
+Client: (From client's folder)
+`yarn install`
+`yarn start`
 
 Use URL to connect: `http://localhost:3000`
 
