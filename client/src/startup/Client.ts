@@ -3,7 +3,7 @@ import { Game } from './Game'
 import { Main } from './Main'
 import { Parser } from '../parser/Parser'
 import { Command, PveAttacker, Rooms, Direction, ItemsIds } from '../models/Enums'
-import { PlayerColors } from '../board/map/tiles/Color'
+import { Color, PlayerColors } from '../board/map/tiles/Color'
 import { Woods } from '../board/map/Woods'
 import { InitialRoom } from '../board/map/InitialRoom'
 import Bag from '../entities/items/Bag'
@@ -33,6 +33,9 @@ export class Client {
     private atkTextElement: HTMLElement
     private defTextElement: HTMLElement
     private messageElement: HTMLElement
+    private chatElement: HTMLElement
+    private chatMessageElement: HTMLInputElement
+    private chatBtn: HTMLButtonElement
     private showRankBtn: HTMLButtonElement
     private showPlayersBtn: HTMLButtonElement
     private rankElement: HTMLElement
@@ -53,6 +56,8 @@ export class Client {
     private parser: Parser
     private currentRoom: InitialRoom | Woods
     private canMove: boolean
+    private chatTimeout: number = 5
+    private canChat: boolean = true
 
     constructor(game: Game, clientConfigs: PlayerConfig, mainElements: Main) {
         document.onkeydown = this.checkKey.bind(this)
@@ -68,6 +73,8 @@ export class Client {
         this.atkTextElement = mainElements.atkTextElement
         this.defTextElement = mainElements.defTextElement
         this.messageElement = mainElements.messageElement
+        this.chatElement = mainElements.chatElement
+        this.chatMessageElement = mainElements.chatMessageElement as HTMLInputElement
         this.rankElement = mainElements.rankElement
         this.playersElement = mainElements.playersElement
         this.top1Element = mainElements.top1Element
@@ -102,6 +109,24 @@ export class Client {
         this.showPlayersBtn = mainElements.showPlayersBtn
         this.showPlayersBtn.onclick = () => {
             this.togglePlayers()
+        }
+
+        this.chatBtn = mainElements.chatBtn as HTMLButtonElement
+        this.chatBtn.onclick = () => {
+            this.sendChat()
+        }
+
+        this.chatMessageElement.oninput = () => {
+            if (this.chatMessageElement.value.length > 40) {
+                this.chatMessageElement.value = this.chatMessageElement.value.substring(0, 40)
+            }
+        };
+
+        this.chatMessageElement.onkeydown = (e: Partial<KeyboardEvent>) => {
+            e = e || window.event;
+            if (e.keyCode == 13) {
+                this.sendChat()
+            }
         }
 
         this.game = game
@@ -145,7 +170,11 @@ export class Client {
         this.gearElement.style.display = 'block'
         this.hpTextElement.style.display = 'block'
         this.xpTextElement.style.display = 'block'
+        this.chatElement.style.display = 'block'
         this.loginScreen.style.display = 'none'
+
+        // remove this when we have seller npcs
+        document.getElementById('coins')!.innerHTML = `${this.playerName}`
         
         this.pingPong()
     }
@@ -304,14 +333,56 @@ export class Client {
         }
     }
 
-    displayDialog(message: string) {
+    displayDialog(message: string, isQuestStart: boolean) {
         if (!this.isShowingMessage) {
             clearTimeout(this.messageTimeout)
+            
+            if (isQuestStart) {
+                this.messageElement.style.color = Color.LightRed
+            } else {
+                this.messageElement.style.color = '#e5e5e5'
+            }
             this.messageElement.innerHTML = message
+
             this.messageTimeout = setTimeout(() => {
                 this.messageElement.innerHTML = ''
             }, 5000)
         }
+    }
+
+    displayChat(message: string, playerId: string) {
+        if (playerId == this.playerId) {
+            this.startChatTimeout()
+        }
+
+        const player = this.game.spritesLayer.getPlayerById(playerId)
+        player?.drawChat(message)
+    }
+
+    sendChat() {
+        if (this.chatMessageElement.value && (this.chatMessageElement.value.length <= 40) && this.canChat) {
+            this.chatMessageElement.blur()
+            this.canChat = false
+            this.chatBtn.disabled = true
+            this.chatBtn.value = `${this.chatTimeout}`
+            this.ws!.send(`${Command.Chat},"${this.chatMessageElement.value}"`)
+            this.chatMessageElement.value = ''
+        }
+    }
+
+    startChatTimeout() {
+        setTimeout(() => {
+            this.chatTimeout-=1
+            if (this.chatTimeout < 0) {
+                this.chatTimeout = 5
+                this.chatBtn.value = `send`
+                this.chatBtn.disabled = false
+                this.canChat = true
+            } else {
+                this.chatBtn.value = `${this.chatTimeout}`
+                this.startChatTimeout()
+            }            
+        }, 1000)
     }
 
     updateRank(rank: ParseRank) {

@@ -15,7 +15,8 @@ export class Player {
     public isFighting: boolean
     public pveData: any
     public matrix: any[][]
-
+    public chatMessage: string = ''
+    private chatMessageTimeout: number = 0
     private game: Game
     private layer: SpritesLayer
     private playerSize: number
@@ -78,6 +79,29 @@ export class Player {
         this.layer.ctx.fill()
 
         this.drawHit()
+    }
+
+    drawChat(message: string) {
+        clearTimeout(this.chatMessageTimeout)
+        this.chatMessage = message
+        this.layer.ctx.font = '15px arial'
+        this.layer.ctx.textAlign = 'center'
+        this.layer.ctx.fillStyle = Color.DarkYellow
+        const x = this.x * this.game.gridConfig.cellWidth + this.game.gridConfig.cellWidth / 2
+        const y = this.y * this.game.gridConfig.cellHeight - 10
+        this.layer.ctx.fillText(`${this.chatMessage}`, x, y)
+        this.chatMessageTimeout = setTimeout(() => {
+            this.chatMessage = ''
+        }, 5000)
+    }
+
+    drawChatMessage() {
+        this.layer.ctx.font = '15px arial'
+        this.layer.ctx.textAlign = 'center'
+        this.layer.ctx.fillStyle = Color.Yellow
+        const x = this.x * this.game.gridConfig.cellWidth + this.game.gridConfig.cellWidth / 2
+        const y = this.y * this.game.gridConfig.cellHeight - 10
+        this.layer.ctx.fillText(`${this.chatMessage}`, x, y)
     }
 
     drawHit() {

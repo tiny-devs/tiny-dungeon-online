@@ -95,11 +95,11 @@ export class DrawingCanvas {
     private draw(x: number, y: number) {
         x = Math.floor(x / this.config.cellWidth)
         y = Math.floor(y / this.config.cellHeight)
-        let color = 'black'
+        let color = '#e5e5e5'
         let matrixValue = 1
 
         if (this.erasing) {
-            color = 'white'
+            color = '#121212'
             matrixValue = 0
         }
 
@@ -121,6 +121,7 @@ export class DrawingCanvas {
         for (let i = 0; i < this.config.rows; i++) {
             for (let j = 0; j < this.config.columns; j++) {
                 this.ctx.beginPath()
+                this.ctx.strokeStyle = '#e5e5e5'
                 this.ctx.rect(
                     i * this.config.cellWidth,
                     j * this.config.cellHeight,

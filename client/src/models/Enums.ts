@@ -24,7 +24,8 @@ export enum Command {
     Stats = 16,
     Message = 17,
     Dialog = 18,
-    Rank = 19
+    Rank = 19,
+    Chat = 20
 }
 
 export enum Rooms {
