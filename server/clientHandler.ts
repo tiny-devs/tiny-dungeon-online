@@ -531,8 +531,9 @@ export class ClientHandler {
               }
               break
             case Command.Chat:
-              if (eventData[1].length <= 40) {
+              if (eventData[1].length <= 40 && player.canChat) {
                 this.roomcastChat(player.currentRoom, player.id, eventData[1])
+                player.startChatTimeout()
               }
               break
             case Command.Move:

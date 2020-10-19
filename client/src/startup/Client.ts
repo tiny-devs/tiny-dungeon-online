@@ -35,7 +35,7 @@ export class Client {
     private messageElement: HTMLElement
     private chatElement: HTMLElement
     private chatMessageElement: HTMLInputElement
-    private chatBtn: HTMLElement
+    private chatBtn: HTMLButtonElement
     private showRankBtn: HTMLButtonElement
     private showPlayersBtn: HTMLButtonElement
     private rankElement: HTMLElement
@@ -56,6 +56,8 @@ export class Client {
     private parser: Parser
     private currentRoom: InitialRoom | Woods
     private canMove: boolean
+    private chatTimeout: number = 5
+    private canChat: boolean = true
 
     constructor(game: Game, clientConfigs: PlayerConfig, mainElements: Main) {
         document.onkeydown = this.checkKey.bind(this)
@@ -109,16 +111,23 @@ export class Client {
             this.togglePlayers()
         }
 
-        this.chatBtn = mainElements.chatBtn
+        this.chatBtn = mainElements.chatBtn as HTMLButtonElement
         this.chatBtn.onclick = () => {
             this.sendChat()
         }
 
-        this.chatMessageElement.addEventListener('input', () => {
+        this.chatMessageElement.oninput = () => {
             if (this.chatMessageElement.value.length > 40) {
                 this.chatMessageElement.value = this.chatMessageElement.value.substring(0, 40)
             }
-        });
+        };
+
+        this.chatMessageElement.onkeydown = (e: Partial<KeyboardEvent>) => {
+            e = e || window.event;
+            if (e.keyCode == 13) {
+                this.sendChat()
+            }
+        }
 
         this.game = game
         this.ws = null
@@ -163,6 +172,9 @@ export class Client {
         this.xpTextElement.style.display = 'block'
         this.chatElement.style.display = 'block'
         this.loginScreen.style.display = 'none'
+
+        // remove this when we have seller npcs
+        document.getElementById('coins')!.innerHTML = `${this.playerName}`
         
         this.pingPong()
     }
@@ -339,15 +351,38 @@ export class Client {
     }
 
     displayChat(message: string, playerId: string) {
+        if (playerId == this.playerId) {
+            this.startChatTimeout()
+        }
+
         const player = this.game.spritesLayer.getPlayerById(playerId)
         player?.drawChat(message)
     }
 
     sendChat() {
-        if (this.chatMessageElement.value && (this.chatMessageElement.value.length <= 40)) {
+        if (this.chatMessageElement.value && (this.chatMessageElement.value.length <= 40) && this.canChat) {
+            this.chatMessageElement.blur()
+            this.canChat = false
+            this.chatBtn.disabled = true
+            this.chatBtn.value = `${this.chatTimeout}`
             this.ws!.send(`${Command.Chat},"${this.chatMessageElement.value}"`)
             this.chatMessageElement.value = ''
         }
+    }
+
+    startChatTimeout() {
+        setTimeout(() => {
+            this.chatTimeout-=1
+            if (this.chatTimeout < 0) {
+                this.chatTimeout = 5
+                this.chatBtn.value = `${this.chatTimeout}`
+                this.chatBtn.disabled = false
+                this.canChat = true
+            } else {
+                this.chatBtn.value = `${this.chatTimeout}`
+                this.startChatTimeout()
+            }            
+        }, 1000)
     }
 
     updateRank(rank: ParseRank) {

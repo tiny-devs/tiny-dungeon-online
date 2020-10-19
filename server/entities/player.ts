@@ -30,6 +30,8 @@ export class Player {
     public bag: Bag = new Bag(this)
     public gear: Gear
     public quests: Quest[] = []
+    public chatTimeout: number = 5000
+    public canChat: boolean = true
     public clientWs: WebSocket
     private canMove: boolean = true
     private clientHandler: ClientHandler
@@ -179,6 +181,13 @@ export class Player {
             xp: +this.xp.toFixed(2),
             xpNeeded: this.xpNeeded
         }
+    }
+
+    public startChatTimeout() {
+        this.canChat = false
+        setTimeout(async () => {
+            this.canChat = true
+        }, this.chatTimeout);
     }
 
     public getNewQuest(quest: QuestBase){
