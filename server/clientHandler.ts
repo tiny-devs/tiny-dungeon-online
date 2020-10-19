@@ -184,6 +184,18 @@ export class ClientHandler {
     }
   }
 
+  private roomcastChat(room: Room, playerId: string, message: string): void {
+    let currentPlayer = null
+    try{
+      for (const player of room.players) {
+        currentPlayer = player
+        this.send(player,`${Command.Chat},${playerId},"${message}"`)
+      }
+    } catch (e) {
+      this.handleExceptions(e, currentPlayer, 'roomcastItemsInRoom')
+    }
+  }
+
   private switchRooms(player: Player, newRoom: Room) {
     try{
       player.currentRoom.removePlayer(player)
@@ -449,6 +461,12 @@ export class ClientHandler {
       eventData.push(matrix)
     }
 
+    if (eventDataString.includes(',"')) {
+      const indexFirstQuotes = eventDataString.indexOf(',"')+2
+      const indexLastQuotes = eventDataString.split(',"')[1].indexOf('"')+indexFirstQuotes
+      eventData[1] = eventDataString.substring(indexFirstQuotes, indexLastQuotes)
+    }
+
     return eventData
   }
 
@@ -510,6 +528,11 @@ export class ClientHandler {
               if (removed) {
                 this.unicastItemRemove(player, +eventData[1])
                 this.unicastPlayerStats(player)
+              }
+              break
+            case Command.Chat:
+              if (eventData[1].length <= 40) {
+                this.roomcastChat(player.currentRoom, player.id, eventData[1])
               }
               break
             case Command.Move:

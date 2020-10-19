@@ -18,6 +18,7 @@ import { Player } from '../entities/Player'
 import { ParseMessage } from './ParseMessage'
 import { ParseRank } from './ParseRank'
 import { ParseDialog } from './ParseDialog'
+import { ParseChat } from './ParseChat'
 
 export class Parser {
     private client: Client
@@ -78,6 +79,9 @@ export class Parser {
                     break
                 case Command.Message:
                     this.parseMessage(data)
+                    break
+                case Command.Chat:
+                    this.parseChat(data)
                     break
                 case Command.Error:
                     this.parseError(data)
@@ -210,5 +214,11 @@ export class Parser {
         const isQuestStart = dialogData.message.includes('-quest')
 
         this.client.displayDialog(dialogData.message, isQuestStart)
+    }
+
+    private parseChat(data: string) {
+        const chatData = new ParseChat(data)
+
+        this.client.displayChat(chatData.message, chatData.playerId)
     }
 }

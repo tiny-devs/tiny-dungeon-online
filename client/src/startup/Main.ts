@@ -24,6 +24,9 @@ export class Main {
     public atkTextElement: HTMLElement
     public defTextElement: HTMLElement
     public layersParentElement: HTMLElement
+    public chatElement: HTMLElement
+    public chatMessageElement: HTMLElement
+    public chatBtn: HTMLElement
     public messageElement: HTMLElement
     public showRankBtn: HTMLButtonElement
     public showPlayersBtn: HTMLButtonElement
@@ -64,6 +67,9 @@ export class Main {
         this.defTextElement = document.getElementById('def-text')!
         this.layersParentElement = document.getElementById('layers')!
         this.messageElement = document.getElementById('message')!
+        this.chatElement = document.getElementById('chat')!
+        this.chatMessageElement = document.getElementById('chat-message')! as HTMLInputElement
+        this.chatBtn = document.getElementById('send-chat')! as HTMLButtonElement
         this.showRankBtn = document.getElementById('show-rank')! as HTMLButtonElement
         this.showPlayersBtn = document.getElementById('show-players')! as HTMLButtonElement
         this.rankElement = document.getElementById('game-rank')!
@@ -78,6 +84,7 @@ export class Main {
         this.gearElement.style.display = 'none'
         this.hpTextElement.style.display = 'none'
         this.xpTextElement.style.display = 'none'
+        this.chatElement.style.display = 'none'
 
         if (this.isMobile()) {
             this.setupMobile()

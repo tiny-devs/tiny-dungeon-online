@@ -92,6 +92,10 @@ export class SpritesLayer {
                 if (player.isFighting) {
                     player.drawHp()
                 }
+
+                if (player.chatMessage !== '') {
+                    player.drawChatMessage()
+                }
             }
         })
     }

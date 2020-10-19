@@ -6,7 +6,7 @@
     <meta name="author" content="Tiny Devs">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1">
-    <title>TDO</title>
+    <title>TLO</title>
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
   </head>
   <body>
@@ -14,8 +14,8 @@
     
     <div id="content">
       <div class="title" id="title-content">
-        <h1 id="title">Tiny Dungeon Online</h1>
-        <p id="sub-title">A Tiny Minimalist Online RPG Game</p>
+        <h1 id="title">Tiny Land Online</h1>
+        <p id="sub-title">A Tiny Online RPG Game</p>
       </div>
       <div class="login-flex-container">
         <div id="login" class="login-flex-item">
@@ -48,6 +48,10 @@
               <input type="button" value="▼" id="down"></input>
               <input type="button" value="►" id="right"></input>
             </center>
+          </div>
+          <div id="chat">
+            <input id="chat-message"></input>
+            <input type="button" value="send" id="send-chat"></input>
           </div>
           <div id="game-messages">
             <p id="message"></p>
@@ -125,6 +129,17 @@
         overflow-wrap: break-word;
         word-wrap: break-word;
         hyphens: auto;
+      }
+
+      #chat-message {
+        width: 70%;
+      }
+
+      #send-chat {
+        width: 20%;
+        margin: 0;
+        margin-left: -5px;
+        padding: 0;
       }
       
       #game-info, #game-rank {

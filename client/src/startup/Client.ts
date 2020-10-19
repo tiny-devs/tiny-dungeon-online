@@ -33,6 +33,9 @@ export class Client {
     private atkTextElement: HTMLElement
     private defTextElement: HTMLElement
     private messageElement: HTMLElement
+    private chatElement: HTMLElement
+    private chatMessageElement: HTMLInputElement
+    private chatBtn: HTMLElement
     private showRankBtn: HTMLButtonElement
     private showPlayersBtn: HTMLButtonElement
     private rankElement: HTMLElement
@@ -68,6 +71,8 @@ export class Client {
         this.atkTextElement = mainElements.atkTextElement
         this.defTextElement = mainElements.defTextElement
         this.messageElement = mainElements.messageElement
+        this.chatElement = mainElements.chatElement
+        this.chatMessageElement = mainElements.chatMessageElement as HTMLInputElement
         this.rankElement = mainElements.rankElement
         this.playersElement = mainElements.playersElement
         this.top1Element = mainElements.top1Element
@@ -103,6 +108,17 @@ export class Client {
         this.showPlayersBtn.onclick = () => {
             this.togglePlayers()
         }
+
+        this.chatBtn = mainElements.chatBtn
+        this.chatBtn.onclick = () => {
+            this.sendChat()
+        }
+
+        this.chatMessageElement.addEventListener('input', () => {
+            if (this.chatMessageElement.value.length > 40) {
+                this.chatMessageElement.value = this.chatMessageElement.value.substring(0, 40)
+            }
+        });
 
         this.game = game
         this.ws = null
@@ -145,6 +161,7 @@ export class Client {
         this.gearElement.style.display = 'block'
         this.hpTextElement.style.display = 'block'
         this.xpTextElement.style.display = 'block'
+        this.chatElement.style.display = 'block'
         this.loginScreen.style.display = 'none'
         
         this.pingPong()
@@ -318,6 +335,18 @@ export class Client {
             this.messageTimeout = setTimeout(() => {
                 this.messageElement.innerHTML = ''
             }, 5000)
+        }
+    }
+
+    displayChat(message: string, playerId: string) {
+        const player = this.game.spritesLayer.getPlayerById(playerId)
+        player?.drawChat(message)
+    }
+
+    sendChat() {
+        if (this.chatMessageElement.value && (this.chatMessageElement.value.length <= 40)) {
+            this.ws!.send(`${Command.Chat},"${this.chatMessageElement.value}"`)
+            this.chatMessageElement.value = ''
         }
     }
 
