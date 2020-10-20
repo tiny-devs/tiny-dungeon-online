@@ -6,6 +6,7 @@ import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
 import { PveData } from './pve/pveData.ts'
+import ConnectionManager from "./db/main.ts"
 
 export class ClientHandler {
   public boardColumns: number = 16
@@ -13,6 +14,7 @@ export class ClientHandler {
   public playerNames: string[] = []
   public map: Map
   private topPlayers: {id:string,name:string,level:number}[]
+  private db: ConnectionManager
 
   constructor(serverConfigs: any) {
     this.boardRows = serverConfigs.boardRows
@@ -20,10 +22,13 @@ export class ClientHandler {
 
     this.map = new Map(this)
 
+    this.db = new ConnectionManager()
+
     this.topPlayers = []
-    this.topPlayers.push({id:'',name:'',level:0})
-    this.topPlayers.push({id:'',name:'',level:0})
-    this.topPlayers.push({id:'',name:'',level:0})
+
+     this.db.getRank().then(result => {
+      this.topPlayers = result
+    })
   }
 
   private broadcastRank(): void {
@@ -350,7 +355,9 @@ export class ClientHandler {
     players.splice(0, players.length)
     if (updated) {
       this.topPlayers.splice(3)
-      this.broadcastRank()
+      this.db.updateRank(this.topPlayers).then(() => {
+        this.broadcastRank()
+      })
     }
 
     return updated
