@@ -2,7 +2,7 @@ import { PlayerConfig } from '../models/configs'
 import { Game } from './Game'
 import { Main } from './Main'
 import { Parser } from '../parser/Parser'
-import { Command, PveAttacker, Rooms, Direction, ItemsIds } from '../models/Enums'
+import { Command, PveAttacker, Rooms, Direction, ItemsIds, GearType } from '../models/Enums'
 import { Color, PlayerColors } from '../board/map/tiles/Color'
 import { Woods } from '../board/map/Woods'
 import { InitialRoom } from '../board/map/InitialRoom'
@@ -11,6 +11,8 @@ import { ParseItemPick } from '../parser/ParseItemPick'
 import { ParseItemRemove } from '../parser/ParseItemRemove'
 import Gear from '../entities/items/Gear'
 import { ParseRank } from '../parser/ParseRank'
+import { ParseLoad } from '../parser/ParseLoad'
+import { ParsePlayerIdUpdate } from '../parser/ParsePlayerIdUpdate'
 
 export class Client {
     public loggedIn: boolean
@@ -25,6 +27,8 @@ export class Client {
     private gameScreen: HTMLElement
     private bagElement: HTMLElement
     private gearElement: HTMLElement
+    private exitElement: HTMLElement
+    private exit: HTMLElement
     private coinsElement: HTMLElement
     private hpTextElement: HTMLElement
     private xpTextElement: HTMLElement
@@ -58,6 +62,7 @@ export class Client {
     private canMove: boolean
     private chatTimeout: number = 5
     private canChat: boolean = true
+    private localStorageLoadKey: string = 'tinydata'
 
     constructor(game: Game, clientConfigs: PlayerConfig, mainElements: Main) {
         document.onkeydown = this.checkKey.bind(this)
@@ -66,6 +71,7 @@ export class Client {
         this.bagElement = mainElements.bagElement
         this.coinsElement = mainElements.coinsElement
         this.gearElement = mainElements.gearElement
+        this.exitElement = mainElements.exitElement
         this.hpTextElement = mainElements.hpTextElement
         this.xpTextElement = mainElements.xpTextElement
         this.hpBarElement = mainElements.hpBarElement
@@ -75,6 +81,7 @@ export class Client {
         this.messageElement = mainElements.messageElement
         this.chatElement = mainElements.chatElement
         this.chatMessageElement = mainElements.chatMessageElement as HTMLInputElement
+        this.exit = mainElements.exitBtn as HTMLInputElement
         this.rankElement = mainElements.rankElement
         this.playersElement = mainElements.playersElement
         this.top1Element = mainElements.top1Element
@@ -109,6 +116,11 @@ export class Client {
         this.showPlayersBtn = mainElements.showPlayersBtn
         this.showPlayersBtn.onclick = () => {
             this.togglePlayers()
+        }
+
+        this.exit = mainElements.exitBtn as HTMLButtonElement
+        this.exit.onclick = () => {
+            this.sendExitRequest()
         }
 
         this.chatBtn = mainElements.chatBtn as HTMLButtonElement
@@ -168,6 +180,7 @@ export class Client {
         this.bagElement.style.display = 'block'
         this.coinsElement.style.display = 'block'
         this.gearElement.style.display = 'block'
+        this.exitElement.style.display = 'block'
         this.hpTextElement.style.display = 'block'
         this.xpTextElement.style.display = 'block'
         this.chatElement.style.display = 'block'
@@ -180,9 +193,11 @@ export class Client {
     }
 
     getPlayerLoginData() {
-        let playerMatrix = JSON.stringify(this.playerMatrix)
+        const playerLoadData = localStorage.getItem(this.localStorageLoadKey)
+        const playerData = playerLoadData ? playerLoadData : '0'
+        const playerMatrix = JSON.stringify(this.playerMatrix)
 
-        return `${Command.Login},` + `${this.playerName},` + `${this.getRandomPlayerColor()},` + `${playerMatrix}`
+        return `${Command.Login},${this.playerName},${this.getRandomPlayerColor()},${playerData},${playerMatrix}`
     }
 
     onReceiveMessage(event: any) {
@@ -416,6 +431,57 @@ export class Client {
             this.showPlayersBtn.value = 'show players'
             this.playersElement.style.display = 'none'
         }
+    }
+
+    updatePlayerId(data: ParsePlayerIdUpdate) {
+        this.game.spritesLayer.updatePlayerId(data.oldId, data.newId)
+    }
+
+    savePlayerData(playerHexData: string) {
+        localStorage.setItem(this.localStorageLoadKey, playerHexData)
+        this.displayMessage('player saved!')
+    }
+
+    loadPlayerData(loadData: ParseLoad) {
+        this.game.spritesLayer.updatePlayerId(this.playerId, loadData.id)
+        this.playerId = loadData.id
+        this.bag.playerId = loadData.id
+        this.gear.playerId = loadData.id
+        
+        this.applyStats(loadData.hp, loadData.maxHp, loadData.attack, loadData.defense, loadData.level, loadData.xp, loadData.xpNeeded)
+        this.loadItems(loadData.itemsIds)
+        this.loadGear(loadData.gearHead, loadData.gearTorso, loadData.gearLegs, loadData.gearWeapon)
+    }
+
+    loadItems(items: ItemsIds[]) {
+        for (const item of items) {
+            this.bag.addItem(item, 0, this.playerId)
+        }
+    }
+
+    loadGear(head: ItemsIds | null, torso: ItemsIds | null, legs: ItemsIds | null, weapon: ItemsIds | null) {
+        if (head) {
+            this.gear.addGear(head, GearType.Head)
+        }
+        if (torso) {
+            this.gear.addGear(torso, GearType.Torso)
+        }
+        if (legs) {
+            this.gear.addGear(legs, GearType.Legs)
+        }
+        if (weapon) {
+            this.gear.addGear(weapon, GearType.Weapon)
+        }
+    }
+
+    sendExitRequest() {
+        this.ws!.send(`${Command.Exit}`)
+    }
+
+    exitConfirmed(data: string) {
+        this.savePlayerData(data)
+        alert('Exit Successful!')
+        window.location.reload()
     }
 
     getRandomPlayerColor() {
