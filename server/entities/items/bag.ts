@@ -1,6 +1,37 @@
-import { Items, ItemType, GearType } from "../../Enums.ts"
+import { Items, ItemType } from "../../Enums.ts"
 import ItemBase from "./itemBase.ts"
 import { Player } from "../player.ts"
+import WoodenHelm from "./woodenHelm.ts"
+import WoodenArmour from "./woodenArmour.ts"
+import WoodenLegs from "./woodenLegs.ts"
+import WoodenDagger from "./woodenDagger.ts"
+import WoodenSword from "./woodenSword.ts"
+import BronzeHelm from "./bronzeHelm.ts"
+import BronzeArmour from "./bronzeArmour.ts"
+import BronzeLegs from "./bronzeLegs.ts"
+import BronzeDagger from "./bronzeDagger.ts"
+import BronzeSword from "./bronzeSword.ts"
+import IronHelm from "./ironHelm.ts"
+import IronArmour from "./ironArmour.ts"
+import IronLegs from "./ironLegs.ts"
+import IronDagger from "./ironDagger.ts"
+import IronSword from "./ironSword.ts"
+import BluriteHelm from "./bluriteHelm.ts"
+import BluriteArmour from "./bluriteArmour.ts"
+import BluriteLegs from "./bluriteLegs.ts"
+import BluriteDagger from "./bluriteDagger.ts"
+import BluriteSword from "./bluriteSword.ts"
+import AdamantHelm from "./adamantHelm.ts"
+import AdamantArmour from "./adamantArmour.ts"
+import AdamantLegs from "./adamantLegs.ts"
+import AdamantDagger from "./adamantDagger.ts"
+import AdamantSword from "./adamantSword.ts"
+import FireHelm from "./fireHelm.ts"
+import FireArmour from "./fireArmour.ts"
+import FireLegs from "./fireLegs.ts"
+import FireDagger from "./fireDagger.ts"
+import FireSword from "./fireSword.ts"
+import Coffee from "./coffee.ts"
 
 export default class Bag {
     public items: ItemBase[] = []
@@ -21,7 +52,7 @@ export default class Bag {
                 return {used:true,wore:false}
             }
             if (item.type == ItemType.Weareable) {
-                const wore = this.player.gear.wear(item)
+                const wore = this.player.gear.wear(item, false)
                 if (wore) {
                     this.removeItem(item)
                 }
@@ -55,6 +86,104 @@ export default class Bag {
             }
         }
         return false
+    }
+
+    public getItemFromItemId(item: Items): ItemBase | null {
+        if (item == Items.Coffee) {
+            return new Coffee(0)
+        }
+        if (item == Items.WoodenHelm) {
+            return new WoodenHelm(0)
+        }
+        if (item == Items.WoodenArmour) {
+            return new WoodenArmour(0)
+        }
+        if (item == Items.WoodenLegs) {
+            return new WoodenLegs(0)
+        }
+        if (item == Items.WoodenDagger) {
+            return new WoodenDagger(0)
+        }
+        if (item == Items.WoodenSword) {
+            return new WoodenSword(0)
+        }
+        if (item == Items.BronzeHelm) {
+            return new BronzeHelm(0)
+        }
+        if (item == Items.BronzeArmour) {
+            return new BronzeArmour(0)
+        }
+        if (item == Items.BronzeLegs) {
+            return new BronzeLegs(0)
+        }
+        if (item == Items.BronzeDagger) {
+            return new BronzeDagger(0)
+        }
+        if (item == Items.BronzeSword) {
+            return new BronzeSword(0)
+        }
+        if (item == Items.IronHelm) {
+            return new IronHelm(0)
+        }
+        if (item == Items.IronArmour) {
+            return new IronArmour(0)
+        }
+        if (item == Items.IronLegs) {
+            return new IronLegs(0)
+        }
+        if (item == Items.IronDagger) {
+            return new IronDagger(0)
+        }
+        if (item == Items.IronSword) {
+            return new IronSword(0)
+        }
+        if (item == Items.BluriteHelm) {
+            return new BluriteHelm(0)
+        }
+        if (item == Items.BluriteArmour) {
+            return new BluriteArmour(0)
+        }
+        if (item == Items.BluriteLegs) {
+            return new BluriteLegs(0)
+        }
+        if (item == Items.BluriteDagger) {
+            return new BluriteDagger(0)
+        }
+        if (item == Items.BluriteSword) {
+            return new BluriteSword(0)
+        }
+        if (item == Items.AdamantHelm) {
+            return new AdamantHelm(0)
+        }
+        if (item == Items.AdamantArmour) {
+            return new AdamantArmour(0)
+        }
+        if (item == Items.AdamantLegs) {
+            return new AdamantLegs(0)
+        }
+        if (item == Items.AdamantDagger) {
+            return new AdamantDagger(0)
+        }
+        if (item == Items.AdamantSword) {
+            return new AdamantSword(0)
+        }
+        if (item == Items.FireHelm) {
+            return new FireHelm(0)
+        }
+        if (item == Items.FireArmour) {
+            return new FireArmour(0)
+        }
+        if (item == Items.FireLegs) {
+            return new FireLegs(0)
+        }
+        if (item == Items.FireDagger) {
+            return new FireDagger(0)
+        }
+        if (item == Items.FireSword) {
+            return new FireSword(0)
+        }
+        
+        return null
     }
 
     removeItem(item: ItemBase) {

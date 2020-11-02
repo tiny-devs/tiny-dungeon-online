@@ -6,7 +6,8 @@ import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
 import { PveData } from './pve/pveData.ts'
-import ConnectionManager from "./db/main.ts"
+import ConnectionManager from "./data/connectionManager.ts"
+import DataManager from "./data/dataManager.ts"
 
 export class ClientHandler {
   public boardColumns: number = 16
@@ -15,6 +16,7 @@ export class ClientHandler {
   public map: Map
   private topPlayers: {id:string,name:string,level:number}[]
   private db: ConnectionManager
+  private playerDataManager: DataManager
 
   constructor(serverConfigs: any) {
     this.boardRows = serverConfigs.boardRows
@@ -22,10 +24,10 @@ export class ClientHandler {
 
     this.map = new Map(this)
 
+    this.playerDataManager = new DataManager()
+
     this.db = new ConnectionManager()
-
     this.topPlayers = []
-
      this.db.getRank().then(result => {
       this.topPlayers = result
     })
@@ -321,6 +323,61 @@ export class ClientHandler {
     }
   }
 
+  public async unicastPlayerDataHashSave(player: Player) {
+    try{
+      const playerDataHash = await this.playerDataManager.encryptUserData(player.getPlayerDataForSave())
+      this.send(player,`${Command.Save},${playerDataHash}`)
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastPlayerDataHash')
+    }
+  }
+
+  private async unicastPlayerDataLoaded(player: Player, dataHash: string) {
+    try{
+      await this.loadPlayerDataFromHash(player, dataHash)
+      let data = `${Command.Load},${player.id},`+
+      `${player.hp},${player.totalHp()},${player.totalAttack()},${player.totalDefense()},`+
+      `${player.level},${player.xp},${player.xpNeeded}@`
+      for (const item of player.bag.items) {
+        data += `${item.itemId},`
+      }
+      data += '@'
+      if (player.gear.head) {
+        data += `${player.gear.head.itemId}@`
+      } else {
+        data += 'empty@'
+      }
+      if (player.gear.torso) {
+        data += `${player.gear.torso.itemId}@`
+      } else {
+        data += 'empty@'
+      }
+      if (player.gear.legs) {
+        data += `${player.gear.legs.itemId}@`
+      } else {
+        data += 'empty@'
+      }
+      if (player.gear.weapon) {
+        data += `${player.gear.weapon.itemId}`
+      } else {
+        data += 'empty'
+      }
+
+      this.send(player,data)
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastPlayerDataHash')
+    }
+  }
+
+  private async loadPlayerDataFromHash(player: Player, dataHash: string) {
+    try{
+      const data = await this.playerDataManager.decryptUserData(dataHash)
+      player.loadPlayerDataFromSave(data)
+    } catch (e) {
+      this.handleExceptions(e, player, 'loadPlayerDataFromHash')
+    }
+  }
+
   public updateRank() {
     let updated = false
     let players = [] as any[]
@@ -556,15 +613,24 @@ export class ClientHandler {
               this.playerNames.push(eventData[1])
               player.name = eventData[1]
               player.color = eventData[2]
-              player.matrix = JSON.parse(eventData[3])
+              player.matrix = JSON.parse(eventData[4])
+
               this.broadcastPlayerConnection(playerId)
               this.unicastNpcsInRoom(player)
               this.unicastItemsInRoom(player)
-              this.unicastPlayerStats(player)
+
+              const playerLoadData = eventData[3]
+              const hasPlayerData = playerLoadData != '0'
+              if (hasPlayerData) {
+                await this.unicastPlayerDataLoaded(player,playerLoadData)
+              } else {
+                this.unicastPlayerStats(player)
+              }
               const updatedRank = this.updateRank()
               if (!updatedRank) {
                 this.unicastRank(player)
               }
+              player.savePlayer()
               break
             case Command.Ping:
               this.pong(player)

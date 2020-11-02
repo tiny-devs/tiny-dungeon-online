@@ -34,6 +34,8 @@ export class Player {
     public canChat: boolean = true
     public clientWs: WebSocket
     private canMove: boolean = true
+    private savePlayerInterval: number = 300000
+    private playerSaveTimeout: number = 0
     private clientHandler: ClientHandler
 
     constructor(id: string,
@@ -183,6 +185,88 @@ export class Player {
         }
     }
 
+    public getPlayerDataForSave(): string {
+        let simpleData = `${this.id};${this.name};${this.level};${+this.xp.toFixed(2)};${this.xpNeeded};` +
+                    `${this.hp};${this.maxHp};${this.attack};${this.defense}@`
+        
+        let bagData = `${this.bag.coins}`
+        for (const item of this.bag.items) {
+            bagData += `;${item.itemId}`
+        }
+
+        let gearData = `@`
+        if (this.gear.head) {
+            gearData += `${this.gear.head.itemId},`
+        } else {
+            gearData += 'empty,'
+        }
+        if (this.gear.torso) {
+            gearData += `${this.gear.torso.itemId},`
+        } else {
+            gearData += 'empty,'
+        }
+        if (this.gear.legs) {
+            gearData += `${this.gear.legs.itemId},`
+        } else {
+            gearData += 'empty,'
+        }
+        if (this.gear.weapon) {
+            gearData += `${this.gear.weapon.itemId},`
+        } else {
+            gearData += 'empty'
+        }
+
+        //let questData = `[` maybe later
+
+        return simpleData + bagData + gearData
+    }
+
+    public loadPlayerDataFromSave(data: string) {
+        const allData = data.split('@')
+        const simpleData = allData[0].split(';')
+        this.id = simpleData[0]
+        //this.name = simpleData[1]
+        this.level = +simpleData[2]
+        this.xp = +simpleData[3]
+        this.xpNeeded = +simpleData[4]
+        this.hp = +simpleData[5]
+        this.maxHp = +simpleData[6]
+        this.attack = +simpleData[7]
+        this.defense = +simpleData[8]
+
+        const bagData = allData[1].split(';')
+        this.bag.coins = +bagData[0]
+        if (bagData[1]) {
+            for (let i=1;i<bagData.length;i++) {
+                const item = this.bag.getItemFromItemId(+bagData[i])
+                if (item) {
+                    this.bag.addItem(item)
+                }
+            }
+        }
+
+        const gearData = allData[2].split(',')
+        for (let i=1; i<5; i++) {
+            if (gearData[i] != 'empty') {
+                const item = this.bag.getItemFromItemId(+gearData[i])
+                if (item) {
+                    this.gear.wear(item, true)
+                }
+            }
+        }
+    }
+
+    public savePlayer(): void {
+        clearTimeout(this.playerSaveTimeout)
+        if (!this.clientWs.isClosed) {
+            this.playerSaveTimeout = setTimeout(async () => {
+                this.clientHandler.unicastPlayerDataHashSave(this).then(() => {
+                    this.savePlayer()
+                })
+            }, this.savePlayerInterval);
+        }
+    }
+
     public startChatTimeout() {
         this.canChat = false
         setTimeout(async () => {
@@ -250,15 +334,15 @@ export class Player {
         return Math.floor(Math.random() * (this.totalDefense()))
     }
 
-    private totalDefense() {
+    public totalDefense() {
         return this.defense + this.gear.getDefenseBonus() + Math.floor(this.level/5)
     }
 
-    private totalAttack() {
+    public totalAttack() {
         return this.attack + this.gear.getAttackBonus() + Math.floor(this.level/5)
     }
 
-    private totalHp() {
+    public totalHp() {
         return this.maxHp + Math.floor(this.level/5)
     }
 

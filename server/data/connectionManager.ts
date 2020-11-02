@@ -42,8 +42,12 @@ export default class ConnectionManager {
 
             console.log(`DB error:`)
             console.log(e)
-            this.lastAction = LastActionEnum.GetRank
-            this.reconnect()
+
+            const dbAvailable = !e.name.includes('AddrNotAvailable')
+            if (dbAvailable) {
+                this.lastAction = LastActionEnum.GetRank
+                this.reconnect()
+            }
             return result
         }
     }
@@ -68,12 +72,18 @@ export default class ConnectionManager {
                 "PlayerName", topPlayers[2].name,
                 "PlayerLevel", topPlayers[2].level]);
         } catch (e) {
-            this.client.close()
-            this.isConnected = false
-            console.log(`DB error:`)
-            console.log(e)
-            this.lastAction = LastActionEnum.UpdateRank
-            this.reconnect()
+            if (!e.message.includes('Unconnected')) {
+                this.client.close()
+                this.isConnected = false
+                console.log(`DB error:`)
+                console.log(e)
+    
+                const dbAvailable = !e.name.includes('AddrNotAvailable')
+                if (dbAvailable) {
+                    this.lastAction = LastActionEnum.UpdateRank
+                    this.reconnect()
+                }
+            }
         }
     }
 
@@ -85,7 +95,10 @@ export default class ConnectionManager {
                 db: this.dbname,
                 password: this.password,
             });
-            this.isConnected = true
+
+            if (this.client.pool?.available) {
+                this.isConnected = true
+            }
         } catch (e) {
             this.isConnected = false
             console.log(e)
@@ -108,12 +121,16 @@ export default class ConnectionManager {
     }
 
     private async reconnect() {
-        console.log(`retrying connection: ${this.reconnectAttempts}`)
+        console.log(`retrying connection: ${this.reconnectAttempts + 1}`)
         setTimeout(async ()=>{
             await this.connect()
             if (!this.isConnected) {
                 this.reconnectAttempts += 1
-                this.reconnect()
+                if (this.reconnectAttempts < 5) {
+                    this.reconnect()
+                } else {
+                    console.log('unable to reach db')
+                }
             } else {
                 this.reconnectAttempts = 0
                 console.log('reconnected to db!')

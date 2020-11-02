@@ -18,7 +18,9 @@ export enum Command {
     Message,
     Dialog,
     Rank,
-    Chat
+    Chat,
+    Save,
+    Load
 }
 
 export enum Direction {

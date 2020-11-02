@@ -120,6 +120,11 @@ export class SpritesLayer {
         })
     }
 
+    updatePlayerId(oldId: string, newId: string) {
+        const index = this.players.findIndex((x) => x.id === oldId)
+        this.players[index].id = newId
+    }
+
     getPlayerById(id: string) {
         return this.players.find((x) => x.id === id)
     }

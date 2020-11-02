@@ -19,6 +19,8 @@ import { ParseMessage } from './ParseMessage'
 import { ParseRank } from './ParseRank'
 import { ParseDialog } from './ParseDialog'
 import { ParseChat } from './ParseChat'
+import { ParseSave } from './ParseSave'
+import { ParseLoad } from './ParseLoad'
 
 export class Parser {
     private client: Client
@@ -82,6 +84,12 @@ export class Parser {
                     break
                 case Command.Chat:
                     this.parseChat(data)
+                    break
+                case Command.Save:
+                    this.parseSave(data)
+                    break
+                case Command.Load:
+                    this.parseLoad(data)
                     break
                 case Command.Error:
                     this.parseError(data)
@@ -220,5 +228,17 @@ export class Parser {
         const chatData = new ParseChat(data)
 
         this.client.displayChat(chatData.message, chatData.playerId)
+    }
+
+    private parseSave(data: string) {
+        const saveData = new ParseSave(data)
+
+        this.client.savePlayerData(saveData.playerDataHex)
+    }
+
+    private parseLoad(data: string) {
+        const loadData = new ParseLoad(data)
+
+        this.client.loadPlayerData(loadData)
     }
 }
