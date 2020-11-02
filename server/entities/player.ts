@@ -312,8 +312,8 @@ export class Player {
         }
     }
 
-    public takeDamage(dmg: number): number {
-        let defense = this.getDefenseFromDamage()
+    public takeDamage(dmg: number, crit: boolean): number {
+        let defense = this.getDefenseFromDamage(crit)
         defense = defense > dmg ? dmg : defense
         const actualDamage = (dmg - defense)
     
@@ -326,12 +326,28 @@ export class Player {
         return defense
     }
 
-    public getAttackDamage(): number {
-        return Math.floor(Math.random() * (this.totalAttack()))
+    public checkCriticalHit(hit: number): boolean {
+        return hit > (this.totalAttack() - (this.totalAttack()/8))
     }
 
-    private getDefenseFromDamage(): number {
-        return Math.floor(Math.random() * (this.totalDefense()))
+    public getAttackDamage(): number {
+        const luckFactor = Math.random()
+        if (luckFactor > 0.9) {
+            return this.totalAttack()
+        }
+        return Math.floor(luckFactor * (this.totalAttack()))
+    }
+
+    private getDefenseFromDamage(crit: boolean): number {
+        const minimalDefenseFromBadLuck = 0.5 // defense can be halved from bad luck
+        let luckFactor = Math.random() * (1 - minimalDefenseFromBadLuck) + minimalDefenseFromBadLuck
+        if (luckFactor > 0.9) {
+            return this.totalDefense()
+        }
+        if ((luckFactor < (minimalDefenseFromBadLuck + (luckFactor/2))) && crit) { // if enemy hit critical and you were unlucky defending
+            luckFactor = Math.random() * (minimalDefenseFromBadLuck - 0.2) + 0.2 // you defense can be only 20% to 50% effective
+        }
+        return Math.floor(luckFactor * (this.totalDefense()))
     }
 
     public totalDefense() {
