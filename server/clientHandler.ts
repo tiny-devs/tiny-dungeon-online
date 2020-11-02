@@ -56,6 +56,23 @@ export class ClientHandler {
     }
   }
 
+  private broadcastPlayerIdUpdate(newId: string, oldId: string): void {
+    let currentPlayer = null
+    try{
+      for (const room of this.map.rooms) {
+        for (const player of room.players) {
+          currentPlayer = player
+          this.send(player,`${Command.UpdatePlayerId},${oldId},${newId}`)
+        }
+      }
+    } catch (e) {
+      const success = this.handleExceptions(e, currentPlayer, 'broadcastPlayerConnection')
+      if (success) {
+        this.broadcastPlayerIdUpdate(newId,oldId)
+      }
+    }
+  }
+
   private broadcastPlayerConnection(playerId: string): void {
     let currentPlayer = null
     try{
@@ -328,7 +345,7 @@ export class ClientHandler {
       const playerDataHash = await this.playerDataManager.encryptUserData(player.getPlayerDataForSave())
       this.send(player,`${Command.Save},${playerDataHash}`)
     } catch (e) {
-      this.handleExceptions(e, player, 'unicastPlayerDataHash')
+      this.handleExceptions(e, player, 'unicastPlayerDataHashSave')
     }
   }
 
@@ -365,7 +382,7 @@ export class ClientHandler {
 
       this.send(player,data)
     } catch (e) {
-      this.handleExceptions(e, player, 'unicastPlayerDataHash')
+      this.handleExceptions(e, player, 'unicastPlayerDataLoaded')
     }
   }
 
@@ -373,6 +390,15 @@ export class ClientHandler {
     try{
       const data = await this.playerDataManager.decryptUserData(dataHash)
       player.loadPlayerDataFromSave(data)
+    } catch (e) {
+      this.handleExceptions(e, player, 'loadPlayerDataFromHash')
+    }
+  }
+
+  private async unicastPlayerExit(player: Player) {
+    try{
+      const playerDataHash = await this.playerDataManager.encryptUserData(player.getPlayerDataForSave())
+      this.send(player,`${Command.Exit},${playerDataHash}`)
     } catch (e) {
       this.handleExceptions(e, player, 'loadPlayerDataFromHash')
     }
@@ -477,11 +503,26 @@ export class ClientHandler {
 
   private checkNameDuplicate(name: string, player: Player): boolean {
     try {
-      let nameExists = this.playerNames.some(pName => pName == name)
-      if (nameExists) {
-        return this.send(player, `${Command.Error},"Name already exists"`)
-      }
-      return false
+      return this.playerNames.some(pName => pName == name)
+    } catch (e) {
+      this.handleExceptions(e, player, 'checkNameDuplicate')
+    }
+    return false
+  }
+
+  private checkPlayerAlreadyLogged(player: Player, id: string): boolean {
+    try {
+      const players = this.getAllPlayers()
+      return players.filter(p => p.id == id).length > 1
+    } catch (e) {
+      this.handleExceptions(e, player, 'checkNameDuplicate')
+    }
+    return false
+  }
+
+  private unicastError(player: Player, description: string): boolean {
+    try {
+      this.send(player, `${Command.Error},"${description}"`)
     } catch (e) {
       this.handleExceptions(e, player, 'checkNameDuplicate')
     }
@@ -496,6 +537,7 @@ export class ClientHandler {
       if (!player.clientWs.isClosed) {
         player.clientWs?.close()
       }
+
       return true
     } catch (e) {
       this.handleExceptions(e, player, 'logPlayerOut')
@@ -552,6 +594,7 @@ export class ClientHandler {
 
   public async handleClient(ws: WebSocket): Promise<void> {
     try {
+      let exit = false
       let duplicatedName = false
       const initialRoom = this.map.rooms[0]
       const playerId = v4.generate()
@@ -606,6 +649,7 @@ export class ClientHandler {
             case Command.Login:
               duplicatedName = this.checkNameDuplicate(eventData[1], player)
               if (duplicatedName) {
+                this.unicastError(player, "Name already exists")
                 initialRoom.removePlayer(player)
                 break
               }
@@ -622,7 +666,14 @@ export class ClientHandler {
               const playerLoadData = eventData[3]
               const hasPlayerData = playerLoadData != '0'
               if (hasPlayerData) {
+                const oldId = player.id
                 await this.unicastPlayerDataLoaded(player,playerLoadData)
+                this.broadcastPlayerIdUpdate(player.id, oldId)
+                const isPlayerAlreadyLogged = this.checkPlayerAlreadyLogged(player, player.id)
+                if (isPlayerAlreadyLogged) {
+                  this.unicastError(player, "Player already logged")
+                  exit = true
+                }
               } else {
                 this.unicastPlayerStats(player)
               }
@@ -632,6 +683,10 @@ export class ClientHandler {
               }
               player.savePlayer()
               break
+            case Command.Exit:
+              exit = true
+              await this.unicastPlayerExit(player)
+              break
             case Command.Ping:
               this.pong(player)
               break
@@ -639,6 +694,12 @@ export class ClientHandler {
 
           if (duplicatedName) {
             this.logPlayerOut(player)
+            break
+          }
+
+          if (exit) {
+            this.logPlayerOut(player)
+            this.broadcastPlayerConnection(playerId)
             break
           }
 

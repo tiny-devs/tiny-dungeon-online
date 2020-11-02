@@ -21,6 +21,7 @@ import { ParseDialog } from './ParseDialog'
 import { ParseChat } from './ParseChat'
 import { ParseSave } from './ParseSave'
 import { ParseLoad } from './ParseLoad'
+import { ParsePlayerIdUpdate } from './ParsePlayerIdUpdate'
 
 export class Parser {
     private client: Client
@@ -90,6 +91,12 @@ export class Parser {
                     break
                 case Command.Load:
                     this.parseLoad(data)
+                    break
+                case Command.UpdatePlayerId:
+                    this.parseIdUpdate(data)
+                    break
+                case Command.Exit:
+                    this.parseExit(data)
                     break
                 case Command.Error:
                     this.parseError(data)
@@ -240,5 +247,17 @@ export class Parser {
         const loadData = new ParseLoad(data)
 
         this.client.loadPlayerData(loadData)
+    }
+
+    private parseExit(data: string) {
+        const saveData = new ParseSave(data)
+
+        this.client.exitConfirmed(saveData.playerDataHex)
+    }
+
+    private parseIdUpdate(data: string) {
+        const updateIdData = new ParsePlayerIdUpdate(data)
+
+        this.client.updatePlayerId(updateIdData)
     }
 }

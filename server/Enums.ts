@@ -20,7 +20,9 @@ export enum Command {
     Rank,
     Chat,
     Save,
-    Load
+    Load,
+    UpdatePlayerId,
+    Exit
 }
 
 export enum Direction {

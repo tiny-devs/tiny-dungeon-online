@@ -16,6 +16,7 @@ export class Main {
     public gameScreen: HTMLElement
     public bagElement: HTMLElement
     public gearElement: HTMLElement
+    public exitElement: HTMLElement
     public coinsElement: HTMLElement
     public hpTextElement: HTMLElement
     public xpTextElement: HTMLElement
@@ -27,6 +28,7 @@ export class Main {
     public chatElement: HTMLElement
     public chatMessageElement: HTMLElement
     public chatBtn: HTMLElement
+    public exitBtn: HTMLElement
     public messageElement: HTMLElement
     public showRankBtn: HTMLButtonElement
     public showPlayersBtn: HTMLButtonElement
@@ -58,6 +60,7 @@ export class Main {
         this.gameScreen = document.getElementById('game')!
         this.bagElement = document.getElementById('bag')!
         this.gearElement = document.getElementById('gear')!
+        this.exitElement = document.getElementById('exit')!
         this.coinsElement = document.getElementById('coins')!
         this.hpTextElement = document.getElementById('hp-text')!
         this.xpTextElement = document.getElementById('xp-text')!
@@ -72,6 +75,7 @@ export class Main {
         this.chatBtn = document.getElementById('send-chat')! as HTMLButtonElement
         this.showRankBtn = document.getElementById('show-rank')! as HTMLButtonElement
         this.showPlayersBtn = document.getElementById('show-players')! as HTMLButtonElement
+        this.exitBtn = document.getElementById('exit-btn')! as HTMLButtonElement
         this.rankElement = document.getElementById('game-rank')!
         this.playersElement = document.getElementById('game-info')!
         this.top1Element = document.getElementById('top1')!
@@ -82,6 +86,7 @@ export class Main {
         this.bagElement.style.display = 'none'
         this.coinsElement.style.display = 'none'
         this.gearElement.style.display = 'none'
+        this.exitElement.style.display = 'none'
         this.hpTextElement.style.display = 'none'
         this.xpTextElement.style.display = 'none'
         this.chatElement.style.display = 'none'

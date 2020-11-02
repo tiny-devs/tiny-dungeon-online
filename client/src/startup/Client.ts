@@ -12,6 +12,7 @@ import { ParseItemRemove } from '../parser/ParseItemRemove'
 import Gear from '../entities/items/Gear'
 import { ParseRank } from '../parser/ParseRank'
 import { ParseLoad } from '../parser/ParseLoad'
+import { ParsePlayerIdUpdate } from '../parser/ParsePlayerIdUpdate'
 
 export class Client {
     public loggedIn: boolean
@@ -26,6 +27,8 @@ export class Client {
     private gameScreen: HTMLElement
     private bagElement: HTMLElement
     private gearElement: HTMLElement
+    private exitElement: HTMLElement
+    private exit: HTMLElement
     private coinsElement: HTMLElement
     private hpTextElement: HTMLElement
     private xpTextElement: HTMLElement
@@ -68,6 +71,7 @@ export class Client {
         this.bagElement = mainElements.bagElement
         this.coinsElement = mainElements.coinsElement
         this.gearElement = mainElements.gearElement
+        this.exitElement = mainElements.exitElement
         this.hpTextElement = mainElements.hpTextElement
         this.xpTextElement = mainElements.xpTextElement
         this.hpBarElement = mainElements.hpBarElement
@@ -77,6 +81,7 @@ export class Client {
         this.messageElement = mainElements.messageElement
         this.chatElement = mainElements.chatElement
         this.chatMessageElement = mainElements.chatMessageElement as HTMLInputElement
+        this.exit = mainElements.exitBtn as HTMLInputElement
         this.rankElement = mainElements.rankElement
         this.playersElement = mainElements.playersElement
         this.top1Element = mainElements.top1Element
@@ -111,6 +116,11 @@ export class Client {
         this.showPlayersBtn = mainElements.showPlayersBtn
         this.showPlayersBtn.onclick = () => {
             this.togglePlayers()
+        }
+
+        this.exit = mainElements.exitBtn as HTMLButtonElement
+        this.exit.onclick = () => {
+            this.sendExitRequest()
         }
 
         this.chatBtn = mainElements.chatBtn as HTMLButtonElement
@@ -170,6 +180,7 @@ export class Client {
         this.bagElement.style.display = 'block'
         this.coinsElement.style.display = 'block'
         this.gearElement.style.display = 'block'
+        this.exitElement.style.display = 'block'
         this.hpTextElement.style.display = 'block'
         this.xpTextElement.style.display = 'block'
         this.chatElement.style.display = 'block'
@@ -422,6 +433,10 @@ export class Client {
         }
     }
 
+    updatePlayerId(data: ParsePlayerIdUpdate) {
+        this.game.spritesLayer.updatePlayerId(data.oldId, data.newId)
+    }
+
     savePlayerData(playerHexData: string) {
         localStorage.setItem(this.localStorageLoadKey, playerHexData)
         this.displayMessage('player saved!')
@@ -457,6 +472,16 @@ export class Client {
         if (weapon) {
             this.gear.addGear(weapon, GearType.Weapon)
         }
+    }
+
+    sendExitRequest() {
+        this.ws!.send(`${Command.Exit}`)
+    }
+
+    exitConfirmed(data: string) {
+        this.savePlayerData(data)
+        alert('Exit Successful!')
+        window.location.reload()
     }
 
     getRandomPlayerColor() {
