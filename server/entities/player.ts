@@ -186,7 +186,8 @@ export class Player {
     }
 
     public getPlayerDataForSave(): string {
-        let simpleData = `${this.id};${this.name};${this.level};${+this.xp.toFixed(2)};${this.xpNeeded};` +
+        const hashVersion = 1
+        let simpleData = `${hashVersion}@${this.id};${this.name};${this.level};${+this.xp.toFixed(2)};${this.xpNeeded};` +
                     `${this.hp};${this.maxHp};${this.attack};${this.defense}@`
         
         let bagData = `${this.bag.coins}`
@@ -211,7 +212,7 @@ export class Player {
             gearData += 'empty,'
         }
         if (this.gear.weapon) {
-            gearData += `${this.gear.weapon.itemId},`
+            gearData += `${this.gear.weapon.itemId}`
         } else {
             gearData += 'empty'
         }
@@ -223,7 +224,7 @@ export class Player {
 
     public loadPlayerDataFromSave(data: string) {
         const allData = data.split('@')
-        const simpleData = allData[0].split(';')
+        const simpleData = allData[1].split(';')
         this.id = simpleData[0]
         //this.name = simpleData[1]
         this.level = +simpleData[2]
@@ -234,7 +235,7 @@ export class Player {
         this.attack = +simpleData[7]
         this.defense = +simpleData[8]
 
-        const bagData = allData[1].split(';')
+        const bagData = allData[2].split(';')
         this.bag.coins = +bagData[0]
         if (bagData[1]) {
             for (let i=1;i<bagData.length;i++) {
@@ -245,9 +246,9 @@ export class Player {
             }
         }
 
-        const gearData = allData[2].split(',')
-        for (let i=1; i<5; i++) {
-            if (gearData[i] != 'empty') {
+        const gearData = allData[3].split(',')
+        for (let i=0; i<4; i++) {
+            if (!gearData[i].includes('empty')) {
                 const item = this.bag.getItemFromItemId(+gearData[i])
                 if (item) {
                     this.gear.wear(item, true)
@@ -359,7 +360,7 @@ export class Player {
     }
 
     public totalHp() {
-        return this.maxHp + Math.floor(this.level/5)
+        return this.maxHp + this.level - 1
     }
 
     private respawn() {

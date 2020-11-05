@@ -53,6 +53,9 @@ export class Client {
     private down: HTMLElement
     private left: HTMLElement
     private right: HTMLElement
+    private mobileDirection: number = 0
+    private mobileCanMove: boolean = false
+    private mobileMovementTimeout : number = 0
     private isShowingRank: boolean
     private isShowingPlayerList: boolean
     private ws: WebSocket | null
@@ -62,6 +65,7 @@ export class Client {
     private canMove: boolean
     private chatTimeout: number = 5
     private canChat: boolean = true
+    private isTyping: boolean = false
     private localStorageLoadKey: string = 'tinydata'
 
     constructor(game: Game, clientConfigs: PlayerConfig, mainElements: Main) {
@@ -94,17 +98,45 @@ export class Client {
         this.up.onclick = () => {
             this.checkKey({ keyCode: 38 })
         }
+        this.up.ontouchstart = () => {
+            this.mobileDirection = 38
+            this.mobileCanMove = true
+        }
+        this.up.ontouchend = () => {
+            this.mobileCanMove = false
+        }
         this.down = mainElements.mobileDown
         this.down.onclick = () => {
             this.checkKey({ keyCode: 40 })
+        }
+        this.down.ontouchstart = () => {
+            this.mobileDirection = 40
+            this.mobileCanMove = true
+        }
+        this.down.ontouchend = () => {
+            this.mobileCanMove = false
         }
         this.left = mainElements.mobileLeft
         this.left.onclick = () => {
             this.checkKey({ keyCode: 37 })
         }
+        this.left.ontouchstart = () => {
+            this.mobileDirection = 37
+            this.mobileCanMove = true
+        }
+        this.left.ontouchend = () => {
+            this.mobileCanMove = false
+        }
         this.right = mainElements.mobileRight
         this.right.onclick = () => {
             this.checkKey({ keyCode: 39 })
+        }
+        this.right.ontouchstart = () => {
+            this.mobileDirection = 39
+            this.mobileCanMove = true
+        }
+        this.right.ontouchend = () => {
+            this.mobileCanMove = false
         }
 
         this.isShowingRank = false
@@ -129,16 +161,26 @@ export class Client {
         }
 
         this.chatMessageElement.oninput = () => {
+            this.isTyping = true
             if (this.chatMessageElement.value.length > 40) {
                 this.chatMessageElement.value = this.chatMessageElement.value.substring(0, 40)
             }
-        };
-
+        }
         this.chatMessageElement.onkeydown = (e: Partial<KeyboardEvent>) => {
             e = e || window.event;
             if (e.keyCode == 13) {
                 this.sendChat()
             }
+        }
+        this.chatMessageElement.onblur = () => {
+            this.isTyping = false
+        }
+        this.chatMessageElement.onfocus = () => {
+            this.isTyping = true
+        }
+
+        if (mainElements.isMobile()) {
+            this.mobileMovement()
         }
 
         this.game = game
@@ -251,13 +293,16 @@ export class Client {
                 direction = Direction.Left
             } else if (e.keyCode == 39 || e.keyCode == 68) {
                 direction = Direction.Right
+            } else if (e.keyCode == 13 && !this.isTyping && this.canChat) {
+                this.chatMessageElement.focus()
+                this.chatMessageElement.select()
             }
 
             if (this.loggedIn) {
                 const player = this.game.spritesLayer.getPlayerById(this.playerId)!
                 const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape)
     
-                if (isValidMove) {
+                if (isValidMove && !this.isTyping) {
                     this.ws!.send(`${Command.Move},${direction}`)
                 }
             }
@@ -376,6 +421,7 @@ export class Client {
 
     sendChat() {
         if (this.chatMessageElement.value && (this.chatMessageElement.value.length <= 40) && this.canChat) {
+            this.isTyping = false
             this.chatMessageElement.blur()
             this.canChat = false
             this.chatBtn.disabled = true
@@ -482,6 +528,17 @@ export class Client {
         this.savePlayerData(data)
         alert('Exit Successful!')
         window.location.reload()
+    }
+
+    mobileMovement() {
+        clearTimeout(this.mobileMovementTimeout)
+
+        this.mobileMovementTimeout = setTimeout(() => {
+            if (this.mobileCanMove) {
+                this.checkKey({ keyCode: this.mobileDirection })
+            }
+            this.mobileMovement()
+        }, 110)
     }
 
     getRandomPlayerColor() {
