@@ -53,6 +53,9 @@ export class Client {
     private down: HTMLElement
     private left: HTMLElement
     private right: HTMLElement
+    private mobileDirection: number = 0
+    private mobileCanMove: boolean = false
+    private mobileMovementTimeout : number = 0
     private isShowingRank: boolean
     private isShowingPlayerList: boolean
     private ws: WebSocket | null
@@ -94,17 +97,45 @@ export class Client {
         this.up.onclick = () => {
             this.checkKey({ keyCode: 38 })
         }
+        this.up.ontouchstart = () => {
+            this.mobileDirection = 38
+            this.mobileCanMove = true
+        }
+        this.up.ontouchend = () => {
+            this.mobileCanMove = false
+        }
         this.down = mainElements.mobileDown
         this.down.onclick = () => {
             this.checkKey({ keyCode: 40 })
+        }
+        this.down.ontouchstart = () => {
+            this.mobileDirection = 40
+            this.mobileCanMove = true
+        }
+        this.down.ontouchend = () => {
+            this.mobileCanMove = false
         }
         this.left = mainElements.mobileLeft
         this.left.onclick = () => {
             this.checkKey({ keyCode: 37 })
         }
+        this.left.ontouchstart = () => {
+            this.mobileDirection = 37
+            this.mobileCanMove = true
+        }
+        this.left.ontouchend = () => {
+            this.mobileCanMove = false
+        }
         this.right = mainElements.mobileRight
         this.right.onclick = () => {
             this.checkKey({ keyCode: 39 })
+        }
+        this.right.ontouchstart = () => {
+            this.mobileDirection = 39
+            this.mobileCanMove = true
+        }
+        this.right.ontouchend = () => {
+            this.mobileCanMove = false
         }
 
         this.isShowingRank = false
@@ -139,6 +170,10 @@ export class Client {
             if (e.keyCode == 13) {
                 this.sendChat()
             }
+        }
+
+        if (mainElements.isMobile()) {
+            this.mobileMovement()
         }
 
         this.game = game
@@ -482,6 +517,17 @@ export class Client {
         this.savePlayerData(data)
         alert('Exit Successful!')
         window.location.reload()
+    }
+
+    mobileMovement() {
+        clearTimeout(this.mobileMovementTimeout)
+
+        this.mobileMovementTimeout = setTimeout(() => {
+            if (this.mobileCanMove) {
+                this.checkKey({ keyCode: this.mobileDirection })
+            }
+            this.mobileMovement()
+        }, 110)
     }
 
     getRandomPlayerColor() {
