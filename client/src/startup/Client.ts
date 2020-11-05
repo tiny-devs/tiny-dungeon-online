@@ -65,6 +65,7 @@ export class Client {
     private canMove: boolean
     private chatTimeout: number = 5
     private canChat: boolean = true
+    private isTyping: boolean = false
     private localStorageLoadKey: string = 'tinydata'
 
     constructor(game: Game, clientConfigs: PlayerConfig, mainElements: Main) {
@@ -160,16 +161,22 @@ export class Client {
         }
 
         this.chatMessageElement.oninput = () => {
+            this.isTyping = true
             if (this.chatMessageElement.value.length > 40) {
                 this.chatMessageElement.value = this.chatMessageElement.value.substring(0, 40)
             }
-        };
-
+        }
         this.chatMessageElement.onkeydown = (e: Partial<KeyboardEvent>) => {
             e = e || window.event;
             if (e.keyCode == 13) {
                 this.sendChat()
             }
+        }
+        this.chatMessageElement.onblur = () => {
+            this.isTyping = false
+        }
+        this.chatMessageElement.onfocus = () => {
+            this.isTyping = true
         }
 
         if (mainElements.isMobile()) {
@@ -286,13 +293,16 @@ export class Client {
                 direction = Direction.Left
             } else if (e.keyCode == 39 || e.keyCode == 68) {
                 direction = Direction.Right
+            } else if (e.keyCode == 13 && !this.isTyping && this.canChat) {
+                this.chatMessageElement.focus()
+                this.chatMessageElement.select()
             }
 
             if (this.loggedIn) {
                 const player = this.game.spritesLayer.getPlayerById(this.playerId)!
                 const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape)
     
-                if (isValidMove) {
+                if (isValidMove && !this.isTyping) {
                     this.ws!.send(`${Command.Move},${direction}`)
                 }
             }
@@ -411,6 +421,7 @@ export class Client {
 
     sendChat() {
         if (this.chatMessageElement.value && (this.chatMessageElement.value.length <= 40) && this.canChat) {
+            this.isTyping = false
             this.chatMessageElement.blur()
             this.canChat = false
             this.chatBtn.disabled = true
