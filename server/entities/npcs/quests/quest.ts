@@ -1,4 +1,4 @@
-import { Npcs, Quests, RewardType } from "../../../Enums.ts"
+import { Npcs, Quests, RewardType, StepType } from "../../../Enums.ts"
 import ItemBase from "../../items/itemBase.ts"
 import { Player } from "../../player.ts"
 import QuestBase from "./questBase.ts"
@@ -58,7 +58,9 @@ export default class Quest {
             }
 
             if (this.steps[this.currentStep].npcLines.length <= this.steps[this.currentStep].playerCurrentLine+1) {
-                this.goToNextStep(player)
+                if (this.steps[this.currentStep].type != StepType.MonstersToKill) {
+                    this.goToNextStep(player)
+                }
                 this.steps[this.currentStep].playerCurrentLine = 0
             } else {
                 this.steps[this.currentStep].playerCurrentLine += 1

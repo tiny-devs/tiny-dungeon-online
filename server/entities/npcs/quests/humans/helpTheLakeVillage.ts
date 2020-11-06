@@ -6,7 +6,7 @@ import AdamantArmour from "../../../items/adamantArmour.ts"
 
 export default class HelpTheLakeVillage extends QuestBase {
     constructor() {
-        super(Quests.FlowerForMytklash,
+        super(Quests.HelpTheVillage,
             [
                 new Step(StepType.MonstersToKill,
                     [
@@ -14,7 +14,7 @@ export default class HelpTheLakeVillage extends QuestBase {
                         new MonstersToKill(Npcs.ImpMeelee, 10),
                         new MonstersToKill(Npcs.ImpMage, 10),
                     ],
-                    '',[],[],0),
+                    'vardan',[],[],0),
                 new Step(StepType.NpcToTalk,[],'vardan',['You really killed all those imps!', 'Good job adventurer! We are far from having peace', 'but your help was precious. Take this armour as reward!'],[],0),
             ],
             RewardType.Item,
