@@ -52,6 +52,15 @@ export default class Step {
                 return { validNpc: true, line: this.npcLines[this.playerCurrentLine] }
             }
         }
+        if (this.type == StepType.MonstersToKill) {
+            if (npc == this.npcToTalk) {
+                let monstersLog = ''
+                for (const monster of this.monstersToKill) {
+                    monstersLog += `${Npcs[monster.monster]}: ${monster.amount} left; `
+                }
+                return { validNpc: true, line: monstersLog }
+            }
+        }
         return { validNpc: false, line: '' }
     }
 }

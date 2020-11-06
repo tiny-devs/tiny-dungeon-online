@@ -286,6 +286,7 @@ export class Player {
         if (item) {
             const gotItem = this.bag.addItem(item)
             if (gotItem) {
+                this.clientHandler.roomcastItemPick(this.currentRoomId,-1,-1,item.itemId,item.coins,this.id)
                 return true
             }
         }
