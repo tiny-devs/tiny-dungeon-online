@@ -97,14 +97,18 @@ export default class Room {
       id: clonedItem.id,
       itemId: clonedItem.itemId
     }, this.id, y, x)
+
+    this.startDespawnTimer(y, x, clonedItem.despawnTime)
   }
 
   removeItem(y: number, x: number, playerId: string) {
     const item = this.itemsLayer[y][x]
-    this.itemsLayer[y][x] = 0
-    this.resetItemsCound()
-
-    this.clientHandler.roomcastItemPick(this.id, y, x, item.itemId, item.coins, playerId)
+    if (item != 0) {
+      this.itemsLayer[y][x] = 0
+      this.resetItemsCount()
+  
+      this.clientHandler.roomcastItemPick(this.id, y, x, item.itemId, item.coins, playerId)
+    }
   }
 
   getAllNpcsInRoom() {
@@ -137,7 +141,7 @@ export default class Room {
     return itensReturn
   }
 
-  resetItemsCound(): number {
+  resetItemsCount(): number {
     const currentItens = this.getAllItemsInRoom()
     let greatestId = 0
     for (const item of currentItens) {
@@ -150,6 +154,12 @@ export default class Room {
     }
 
     return greatestId
+  }
+
+  startDespawnTimer(y: number, x: number, despawnTime: number) {
+    setTimeout(() => { 
+      this.removeItem(y,x,'')
+    }, despawnTime);
   }
 
   private buildItemsLayer(): any {
