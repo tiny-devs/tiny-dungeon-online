@@ -6,7 +6,6 @@ import NpcBase from './npcs/npcBase.ts'
 import ItemBase from './items/itemBase.ts'
 import DialogBase from "./npcs/passive/dialogs/dialogBase.ts"
 import QuestBase from "./npcs/quests/questBase.ts"
-import Quest from "./npcs/quests/quest.ts"
 
 export class Npc {
   public id: number
@@ -260,10 +259,8 @@ export class Npc {
     if (this.dead) {
       player.fightingNpcId = null
       player.addXp(this.xpGiven)
+      player.checkNpcKillForQuest(this.npcId)
       this.fightingPlayer = null
-      for (const quest of player.quests) {
-        quest.checkMonsterKill(this.npcId, player)
-      }
     }
   }
 

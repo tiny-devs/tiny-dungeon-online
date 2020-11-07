@@ -1,24 +1,24 @@
 import { Items, Npcs, Quests, RewardType, StepType } from "../../../../Enums.ts"
-import { MonstersToKill } from "../monstersToKill.ts"
 import QuestBase from "../questBase.ts"
-import Step from "../step.ts"
-import AdamantArmour from "../../../items/adamantArmour.ts"
+import BluriteArmour from "../../../items/bluriteArmour.ts"
+import StepBase from "../stepBase.ts"
+import { MonstersToKillBase } from "../monstersToKillBase.ts"
 
 export default class HelpTheLakeVillage extends QuestBase {
     constructor() {
         super(Quests.HelpTheVillage,
             [
-                new Step(StepType.MonstersToKill,
+                new StepBase(StepType.MonstersToKill,
                     [
-                        new MonstersToKill(Npcs.ImpArcher, 10),
-                        new MonstersToKill(Npcs.ImpMeelee, 10),
-                        new MonstersToKill(Npcs.ImpMage, 10),
+                        new MonstersToKillBase(Npcs.ImpArcher, 10),
+                        new MonstersToKillBase(Npcs.ImpMeelee, 10),
+                        new MonstersToKillBase(Npcs.ImpMage, 10),
                     ],
                     'vardan',[],[],0),
-                new Step(StepType.NpcToTalk,[],'vardan',['You really killed all those imps!', 'Good job adventurer! We are far from having peace', 'but your help was precious. Take this armour as reward!'],[],0),
+                new StepBase(StepType.NpcToTalk,[],'vardan',['You really killed all those imps!', 'Good job adventurer! We are far from having peace', 'but your help was precious. Take this armour as reward!', '-You received a Blurite Armour'],[],0),
             ],
             RewardType.Item,
-            new AdamantArmour(1),
+            new BluriteArmour(1),
             0,
             'Thank you for all your help!')
     }

@@ -1,4 +1,4 @@
-import { Direction, Rooms, Items } from '../Enums.ts'
+import { Direction, Rooms, Items, Npcs } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'
@@ -279,6 +279,12 @@ export class Player {
         const alreadyHasQuest = this.quests.some(q => q.id == quest.id)
         if (!alreadyHasQuest) {
             this.quests.push(new Quest(quest))
+        }
+    }
+
+    public checkNpcKillForQuest(npcId: Npcs) {
+        for (const quest of this.quests) {
+            quest.checkMonsterKill(npcId, this)
         }
     }
 

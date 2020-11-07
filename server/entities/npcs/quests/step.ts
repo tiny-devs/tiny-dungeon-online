@@ -1,29 +1,29 @@
 import { Npcs, StepType } from "../../../Enums.ts"
 import { MonstersToKill } from "./monstersToKill.ts"
 import { ItemsToHave } from "./itemsToHave.ts"
+import StepBase from "./stepBase.ts"
 
 export default class Step {
     public isCompleted: boolean = false
     public type: StepType
-    public monstersToKill: MonstersToKill[]
+    public monstersToKill: MonstersToKill[] = []
     public npcToTalk: string
     public npcLines: string[]
     public playerCurrentLine: number = 0
-    public itemsToHave: ItemsToHave[]
+    public itemsToHave: ItemsToHave[] = []
     public levelToReach: number
 
-    constructor(type: StepType,
-        monstersToKill: MonstersToKill[],
-        npcToTalk: string,
-        npcLines: string[],
-        itemsToHave: ItemsToHave[],
-        levelToReach: number) {
-        this.type = type
-        this.monstersToKill = monstersToKill
-        this.npcToTalk = npcToTalk
-        this.npcLines = npcLines
-        this.itemsToHave = itemsToHave
-        this.levelToReach = levelToReach
+    constructor(stepData: StepBase) {
+        this.type = stepData.type
+        for (const monsterToKill of stepData.monstersToKill) {
+            this.monstersToKill.push(new MonstersToKill(monsterToKill))
+        }
+        this.npcToTalk = stepData.npcToTalk
+        this.npcLines = stepData.npcLines
+        for (const itemToHave of stepData.itemsToHave) {
+            this.itemsToHave.push(new ItemsToHave(itemToHave))
+        }
+        this.levelToReach = stepData.levelToReach
     }
 
     public checkLevelToReach(level: number) {
