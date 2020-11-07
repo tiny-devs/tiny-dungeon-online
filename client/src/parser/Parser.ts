@@ -98,6 +98,9 @@ export class Parser {
                 case Command.Exit:
                     this.parseExit(data)
                     break
+                case Command.EraseSave:
+                    this.client.resetPlayerData()
+                    break
                 case Command.Error:
                     this.parseError(data)
                     break

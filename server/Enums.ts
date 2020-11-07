@@ -22,7 +22,8 @@ export enum Command {
     Save,
     Load,
     UpdatePlayerId,
-    Exit
+    Exit,
+    EraseSave
 }
 
 export enum Direction {

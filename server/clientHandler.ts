@@ -351,47 +351,52 @@ export class ClientHandler {
 
   private async unicastPlayerDataLoaded(player: Player, dataHash: string) {
     try{
-      await this.loadPlayerDataFromHash(player, dataHash)
-      let data = `${Command.Load},${player.id},`+
-      `${player.hp},${player.totalHp()},${player.totalAttack()},${player.totalDefense()},`+
-      `${player.level},${player.xp},${player.xpNeeded}@`
-      for (const item of player.bag.items) {
-        data += `${item.itemId},`
-      }
-      data += '@'
-      if (player.gear.head) {
-        data += `${player.gear.head.itemId}@`
+      const success = await this.loadPlayerDataFromHash(player, dataHash)
+      if (!success) {
+        this.send(player,`${Command.EraseSave}`)
       } else {
-        data += 'empty@'
+        let data = `${Command.Load},${player.id},`+
+        `${player.hp},${player.totalHp()},${player.totalAttack()},${player.totalDefense()},`+
+        `${player.level},${player.xp},${player.xpNeeded}@`
+        for (const item of player.bag.items) {
+          data += `${item.itemId},`
+        }
+        data += '@'
+        if (player.gear.head) {
+          data += `${player.gear.head.itemId}@`
+        } else {
+          data += 'empty@'
+        }
+        if (player.gear.torso) {
+          data += `${player.gear.torso.itemId}@`
+        } else {
+          data += 'empty@'
+        }
+        if (player.gear.legs) {
+          data += `${player.gear.legs.itemId}@`
+        } else {
+          data += 'empty@'
+        }
+        if (player.gear.weapon) {
+          data += `${player.gear.weapon.itemId}`
+        } else {
+          data += 'empty'
+        }
+  
+        this.send(player,data)
       }
-      if (player.gear.torso) {
-        data += `${player.gear.torso.itemId}@`
-      } else {
-        data += 'empty@'
-      }
-      if (player.gear.legs) {
-        data += `${player.gear.legs.itemId}@`
-      } else {
-        data += 'empty@'
-      }
-      if (player.gear.weapon) {
-        data += `${player.gear.weapon.itemId}`
-      } else {
-        data += 'empty'
-      }
-
-      this.send(player,data)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastPlayerDataLoaded')
     }
   }
 
-  private async loadPlayerDataFromHash(player: Player, dataHash: string) {
+  private async loadPlayerDataFromHash(player: Player, dataHash: string): Promise<boolean> {
     try{
       const data = await this.playerDataManager.decryptUserData(dataHash)
-      player.loadPlayerDataFromSave(data)
+      return player.loadPlayerDataFromSave(data)
     } catch (e) {
       this.handleExceptions(e, player, 'loadPlayerDataFromHash')
+      return false
     }
   }
 

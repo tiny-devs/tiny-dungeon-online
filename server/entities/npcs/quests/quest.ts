@@ -7,7 +7,7 @@ import Step from "./step.ts"
 export default class Quest {
     public id: Quests
     public isCompleted: boolean
-    public steps: Step[]
+    public steps: Step[] = []
     public currentStep: number
     public reward: RewardType
     public itemReward: ItemBase | null
@@ -17,7 +17,9 @@ export default class Quest {
     constructor(questData: QuestBase) {
         this.id = questData.id
         this.isCompleted = false
-        this.steps = questData.steps
+        for (const step of questData.steps) {
+            this.steps.push(new Step(step))
+        }
         this.currentStep = 0
         this.reward = questData.reward
         this.itemReward = questData.itemReward
