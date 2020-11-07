@@ -222,38 +222,49 @@ export class Player {
         return simpleData + bagData + gearData
     }
 
-    public loadPlayerDataFromSave(data: string) {
-        const allData = data.split('@')
-        const simpleData = allData[1].split(';')
-        this.id = simpleData[0]
-        //this.name = simpleData[1]
-        this.level = +simpleData[2]
-        this.xp = +simpleData[3]
-        this.xpNeeded = +simpleData[4]
-        this.hp = +simpleData[5]
-        this.maxHp = +simpleData[6]
-        this.attack = +simpleData[7]
-        this.defense = +simpleData[8]
-
-        const bagData = allData[2].split(';')
-        this.bag.coins = +bagData[0]
-        if (bagData[1]) {
-            for (let i=1;i<bagData.length;i++) {
-                const item = this.bag.getItemFromItemId(+bagData[i])
-                if (item) {
-                    this.bag.addItem(item)
-                }
-            }
+    public loadPlayerDataFromSave(data: string): boolean {
+        if (data.length < 10) {
+            console.log('unable to read player data')
+            return false;
         }
 
-        const gearData = allData[3].split(',')
-        for (let i=0; i<4; i++) {
-            if (!gearData[i].includes('empty')) {
-                const item = this.bag.getItemFromItemId(+gearData[i])
-                if (item) {
-                    this.gear.wear(item, true)
+        try {
+            const allData = data.split('@')
+            const simpleData = allData[1].split(';')
+            this.id = simpleData[0]
+            //this.name = simpleData[1]
+            this.level = +simpleData[2]
+            this.xp = +simpleData[3]
+            this.xpNeeded = +simpleData[4]
+            this.hp = +simpleData[5]
+            this.maxHp = +simpleData[6]
+            this.attack = +simpleData[7]
+            this.defense = +simpleData[8]
+    
+            const bagData = allData[2].split(';')
+            this.bag.coins = +bagData[0]
+            if (bagData[1]) {
+                for (let i=1;i<bagData.length;i++) {
+                    const item = this.bag.getItemFromItemId(+bagData[i])
+                    if (item) {
+                        this.bag.addItem(item)
+                    }
                 }
             }
+    
+            const gearData = allData[3].split(',')
+            for (let i=0; i<4; i++) {
+                if (!gearData[i].includes('empty')) {
+                    const item = this.bag.getItemFromItemId(+gearData[i])
+                    if (item) {
+                        this.gear.wear(item, true)
+                    }
+                }
+            }
+    
+            return true
+        } catch (e) {
+            return false
         }
     }
 

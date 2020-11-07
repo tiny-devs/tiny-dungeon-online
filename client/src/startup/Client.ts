@@ -488,6 +488,11 @@ export class Client {
         this.displayMessage('player saved!')
     }
 
+    resetPlayerData() {
+        localStorage.removeItem(this.localStorageLoadKey)
+        console.log('data erased')
+    }
+
     loadPlayerData(loadData: ParseLoad) {
         this.game.spritesLayer.updatePlayerId(this.playerId, loadData.id)
         this.playerId = loadData.id

@@ -29,7 +29,8 @@ export enum Command {
     Save = 21,
     Load = 22,
     UpdatePlayerId = 23,
-    Exit = 24
+    Exit = 24,
+    EraseSave = 25
 }
 
 export enum Rooms {
