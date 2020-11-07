@@ -6,7 +6,8 @@ import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
 import { PveData } from './pve/pveData.ts'
-import ConnectionManager from "./db/main.ts"
+import ConnectionManager from "./data/connectionManager.ts"
+import DataManager from "./data/dataManager.ts"
 
 export class ClientHandler {
   public boardColumns: number = 16
@@ -15,6 +16,7 @@ export class ClientHandler {
   public map: Map
   private topPlayers: {id:string,name:string,level:number}[]
   private db: ConnectionManager
+  private playerDataManager: DataManager
 
   constructor(serverConfigs: any) {
     this.boardRows = serverConfigs.boardRows
@@ -22,10 +24,10 @@ export class ClientHandler {
 
     this.map = new Map(this)
 
+    this.playerDataManager = new DataManager()
+
     this.db = new ConnectionManager()
-
     this.topPlayers = []
-
      this.db.getRank().then(result => {
       this.topPlayers = result
     })
@@ -50,6 +52,23 @@ export class ClientHandler {
       const success = this.handleExceptions(e, currentPlayer, 'broadcastRank')
       if (success) {
         this.broadcastRank()
+      }
+    }
+  }
+
+  private broadcastPlayerIdUpdate(newId: string, oldId: string): void {
+    let currentPlayer = null
+    try{
+      for (const room of this.map.rooms) {
+        for (const player of room.players) {
+          currentPlayer = player
+          this.send(player,`${Command.UpdatePlayerId},${oldId},${newId}`)
+        }
+      }
+    } catch (e) {
+      const success = this.handleExceptions(e, currentPlayer, 'broadcastPlayerConnection')
+      if (success) {
+        this.broadcastPlayerIdUpdate(newId,oldId)
       }
     }
   }
@@ -321,6 +340,75 @@ export class ClientHandler {
     }
   }
 
+  public async unicastPlayerDataHashSave(player: Player) {
+    try{
+      const playerDataHash = await this.playerDataManager.encryptUserData(player.getPlayerDataForSave())
+      this.send(player,`${Command.Save},${playerDataHash}`)
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastPlayerDataHashSave')
+    }
+  }
+
+  private async unicastPlayerDataLoaded(player: Player, dataHash: string) {
+    try{
+      const success = await this.loadPlayerDataFromHash(player, dataHash)
+      if (!success) {
+        this.send(player,`${Command.EraseSave}`)
+      } else {
+        let data = `${Command.Load},${player.id},`+
+        `${player.hp},${player.totalHp()},${player.totalAttack()},${player.totalDefense()},`+
+        `${player.level},${player.xp},${player.xpNeeded}@`
+        for (const item of player.bag.items) {
+          data += `${item.itemId},`
+        }
+        data += '@'
+        if (player.gear.head) {
+          data += `${player.gear.head.itemId}@`
+        } else {
+          data += 'empty@'
+        }
+        if (player.gear.torso) {
+          data += `${player.gear.torso.itemId}@`
+        } else {
+          data += 'empty@'
+        }
+        if (player.gear.legs) {
+          data += `${player.gear.legs.itemId}@`
+        } else {
+          data += 'empty@'
+        }
+        if (player.gear.weapon) {
+          data += `${player.gear.weapon.itemId}`
+        } else {
+          data += 'empty'
+        }
+  
+        this.send(player,data)
+      }
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastPlayerDataLoaded')
+    }
+  }
+
+  private async loadPlayerDataFromHash(player: Player, dataHash: string): Promise<boolean> {
+    try{
+      const data = await this.playerDataManager.decryptUserData(dataHash)
+      return player.loadPlayerDataFromSave(data)
+    } catch (e) {
+      this.handleExceptions(e, player, 'loadPlayerDataFromHash')
+      return false
+    }
+  }
+
+  private async unicastPlayerExit(player: Player) {
+    try{
+      const playerDataHash = await this.playerDataManager.encryptUserData(player.getPlayerDataForSave())
+      this.send(player,`${Command.Exit},${playerDataHash}`)
+    } catch (e) {
+      this.handleExceptions(e, player, 'loadPlayerDataFromHash')
+    }
+  }
+
   public updateRank() {
     let updated = false
     let players = [] as any[]
@@ -420,11 +508,26 @@ export class ClientHandler {
 
   private checkNameDuplicate(name: string, player: Player): boolean {
     try {
-      let nameExists = this.playerNames.some(pName => pName == name)
-      if (nameExists) {
-        return this.send(player, `${Command.Error},"Name already exists"`)
-      }
-      return false
+      return this.playerNames.some(pName => pName == name)
+    } catch (e) {
+      this.handleExceptions(e, player, 'checkNameDuplicate')
+    }
+    return false
+  }
+
+  private checkPlayerAlreadyLogged(player: Player, id: string): boolean {
+    try {
+      const players = this.getAllPlayers()
+      return players.filter(p => p.id == id).length > 1
+    } catch (e) {
+      this.handleExceptions(e, player, 'checkNameDuplicate')
+    }
+    return false
+  }
+
+  private unicastError(player: Player, description: string): boolean {
+    try {
+      this.send(player, `${Command.Error},"${description}"`)
     } catch (e) {
       this.handleExceptions(e, player, 'checkNameDuplicate')
     }
@@ -439,6 +542,7 @@ export class ClientHandler {
       if (!player.clientWs.isClosed) {
         player.clientWs?.close()
       }
+
       return true
     } catch (e) {
       this.handleExceptions(e, player, 'logPlayerOut')
@@ -495,6 +599,7 @@ export class ClientHandler {
 
   public async handleClient(ws: WebSocket): Promise<void> {
     try {
+      let exit = false
       let duplicatedName = false
       const initialRoom = this.map.rooms[0]
       const playerId = v4.generate()
@@ -549,6 +654,7 @@ export class ClientHandler {
             case Command.Login:
               duplicatedName = this.checkNameDuplicate(eventData[1], player)
               if (duplicatedName) {
+                this.unicastError(player, "Name already exists")
                 initialRoom.removePlayer(player)
                 break
               }
@@ -556,15 +662,35 @@ export class ClientHandler {
               this.playerNames.push(eventData[1])
               player.name = eventData[1]
               player.color = eventData[2]
-              player.matrix = JSON.parse(eventData[3])
+              player.matrix = JSON.parse(eventData[4])
+
               this.broadcastPlayerConnection(playerId)
               this.unicastNpcsInRoom(player)
               this.unicastItemsInRoom(player)
-              this.unicastPlayerStats(player)
+
+              const playerLoadData = eventData[3]
+              const hasPlayerData = playerLoadData != '0'
+              if (hasPlayerData) {
+                const oldId = player.id
+                await this.unicastPlayerDataLoaded(player,playerLoadData)
+                this.broadcastPlayerIdUpdate(player.id, oldId)
+                const isPlayerAlreadyLogged = this.checkPlayerAlreadyLogged(player, player.id)
+                if (isPlayerAlreadyLogged) {
+                  this.unicastError(player, "Player already logged")
+                  exit = true
+                }
+              } else {
+                this.unicastPlayerStats(player)
+              }
               const updatedRank = this.updateRank()
               if (!updatedRank) {
                 this.unicastRank(player)
               }
+              player.savePlayer()
+              break
+            case Command.Exit:
+              exit = true
+              await this.unicastPlayerExit(player)
               break
             case Command.Ping:
               this.pong(player)
@@ -573,6 +699,12 @@ export class ClientHandler {
 
           if (duplicatedName) {
             this.logPlayerOut(player)
+            break
+          }
+
+          if (exit) {
+            this.logPlayerOut(player)
+            this.broadcastPlayerConnection(playerId)
             break
           }
 

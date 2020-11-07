@@ -18,6 +18,10 @@ export class Server {
   public init(): void {
     this.setPublicFilesList(this.publicFolder);
     listenAndServe({ port: this.port }, async (req) => {
+      if(req.url.includes('?')) {
+        req.url = req.url.split('?')[0]
+      }
+
       if (req.method === "GET" && req.url === "/") {
         req.respond({
           status: 200,

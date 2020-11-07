@@ -1,12 +1,12 @@
 import { Npcs } from "../../../Enums.ts"
+import { MonstersToKillBase } from "./monstersToKillBase.ts"
 
 export class MonstersToKill {
     public monster: Npcs
     public amount: number
 
-    constructor(monster: Npcs,
-      amount: number) {
-        this.monster = monster
-        this.amount = amount
+    constructor(monstersData: MonstersToKillBase) {
+        this.monster = monstersData.monster
+        this.amount = monstersData.amount
     }
 }

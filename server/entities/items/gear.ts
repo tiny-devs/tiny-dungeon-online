@@ -16,7 +16,7 @@ export default class Gear {
         this.clientHandler = clientHandler
     }
 
-    public wear(item: ItemBase): boolean {
+    public wear(item: ItemBase, loading: boolean): boolean {
         let hasMinimumLevel = true
         let wore = false
         switch (item.gearType) {
@@ -65,9 +65,13 @@ export default class Gear {
         }
 
         if (wore) {
-            this.clientHandler.unicastItemWear(this.player, item.itemId, item.gearType)
+            if (!loading) {
+                this.clientHandler.unicastItemWear(this.player, item.itemId, item.gearType)
+            }
         } else if (!hasMinimumLevel) {
-            this.clientHandler.unicastMessage(this.player, `"You need LVL ${item.level} to wear this"`)
+            if (!loading) {
+                this.clientHandler.unicastMessage(this.player, `"You need LVL ${item.level} to wear this"`)
+            }
         }
 
         return wore

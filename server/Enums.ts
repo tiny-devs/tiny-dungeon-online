@@ -18,7 +18,12 @@ export enum Command {
     Message,
     Dialog,
     Rank,
-    Chat
+    Chat,
+    Save,
+    Load,
+    UpdatePlayerId,
+    Exit,
+    EraseSave
 }
 
 export enum Direction {

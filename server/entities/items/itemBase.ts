@@ -29,7 +29,7 @@ export default class ItemBase {
         this.itemId = itemId
         this.type = type
         this.gearType = gearType
-        this.despawnTime = despawnTime
+        this.despawnTime = despawnTime == 0 ? 30000 : despawnTime
         this.coins = coins
         this.level = level
         this.bonusAttack = !isDefensive ? Math.floor(level/2) + 2 + bonusAttack : bonusAttack

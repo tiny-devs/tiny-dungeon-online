@@ -6,7 +6,6 @@ import NpcBase from './npcs/npcBase.ts'
 import ItemBase from './items/itemBase.ts'
 import DialogBase from "./npcs/passive/dialogs/dialogBase.ts"
 import QuestBase from "./npcs/quests/questBase.ts"
-import Quest from "./npcs/quests/quest.ts"
 
 export class Npc {
   public id: number
@@ -144,7 +143,7 @@ export class Npc {
   // please dont mind this messy code
   public talkTo(player: Player) {
     const playerQuest = player.quests.find(q => q.id == this.quest?.id)
-    const npcFromQuestStep = player.quests.find(q => q.steps.some(s => s.npcToTalk == this.name))
+    const npcFromQuestStep = player.quests.find(q => q.steps[q.currentStep].npcToTalk == this.name)
 
     if (this.dialog != null) {
       const hasEverTalked = this.dialog.playerCurrentLine.some(d => d.playerId == player.id)
@@ -238,7 +237,7 @@ export class Npc {
     let enemyAttackData = new PveData(this.room, player, this, PveAttacker.Npc)
 
     const damageCaused = this.getAttackDamage()
-    let playerDefended = player.takeDamage(damageCaused)
+    let playerDefended = player.takeDamage(damageCaused, this.checkCriticalHit(damageCaused))
 
     enemyAttackData.damageCaused =  damageCaused - playerDefended
     enemyAttackData.damageDefended = playerDefended
@@ -250,7 +249,7 @@ export class Npc {
       let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
 
       const damageTaken = player.getAttackDamage()
-      let enemyDefended = this.takeDamage(damageTaken)
+      let enemyDefended = this.takeDamage(damageTaken, player.checkCriticalHit(damageTaken))
   
       playerAttackData.damageCaused = damageTaken - enemyDefended
       playerAttackData.damageDefended = enemyDefended
@@ -260,23 +259,37 @@ export class Npc {
     if (this.dead) {
       player.fightingNpcId = null
       player.addXp(this.xpGiven)
+      player.checkNpcKillForQuest(this.npcId)
       this.fightingPlayer = null
-      for (const quest of player.quests) {
-        quest.checkMonsterKill(this.npcId, player)
-      }
     }
   }
 
+  private checkCriticalHit(hit: number): boolean {
+    return hit > (this.attack - (this.attack/8))
+  }
+
   private getAttackDamage(): number {
-    return Math.floor(Math.random() * (this.attack))
+    const luckFactor = Math.random()
+    if (luckFactor > 0.9) {
+      return this.attack
+    }
+    return Math.floor(luckFactor * (this.attack))
   }
 
-  private getDefenseFromDamage(): number {
-    return Math.floor(Math.random() * (this.defense))
+  private getDefenseFromDamage(crit: boolean): number {
+    const minimalDefenseFromBadLuck = 0.5
+    let luckFactor = Math.random() * (1 - minimalDefenseFromBadLuck) + minimalDefenseFromBadLuck
+    if (luckFactor > 0.9) {
+      return this.defense
+    }
+    if ((luckFactor < (minimalDefenseFromBadLuck + (luckFactor/2))) && crit) {
+      luckFactor = Math.random() * (minimalDefenseFromBadLuck - 0.2) + 0.2
+    }
+    return Math.floor(luckFactor * (this.defense))
   }
 
-  private takeDamage(dmg: number): number {
-    let defense = this.getDefenseFromDamage()
+  private takeDamage(dmg: number, crit: boolean): number {
+    let defense = this.getDefenseFromDamage(crit)
     defense = defense > dmg ? dmg : defense
     const actualDamage = (dmg - defense)
 
