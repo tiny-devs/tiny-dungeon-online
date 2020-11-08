@@ -538,6 +538,8 @@ export class ClientHandler {
     try{
       const room = this.map.getRoomById(player.currentRoom.id)
       room.removePlayer(player)
+      player.x = -1
+      player.y = -1
       this.playerNames = this.playerNames.filter(e => e !== player.name);
       if (!player.clientWs.isClosed) {
         player.clientWs?.close()

@@ -420,13 +420,15 @@ export class Client {
     }
 
     sendChat() {
-        if (this.chatMessageElement.value && (this.chatMessageElement.value.length <= 40) && this.canChat) {
+        if (this.chatMessageElement.value && (this.chatMessageElement.value.length <= 50) && this.canChat) {
+            var re = new RegExp('"', 'g');
+            const message = this.chatMessageElement.value.replace(re,'\'')
             this.isTyping = false
             this.chatMessageElement.blur()
             this.canChat = false
             this.chatBtn.disabled = true
             this.chatBtn.value = `${this.chatTimeout}`
-            this.ws!.send(`${Command.Chat},"${this.chatMessageElement.value}"`)
+            this.ws!.send(`${Command.Chat},"${message}"`)
             this.chatMessageElement.value = ''
         }
     }
