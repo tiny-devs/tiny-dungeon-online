@@ -32,6 +32,16 @@ export class Server {
         });
       }
 
+      if (req.method === "GET" && req.url === "/favicon.ico") {
+        req.respond({
+          status: 200,
+          headers: new Headers({
+            "content-type": "text/html",
+          }),
+          body: await Deno.open("./client/public/favicon.ico"),
+        });
+      }
+
       this.publicFiles.map(async (file) => {
         if (req.method === "GET" && req.url === "/js/" + file) {
           req.respond({
