@@ -168,7 +168,7 @@ export class Main {
     }
 
     private validUsername(username: string) {
-        return username.match(/^\w+$/) && (username.length <= 10)
+        return username.match(/^\w+$/) && (username.length <= 15)
     }
 
     public isMobile(): boolean {

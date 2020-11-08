@@ -354,6 +354,15 @@ export class Npc {
     }
 
     if (playerInRange) {
+      if (playerInRange.clientWs.isClosed) {
+        this.anger = 0
+        this.isChasing = false
+        if (this.fightingPlayer) {
+          this.fightingPlayer = null
+        }
+        return result
+      }
+
       result.found = true
 
       if (this.moveCounter == 0) {
