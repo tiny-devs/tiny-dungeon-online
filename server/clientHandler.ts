@@ -449,6 +449,7 @@ export class ClientHandler {
       // this.db.updateRank(this.topPlayers).then(() => {
       //   this.broadcastRank()
       // })
+      this.broadcastRank()
     }
 
     return updated
