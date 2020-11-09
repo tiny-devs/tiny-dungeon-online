@@ -1,5 +1,5 @@
-import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std/ws/mod.ts'
-import { v4 } from 'https://deno.land/std/uuid/mod.ts'
+import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std@0.77.0/ws/mod.ts'
+import { v4 } from 'https://deno.land/std@0.77.0/uuid/mod.ts'
 import { Player } from './entities/player.ts'
 import { Command, Direction, Items, GearType } from './Enums.ts'
 import Room from './map/rooms/room.ts'
