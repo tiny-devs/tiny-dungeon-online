@@ -1,6 +1,6 @@
 import { ItemsIds, GearType } from "../../models/Enums"
 import { Items } from "./Items"
-import { Client } from "../../startup/Client"
+import { GameClient } from "../../startup/GameClient"
 import GearItem from "./GearItem"
 
 export default class Gear {
@@ -9,9 +9,9 @@ export default class Gear {
     public legs: GearItem
     public weapon: GearItem
     public playerId: string = ''
-    private client: Client
+    private client: GameClient
 
-    constructor(client: Client) {
+    constructor(client: GameClient) {
         this.head = new GearItem(this,ItemsIds.Empty,Items.Empty,'head')
         this.torso = new GearItem(this,ItemsIds.Empty,Items.Empty,'torso')
         this.legs = new GearItem(this,ItemsIds.Empty,Items.Empty,'legs')

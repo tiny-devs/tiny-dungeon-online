@@ -3,7 +3,7 @@ import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'
 import Gear from './items/gear.ts'
-import { WebSocket } from 'https://deno.land/std/ws/mod.ts'
+import { WebSocket } from 'https://deno.land/std@0.77.0/ws/mod.ts'
 import Quest from './npcs/quests/quest.ts'
 import QuestBase from "./npcs/quests/questBase.ts"
 import ItemBase from "./items/itemBase.ts"

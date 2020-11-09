@@ -1,7 +1,7 @@
 import { ClientConfig, PlayerConfig, DimensionsConfig } from '../models/configs'
 import { DrawingCanvas } from '../drawingCanvas/DrawingCanvas'
 import { Game } from './Game'
-import { Client } from './Client'
+import { GameClient } from './GameClient'
 
 export class Main {
     public loginScreen: HTMLElement
@@ -45,7 +45,7 @@ export class Main {
 
     private hasConfirmedName: boolean
     public game: Game | null
-    public client: Client | null
+    public client: GameClient | null
 
     constructor(configs: ClientConfig) {
         this.loginScreen = document.getElementById('login')!
@@ -164,7 +164,7 @@ export class Main {
 
     private startGame() {
         this.game = new Game(this.gameConfig, this)
-        this.client = new Client(this.game, this.playerConfig, this)
+        this.client = new GameClient(this.game, this.playerConfig, this)
     }
 
     private validUsername(username: string) {

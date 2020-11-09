@@ -14,7 +14,7 @@ import { ParseRank } from '../parser/ParseRank'
 import { ParseLoad } from '../parser/ParseLoad'
 import { ParsePlayerIdUpdate } from '../parser/ParsePlayerIdUpdate'
 
-export class Client {
+export class GameClient {
     public loggedIn: boolean
     public playerName: string
     public playerId: string

@@ -1,4 +1,4 @@
-import { Client } from "https://deno.land/x/mysql@v2.6.0/mod.ts";
+import { Client } from "https://deno.land/x/mysql/mod.ts";
 
 enum LastActionEnum {
     None,
