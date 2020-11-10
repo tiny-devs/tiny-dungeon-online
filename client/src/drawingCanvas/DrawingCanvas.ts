@@ -74,14 +74,14 @@ export class DrawingCanvas {
     private getOffset(e: MouseEvent | TouchEvent) {
         let clientX = 0
         let clientY = 0
-        if (e instanceof TouchEvent) {
+        if (window.TouchEvent && e instanceof TouchEvent) {
             if (e.touches.length > 0) {
                 clientX = e.touches[0].clientX
                 clientY = e.touches[0].clientY
             }
         } else {
-            clientX = e.clientX
-            clientY = e.clientY
+            clientX = (e as MouseEvent).clientX
+            clientY = (e as MouseEvent).clientY
         }
 
         const target = <HTMLElement>e.target || e.srcElement,

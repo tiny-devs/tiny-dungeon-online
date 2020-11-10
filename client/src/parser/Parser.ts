@@ -13,7 +13,7 @@ import { ParseItemWear } from './ParseItemWear'
 import { ParseItemRemove } from './ParseItemRemove'
 import { ParseItemDroped } from './ParseItemDroped'
 import { ParseStats } from './ParseStats'
-import { Client } from '../startup/Client'
+import { GameClient } from '../startup/GameClient'
 import { Player } from '../entities/Player'
 import { ParseMessage } from './ParseMessage'
 import { ParseRank } from './ParseRank'
@@ -24,7 +24,7 @@ import { ParseLoad } from './ParseLoad'
 import { ParsePlayerIdUpdate } from './ParsePlayerIdUpdate'
 
 export class Parser {
-    private client: Client
+    private client: GameClient
 
     constructor(client: any) {
         this.client = client

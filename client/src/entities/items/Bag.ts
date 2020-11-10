@@ -1,7 +1,7 @@
 import { ItemsIds } from "../../models/Enums"
 import BagItem from "./BagItem"
 import { Items } from "./Items"
-import { Client } from "../../startup/Client"
+import { GameClient } from "../../startup/GameClient"
 
 export default class Bag {
     public items: any[] = []
@@ -10,10 +10,10 @@ export default class Bag {
     public playerId: string = ''
     public itemsHolderEl: HTMLElement
     public coinsEl: HTMLElement
-    private client: Client
+    private client: GameClient
     private itemsCount: number = 0
 
-    constructor(client: Client) {
+    constructor(client: GameClient) {
         this.itemsHolderEl = document.getElementById('items')!
         this.coinsEl = document.getElementById('coins')!
         this.client = client

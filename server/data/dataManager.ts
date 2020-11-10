@@ -1,4 +1,4 @@
-import { AES }  from "https://deno.land/x/god_crypto/aes.ts";
+import { AES }  from "https://deno.land/x/god_crypto@v1.4.3/aes.ts";
 
 export default class DataManager {
     private aes: AES
