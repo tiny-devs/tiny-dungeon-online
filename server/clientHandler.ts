@@ -6,7 +6,7 @@ import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
 import { PveData } from './pve/pveData.ts'
-//import ConnectionManager from "./data/connectionManager.ts"
+import ConnectionManager from "./data/connectionManager.ts"
 import DataManager from "./data/dataManager.ts"
 
 export class ClientHandler {
@@ -15,7 +15,7 @@ export class ClientHandler {
   public playerNames: string[] = []
   public map: Map
   private topPlayers: {id:string,name:string,level:number}[]
-  //private db: ConnectionManager
+  private db: ConnectionManager
   private playerDataManager: DataManager
 
   constructor(serverConfigs: any) {
@@ -26,14 +26,11 @@ export class ClientHandler {
 
     this.playerDataManager = new DataManager()
 
-    //this.db = new ConnectionManager()
+    this.db = new ConnectionManager()
     this.topPlayers = []
-    //  this.db.getRank().then(result => {
-    //   this.topPlayers = result
-    // })
-    this.topPlayers.push({id:'',name:'',level:0})
-    this.topPlayers.push({id:'',name:'',level:0})
-    this.topPlayers.push({id:'',name:'',level:0})
+     this.db.getRank().then(result => {
+      this.topPlayers = result
+    })
   }
 
   private broadcastRank(): void {
@@ -446,10 +443,9 @@ export class ClientHandler {
     players.splice(0, players.length)
     if (updated) {
       this.topPlayers.splice(3)
-      // this.db.updateRank(this.topPlayers).then(() => {
-      //   this.broadcastRank()
-      // })
-      this.broadcastRank()
+      this.db.updateRank(this.topPlayers).then(() => {
+        this.broadcastRank()
+      })
     }
 
     return updated
