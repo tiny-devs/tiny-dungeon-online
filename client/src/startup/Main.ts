@@ -37,15 +37,17 @@ export class Main {
     public top1Element: HTMLElement
     public top2Element: HTMLElement
     public top3Element: HTMLElement
+    public adminPassword: string = ''
 
     public drawingGrid: DrawingCanvas
+    
+    public game: Game | null
+    public client: GameClient | null
 
     private playerConfig: PlayerConfig
     private gameConfig: DimensionsConfig
-
     private hasConfirmedName: boolean
-    public game: Game | null
-    public client: GameClient | null
+    private admins: string[] = ['diguifi']
 
     constructor(configs: ClientConfig) {
         this.loginScreen = document.getElementById('login')!
@@ -139,7 +141,18 @@ export class Main {
 
     onConfirmName() {
         if(!this.validUsername(this.playerNameInput.value)) {
-            alert('Insert a valid username (max length: 10)')
+            alert('Insert a valid username (max length: 12)')
+            return
+        }
+
+        if (this.admins.some(name => name == this.playerNameInput.value)) {
+            const password = prompt('insert admin password')
+            if (!password || password?.length < 1) {
+                alert('invalid password')
+                return
+            } else {
+                this.adminPassword = password
+            }
         }
 
         if (!this.hasConfirmedName) {
@@ -168,7 +181,7 @@ export class Main {
     }
 
     private validUsername(username: string) {
-        return username.match(/^\w+$/) && (username.length <= 15)
+        return username.match(/^\w+$/) && (username.length <= 12)
     }
 
     public isMobile(): boolean {
