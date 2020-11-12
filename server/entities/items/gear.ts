@@ -70,7 +70,7 @@ export default class Gear {
             }
         } else if (!hasMinimumLevel) {
             if (!loading) {
-                this.clientHandler.unicastMessage(this.player, `"You need LVL ${item.level} to wear this"`)
+                this.clientHandler.unicastMessage(this.player, `You need LVL ${item.level} to wear this`)
             }
         }
 
