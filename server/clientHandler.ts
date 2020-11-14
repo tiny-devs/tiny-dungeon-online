@@ -511,7 +511,7 @@ export class ClientHandler {
       args.shift()
       switch (command) {
         case '/kick':
-          this.kickPlayer(args[0])
+          this.kickPlayer(args[0], 'you were kicked by admin')
           break
         case '/global':
           const message = args.join(' ')
@@ -623,7 +623,7 @@ export class ClientHandler {
     return false
   }
 
-  private async kickPlayer(name: string | undefined) {
+  public async kickPlayer(name: string | undefined, reason: string) {
     let currentPlayer = null
     try {
       if (name) {
@@ -631,7 +631,7 @@ export class ClientHandler {
           const player = room.players.find(p => p.name == name)
           if (player) {
             currentPlayer = player
-            this.unicastError(player, 'you were kicked by admin')
+            this.unicastError(player, reason)
             await this.delay(1000)
             this.logPlayerOut(player)
             this.broadcastPlayerConnection(player.id)
