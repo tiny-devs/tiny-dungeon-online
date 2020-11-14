@@ -31,6 +31,7 @@ export class Player {
     public gear: Gear
     public quests: Quest[] = []
     public chatTimeout: number = 5000
+    public badBehaviour: number = 0
     public canChat: boolean = true
     public clientWs: WebSocket
     private canMove: boolean = true
