@@ -392,7 +392,7 @@ export class Player {
     }
 
     private notCollided(y: number, x: number): boolean {        
-        const notSolidTile = this.currentRoom.solidLayer[y][x] === 0
+        const notSolidTile = this.currentRoom.solidLayer[y][x] === 0 || this.currentRoom.solidLayer[y][x] === -1
         const notNpc = !this.hasNpc(y,x)
 
         return notSolidTile && notNpc

@@ -32,7 +32,7 @@ export class Room {
                 }
 
                 const tileToDraw = this.solidLayerShape[line][column] as number
-                if (tileToDraw != 0) {
+                if (tileToDraw != 0 && tileToDraw != -1) {
                     const tiles = SolidTiles as any
                     const tile = tiles[Object.keys(SolidTiles)[tileToDraw-1]]
 
