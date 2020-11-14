@@ -68,6 +68,8 @@ export class GameClient {
     private isTyping: boolean = false
     private localStorageLoadKey: string = 'tinydata'
     private adminPassword: string = ''
+    private afkTimeout: number = 0
+    private afkInterval: number = 240000 // 4min
 
     constructor(game: Game, clientConfigs: PlayerConfig, mainElements: Main) {
         document.onkeydown = this.checkKey.bind(this)
@@ -284,6 +286,7 @@ export class GameClient {
     }
 
     checkKey(e: Partial<KeyboardEvent>) {
+        this.restartAfkTimer()
         if (this.canMove) {
             this.delayMove()
 
@@ -553,6 +556,14 @@ export class GameClient {
 
     getRandomPlayerColor() {
         return PlayerColors[Math.floor(Math.random() * PlayerColors.length)]
+    }
+
+    restartAfkTimer(): void {
+        clearTimeout(this.afkTimeout)
+        this.afkTimeout = setTimeout(async () => {
+            this.displayMessage('after 10min afk you will be kicked')
+            this.restartAfkTimer()
+        }, this.afkInterval);
     }
 
     pingPong() {
