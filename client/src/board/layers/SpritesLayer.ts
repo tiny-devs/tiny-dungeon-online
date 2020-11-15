@@ -36,8 +36,8 @@ export class SpritesLayer {
     draw(clientRoomId: any) {
         this.ctx.clearRect(0, 0, this.game.gridConfig.width, this.game.gridConfig.height)
         this.drawItems(clientRoomId)
-        this.drawPlayers(clientRoomId)
         this.drawNpcs(clientRoomId)
+        this.drawPlayers(clientRoomId)
     }
 
     public clear() {

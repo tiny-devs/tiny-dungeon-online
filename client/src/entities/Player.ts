@@ -84,23 +84,37 @@ export class Player {
     drawChat(message: string) {
         clearTimeout(this.chatMessageTimeout)
         this.chatMessage = message
-        this.layer.ctx.font = '15px arial'
-        this.layer.ctx.textAlign = 'center'
-        this.layer.ctx.fillStyle = Color.DarkYellow
+
         const x = this.x * this.game.gridConfig.cellWidth + this.game.gridConfig.cellWidth / 2
         const y = this.y * this.game.gridConfig.cellHeight - 10
+
+        this.layer.ctx.font = '15px arial'
+        this.layer.ctx.textAlign = 'center'
+
+        this.layer.ctx.strokeStyle = Color.Black;
+        this.layer.ctx.lineWidth = 2;
+        this.layer.ctx.strokeText(`${this.chatMessage}`, x, y);
+        
+        this.layer.ctx.fillStyle = Color.LightYellow
         this.layer.ctx.fillText(`${this.chatMessage}`, x, y)
+
         this.chatMessageTimeout = setTimeout(() => {
             this.chatMessage = ''
         }, 5000)
     }
 
     drawChatMessage() {
-        this.layer.ctx.font = '15px arial'
-        this.layer.ctx.textAlign = 'center'
-        this.layer.ctx.fillStyle = Color.Yellow
         const x = this.x * this.game.gridConfig.cellWidth + this.game.gridConfig.cellWidth / 2
         const y = this.y * this.game.gridConfig.cellHeight - 10
+
+        this.layer.ctx.font = '15px arial'
+        this.layer.ctx.textAlign = 'center'
+
+        this.layer.ctx.strokeStyle = Color.Black;
+        this.layer.ctx.lineWidth = 2;
+        this.layer.ctx.strokeText(`${this.chatMessage}`, x, y);
+        
+        this.layer.ctx.fillStyle = Color.LightYellow
         this.layer.ctx.fillText(`${this.chatMessage}`, x, y)
     }
 

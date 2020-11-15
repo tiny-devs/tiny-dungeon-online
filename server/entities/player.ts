@@ -31,10 +31,13 @@ export class Player {
     public gear: Gear
     public quests: Quest[] = []
     public chatTimeout: number = 5000
+    public badBehaviour: number = 0
     public canChat: boolean = true
     public clientWs: WebSocket
+    private afkTimeout: number = 0
+    private afkInterval: number = 601000 // 10:01 min
     private canMove: boolean = true
-    private savePlayerInterval: number = 300000
+    private savePlayerInterval: number = 300000 // 5 min
     private playerSaveTimeout: number = 0
     private clientHandler: ClientHandler
 
@@ -62,6 +65,7 @@ export class Player {
     }
 
     public move(key: Direction): boolean {
+        this.restartAfkTimer()
         let validMove = false
 
         if (this.canMove) {
@@ -391,7 +395,7 @@ export class Player {
     }
 
     private notCollided(y: number, x: number): boolean {        
-        const notSolidTile = this.currentRoom.solidLayer[y][x] === 0
+        const notSolidTile = this.currentRoom.solidLayer[y][x] === 0 || this.currentRoom.solidLayer[y][x] === -1
         const notNpc = !this.hasNpc(y,x)
 
         return notSolidTile && notNpc
@@ -415,6 +419,15 @@ export class Player {
             }
         }
         return false
+    }
+
+    private restartAfkTimer(): void {
+        clearTimeout(this.afkTimeout)
+        if (!this.clientWs.isClosed) {
+            this.afkTimeout = setTimeout(async () => {
+                this.clientHandler.kickPlayer(this.name, 'kicked for being afk')
+            }, this.afkInterval);
+        }
     }
 
     private delayMove(): void {

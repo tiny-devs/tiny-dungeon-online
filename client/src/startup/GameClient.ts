@@ -67,6 +67,9 @@ export class GameClient {
     private canChat: boolean = true
     private isTyping: boolean = false
     private localStorageLoadKey: string = 'tinydata'
+    private adminPassword: string = ''
+    private afkTimeout: number = 0
+    private afkInterval: number = 240000 // 4min
 
     constructor(game: Game, clientConfigs: PlayerConfig, mainElements: Main) {
         document.onkeydown = this.checkKey.bind(this)
@@ -93,6 +96,7 @@ export class GameClient {
         this.top3Element = mainElements.top3Element
         this.isShowingMessage = false
         this.messageTimeout = 0
+        this.adminPassword = mainElements.adminPassword
         
         this.up = mainElements.mobileUp
         this.up.onclick = () => {
@@ -237,9 +241,10 @@ export class GameClient {
     getPlayerLoginData() {
         const playerLoadData = localStorage.getItem(this.localStorageLoadKey)
         const playerData = playerLoadData ? playerLoadData : '0'
+        const adminPassword = this.adminPassword ? this.adminPassword : '0'
         const playerMatrix = JSON.stringify(this.playerMatrix)
 
-        return `${Command.Login},${this.playerName},${this.getRandomPlayerColor()},${playerData},${playerMatrix}`
+        return `${Command.Login},${this.playerName},${this.getRandomPlayerColor()},${playerData},${adminPassword},${playerMatrix}`
     }
 
     onReceiveMessage(event: any) {
@@ -281,6 +286,7 @@ export class GameClient {
     }
 
     checkKey(e: Partial<KeyboardEvent>) {
+        this.restartAfkTimer()
         if (this.canMove) {
             this.delayMove()
 
@@ -550,6 +556,14 @@ export class GameClient {
 
     getRandomPlayerColor() {
         return PlayerColors[Math.floor(Math.random() * PlayerColors.length)]
+    }
+
+    restartAfkTimer(): void {
+        clearTimeout(this.afkTimeout)
+        this.afkTimeout = setTimeout(async () => {
+            this.displayMessage('after 10min afk you will be kicked')
+            this.restartAfkTimer()
+        }, this.afkInterval);
     }
 
     pingPong() {

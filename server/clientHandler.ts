@@ -1,13 +1,15 @@
 import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std@0.77.0/ws/mod.ts'
 import { v4 } from 'https://deno.land/std@0.77.0/uuid/mod.ts'
 import { Player } from './entities/player.ts'
-import { Command, Direction, Items, GearType } from './Enums.ts'
+import { Command, Direction, Items, GearType, Rooms } from './Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
 import { PveData } from './pve/pveData.ts'
 import ConnectionManager from "./data/connectionManager.ts"
 import DataManager from "./data/dataManager.ts"
+import { Admins } from "./data/admins.ts"
+import { badWords } from "./data/badWords.ts"
 
 export class ClientHandler {
   public boardColumns: number = 16
@@ -17,6 +19,8 @@ export class ClientHandler {
   private topPlayers: {id:string,name:string,level:number}[]
   private db: ConnectionManager
   private playerDataManager: DataManager
+  private admins: typeof Admins = Admins
+  private regexBadWords: RegExp
 
   constructor(serverConfigs: any) {
     this.boardRows = serverConfigs.boardRows
@@ -31,6 +35,15 @@ export class ClientHandler {
      this.db.getRank().then(result => {
       this.topPlayers = result
     })
+    
+    this.regexBadWords = new RegExp(badWords.map((word) => {
+      let improvedWord = `(${word.split("").join("+(\\W|_)*")})`
+      improvedWord = improvedWord.replace(/a/gi, "(a|2|4|@)")
+      improvedWord = improvedWord.replace(/e/gi, "(e|3|&)")
+      improvedWord = improvedWord.replace(/i/gi, "(i|1|!)")
+      improvedWord = improvedWord.replace(/o/gi, "(o|0)")
+      return improvedWord
+    }).join('|'), 'ig')
   }
 
   private broadcastRank(): void {
@@ -125,6 +138,20 @@ export class ClientHandler {
     }
   }
 
+  private broadcastMessage(message: string): void {
+    let currentPlayer = null
+    try{
+      for (const room of this.map.rooms) {
+        for (const player of room.players) {
+          currentPlayer = player
+          this.send(player,`${Command.Message},"${message}"`)
+        }
+      }
+    } catch (e) {
+      this.handleExceptions(e, currentPlayer, 'broadcastMessage')
+    }
+  }
+
   public roomcastNpcMove(npcMoved: Npc): void {
     let currentPlayer = null
     try{
@@ -208,16 +235,42 @@ export class ClientHandler {
     }
   }
 
-  private roomcastChat(room: Room, playerId: string, message: string): void {
+  private async roomcastChat(room: Room, sentBy: Player, message: string): Promise<boolean> {
     let currentPlayer = null
     try{
+      const badWordCheckResult = this.checkBadWords(message)
+      if (badWordCheckResult.contains) {
+        message = badWordCheckResult.messageFixed
+        sentBy.badBehaviour += 1
+        if(sentBy.badBehaviour > 4) {
+          this.unicastError(sentBy, 'you were kicked for swearing')
+          await this.delay(1000)
+          this.logPlayerOut(sentBy)
+          this.broadcastPlayerConnection(sentBy.id)
+          return false
+        }
+      }
+
       for (const player of room.players) {
         currentPlayer = player
-        this.send(player,`${Command.Chat},${playerId},"${message}"`)
+        this.send(player,`${Command.Chat},${sentBy.id},"${message}"`)
       }
+      return true
     } catch (e) {
       this.handleExceptions(e, currentPlayer, 'roomcastItemsInRoom')
+      return false
     }
+  }
+
+  private checkBadWords(message: string) {
+    let hasBadWord = false
+
+    message = message.replace(this.regexBadWords, (match) => { 
+      hasBadWord = true
+      return match.replace(/([a-z]|\d)/gi, "*") 
+    })
+
+    return {contains: hasBadWord, messageFixed: message}
   }
 
   private switchRooms(player: Player, newRoom: Room) {
@@ -251,7 +304,7 @@ export class ClientHandler {
 
   public unicastMessage(player: Player, message: string): void {
     try{
-      this.send(player,`${Command.Message},${message}`)
+      this.send(player,`${Command.Message},"${message}"`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastMessage')
     }
@@ -451,6 +504,31 @@ export class ClientHandler {
     return updated
   }
 
+  private executeAdminCommand(adm: Player, cmd: string) {
+    try {
+      const command = cmd.split(' ')[0]
+      let args = cmd.split(' ')!
+      args.shift()
+      switch (command) {
+        case '/kick':
+          this.kickPlayer(args[0], 'you were kicked by admin')
+          break
+        case '/global':
+          const message = args.join(' ')
+          this.broadcastMessage(message)
+          break
+        case '/find':
+            this.findPlayer(adm, args[0])
+            break
+        default:
+          break
+      }
+    } catch (e) {
+      console.log('source: executeAdminCommand')
+      console.log(e)
+    }
+  }
+
   private handleExceptions(e: Error, player: Player | null, src: string): boolean {
     try {
       console.log(`source: ${src}`)
@@ -506,6 +584,17 @@ export class ClientHandler {
     return playersReturn
   }
 
+  private findPlayer(adm: Player, name: string) {
+    for (const room of this.map.rooms) {
+      for (const player of room.players) {
+        if (player.name == name) {
+          this.unicastMessage(adm, `${Rooms[player.currentRoom.id]} (${player.currentRoom.id})`)
+        }
+      }
+    }
+    this.unicastMessage(adm, 'player not found')
+  }
+
   private checkNameDuplicate(name: string, player: Player): boolean {
     try {
       return this.playerNames.some(pName => pName == name)
@@ -532,6 +621,31 @@ export class ClientHandler {
       this.handleExceptions(e, player, 'checkNameDuplicate')
     }
     return false
+  }
+
+  public async kickPlayer(name: string | undefined, reason: string) {
+    let currentPlayer = null
+    try {
+      if (name) {
+        for (const room of this.map.rooms) {
+          const player = room.players.find(p => p.name == name)
+          if (player) {
+            currentPlayer = player
+            this.unicastError(player, reason)
+            await this.delay(1000)
+            this.logPlayerOut(player)
+            this.broadcastPlayerConnection(player.id)
+            break
+          }
+        }
+      }
+    } catch (e) {
+      this.handleExceptions(e, currentPlayer, 'kickPlayer')
+    }
+  }
+
+  private async delay(ms: number): Promise<unknown> {
+    return new Promise( resolve => setTimeout(resolve, ms) );
   }
 
   private logPlayerOut(player: Player): boolean {
@@ -645,8 +759,13 @@ export class ClientHandler {
               }
               break
             case Command.Chat:
-              if (eventData[1].length <= 40 && player.canChat) {
-                this.roomcastChat(player.currentRoom, player.id, eventData[1])
+              if (eventData[1][0] == '/' && this.admins.some(a => a.name == player.name)) {
+                this.executeAdminCommand(player, eventData[1])
+                eventData[1] = ' '
+              }
+
+              if (eventData[1].length <= 50 && player.canChat) {
+                this.roomcastChat(player.currentRoom, player, eventData[1])
                 player.startChatTimeout()
               }
               break
@@ -654,6 +773,22 @@ export class ClientHandler {
               this.broadcastPlayerMove(player, +eventData[1])
               break
             case Command.Login:
+              const adminAccess = this.admins.find(a => a.name == eventData[1])
+              if (adminAccess) {
+                if (eventData[4] != '0') {
+                  const code = await this.playerDataManager.decryptUserData(eventData[4])
+                  if (code != adminAccess.code) {
+                    this.unicastError(player, "Wrong password")
+                    initialRoom.removePlayer(player)
+                    break
+                  }
+                } else {
+                  this.unicastError(player, "Thats an admins name")
+                  initialRoom.removePlayer(player)
+                  break
+                }
+              }
+
               duplicatedName = this.checkNameDuplicate(eventData[1], player)
               if (duplicatedName) {
                 this.unicastError(player, "Name already exists")
@@ -664,7 +799,7 @@ export class ClientHandler {
               this.playerNames.push(eventData[1])
               player.name = eventData[1]
               player.color = eventData[2]
-              player.matrix = JSON.parse(eventData[4])
+              player.matrix = JSON.parse(eventData[5])
 
               this.broadcastPlayerConnection(playerId)
               this.unicastNpcsInRoom(player)
