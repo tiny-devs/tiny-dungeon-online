@@ -70,6 +70,8 @@ export class GameClient {
     private adminPassword: string = ''
     private afkTimeout: number = 0
     private afkInterval: number = 240000 // 4min
+    private afkTabMinCountdown: number = 9
+    private afkTabSecCountdown: number = 59
 
     constructor(game: Game, clientConfigs: PlayerConfig, mainElements: Main) {
         document.onkeydown = this.checkKey.bind(this)
@@ -187,6 +189,8 @@ export class GameClient {
             this.mobileMovement()
         }
 
+        this.showStatusOnTab()
+
         this.game = game
         this.ws = null
         this.loggedIn = false
@@ -286,6 +290,8 @@ export class GameClient {
     }
 
     checkKey(e: Partial<KeyboardEvent>) {
+        this.afkTabMinCountdown = 9
+        this.afkTabSecCountdown = 59
         this.restartAfkTimer()
         if (this.canMove) {
             this.delayMove()
@@ -564,6 +570,34 @@ export class GameClient {
             this.displayMessage('after 10min afk you will be kicked')
             this.restartAfkTimer()
         }, this.afkInterval);
+    }
+
+    showStatusOnTab() {
+        setTimeout(async () => {
+            this.afkCountdownTick()
+            if (document.hidden) {
+                const player = this.game.spritesLayer.getPlayerById(this.playerId)!
+                document.title = `AFK: ${this.afkTabMinCountdown}:${this.afkTabSecCountdown} HP: ${player.hp}`;
+            } else {
+                document.title = 'TLO'
+            }
+
+            this.showStatusOnTab()
+        }, 900);
+    }
+
+    afkCountdownTick() {
+        if (this.afkTabMinCountdown > 0 && this.afkTabSecCountdown == 0) {
+            this.afkTabMinCountdown -= 1
+        }
+
+        if (this.afkTabSecCountdown == 0) {
+            if (this.afkTabMinCountdown > 0) {
+                this.afkTabSecCountdown = 59
+            }
+        } else {
+            this.afkTabSecCountdown -= 1
+        }
     }
 
     pingPong() {

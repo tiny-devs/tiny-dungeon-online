@@ -149,28 +149,28 @@ export class Player {
         switch (direction) {
             case Direction.Up:
                 if (!this.isOnBorder(collisionShape, +this.x, +this.y - 1)) {
-                    if (collisionShape[+this.y - 1][+this.x]) {
+                    if (collisionShape[+this.y - 1][+this.x] !== 0 && collisionShape[+this.y - 1][+this.x] !== -1) {
                         valid = false
                     }
                 }
                 break
             case Direction.Down:
                 if (!this.isOnBorder(collisionShape, +this.x, +this.y + 1)) {
-                    if (collisionShape[+this.y + 1][+this.x]) {
+                    if (collisionShape[+this.y + 1][+this.x] !== 0 && collisionShape[+this.y + 1][+this.x] !== -1) {
                         valid = false
                     }
                 }
                 break
             case Direction.Left:
                 if (!this.isOnBorder(collisionShape, +this.x - 1, +this.y)) {
-                    if (collisionShape[+this.y][+this.x - 1]) {
+                    if (collisionShape[+this.y][+this.x - 1] !== 0 && collisionShape[+this.y][+this.x - 1] !== -1) {
                         valid = false
                     }
                 }
                 break
             case Direction.Right:
                 if (!this.isOnBorder(collisionShape, +this.x + 1, +this.y)) {
-                    if (collisionShape[+this.y][+this.x + 1]) {
+                    if (collisionShape[+this.y][+this.x + 1] !== 0 && collisionShape[+this.y][+this.x + 1] !== -1) {
                         valid = false
                     }
                 }
