@@ -35,7 +35,8 @@ export class Player {
     public canChat: boolean = true
     public clientWs: WebSocket
     private afkTimeout: number = 0
-    private afkInterval: number = 601000 // 10:01 min
+    private afkTotalSeconds: number = 601 // 10:01 min
+    private currentAfkSecondsLeft: number = 601
     private canMove: boolean = true
     private savePlayerInterval: number = 300000 // 5 min
     private playerSaveTimeout: number = 0
@@ -62,10 +63,11 @@ export class Player {
         this.clientWs = clientWs
         this.clientHandler = clientHandler
         this.gear = new Gear(this, clientHandler)
+        this.afkTimer()
     }
 
     public move(key: Direction): boolean {
-        this.restartAfkTimer()
+        this.currentAfkSecondsLeft = this.afkTotalSeconds
         let validMove = false
 
         if (this.canMove) {
@@ -421,12 +423,17 @@ export class Player {
         return false
     }
 
-    private restartAfkTimer(): void {
-        clearTimeout(this.afkTimeout)
+    private afkTimer(): void {
         if (!this.clientWs.isClosed) {
             this.afkTimeout = setTimeout(async () => {
-                this.clientHandler.kickPlayer(this.name, 'kicked for being afk')
-            }, this.afkInterval);
+                if (this.currentAfkSecondsLeft <= 0) {
+                    this.clientHandler.kickPlayer(this.name, 'kicked for being afk')
+                    clearTimeout(this.afkTimeout)
+                } else {
+                    this.currentAfkSecondsLeft-=1
+                    this.afkTimer()
+                }
+            }, 1000);
         }
     }
 
