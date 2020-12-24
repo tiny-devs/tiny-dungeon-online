@@ -4,8 +4,6 @@ import { Main } from './Main'
 import { Parser } from '../parser/Parser'
 import { Command, PveAttacker, Rooms, Direction, ItemsIds, GearType } from '../models/Enums'
 import { Color, PlayerColors } from '../board/map/tiles/Color'
-import { Woods } from '../board/map/Woods'
-import { InitialRoom } from '../board/map/InitialRoom'
 import Bag from '../entities/items/Bag'
 import { ParseItemPick } from '../parser/ParseItemPick'
 import { ParseItemRemove } from '../parser/ParseItemRemove'
@@ -61,7 +59,7 @@ export class GameClient {
     private ws: WebSocket | null
     private playerMatrix: number[][]
     private parser: Parser
-    private currentRoom: InitialRoom | Woods
+    private currentRoom: any
     private canMove: boolean
     private chatTimeout: number = 5
     private canChat: boolean = true
@@ -198,7 +196,7 @@ export class GameClient {
         this.playerId = ''
         this.bag = new Bag(this)
         this.gear = new Gear(this)
-        this.currentRoomId = Rooms.Initial
+        this.currentRoomId = Rooms.InitialRoom
         this.playerMatrix = clientConfigs.playerMatrix
         this.parser = new Parser(this)
         this.currentRoom = this.game.map.rooms[0]
