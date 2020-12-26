@@ -34,7 +34,7 @@ export enum Direction {
 }
 
 export enum Rooms {
-    Initial = 0,
+    InitialRoom = 0,
     Woods,
     Woods2,
     Woods3,
