@@ -17,13 +17,16 @@ export default class Room {
   public boardRows: number = 16
   public boardColumns: number = 16
 
-  constructor(id: number, exits: Exits, clientHandler: ClientHandler) {
+  constructor(id: number, exits: Exits, clientHandler: ClientHandler, solidLayer: any, npcSpawns: any) {
     this.id = id
     this.exits = exits
     this.clientHandler = clientHandler
     this.boardRows = clientHandler.boardRows
     this.boardColumns = clientHandler.boardColumns
+    this.solidLayer = solidLayer
+    this.npcSpawns = npcSpawns
     this.itemsLayer = this.buildItemsLayer()
+    this.spawnNpcs()
   }
 
   addPlayer(player: Player) {

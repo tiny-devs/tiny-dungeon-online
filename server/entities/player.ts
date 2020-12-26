@@ -389,7 +389,7 @@ export class Player {
 
     private respawn() {
         this.fightingNpcId = null
-        this.currentRoomId = Rooms.Initial
+        this.currentRoomId = Rooms.InitialRoom
         this.x = 0
         this.y = 0
         this.clientHandler.broadcastPlayerMove(this, Direction.Right)
