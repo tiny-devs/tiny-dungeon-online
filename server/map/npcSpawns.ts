@@ -24,6 +24,7 @@ import Slime from "../entities/npcs/slime.ts";
 import Spider from "../entities/npcs/spider.ts";
 import Witch from "../entities/npcs/witch.ts";
 
+export const MapDimensionsHeightWidth: number[] = [10, 10]
 export const NpcSpawns = {
   InitialRoom: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
