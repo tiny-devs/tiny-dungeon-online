@@ -1,6 +1,6 @@
-import { Npcs } from '../../../../Enums.ts'
-import NpcBase from '../../npcBase.ts'
-import RogerDialog from "../dialogs/rogerDialog.ts"
+import { Npcs } from '../../../../../Enums.ts'
+import NpcBase from '../../../npcBase.ts'
+import RogerDialog from "../../dialogs/rogerDialog.ts"
 
 export default class Roger extends NpcBase {
     constructor() {

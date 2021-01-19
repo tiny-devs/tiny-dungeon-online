@@ -6,6 +6,6 @@ import FireSword from '../items/fireSword.ts'
 
 export default class Demon2 extends NpcBase {
     constructor() {
-        super(Npcs.Demon2, true, 'demon', 0, 5, 0, 75, 10000, 0.25, 6, 36, null, [new FireDagger(0.6), new FireLegs(0.7), new FireSword(0.6)], null)
+        super(Npcs.Demon2, true, 'demon', 0, 5, 5, 75, 10000, 0.25, 8, 36, null, [new FireDagger(0.5), new FireLegs(0.6), new FireSword(0.5)], null)
     }
 }

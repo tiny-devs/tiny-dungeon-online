@@ -18,11 +18,11 @@ import Horvyn from "../entities/npcs/passive/gnomes/horvyn.ts";
 import Mytklash from "../entities/npcs/passive/gnomes/mytklash.ts";
 import MytklashsFlower from "../entities/npcs/passive/gnomes/mytklashsFlower.ts";
 import Nestor from "../entities/npcs/passive/gnomes/nestor.ts";
-import Edmond from "../entities/npcs/passive/humans/edmond.ts";
-import Lissy from "../entities/npcs/passive/humans/lissy.ts";
-import Miah from "../entities/npcs/passive/humans/miah.ts";
-import Roger from "../entities/npcs/passive/humans/roger.ts";
-import Vardan from "../entities/npcs/passive/humans/vardan.ts";
+import Edmond from "../entities/npcs/passive/humans/deepLake/edmond.ts";
+import Lissy from "../entities/npcs/passive/humans/deepLake/lissy.ts";
+import Miah from "../entities/npcs/passive/humans/deepLake/miah.ts";
+import Roger from "../entities/npcs/passive/humans/deepLake/roger.ts";
+import Vardan from "../entities/npcs/passive/humans/deepLake/vardan.ts";
 import Skeleton from "../entities/npcs/skeleton.ts";
 import SkeletonKnight from "../entities/npcs/skeletonKnight.ts";
 import Slime from "../entities/npcs/slime.ts";
@@ -45,6 +45,28 @@ import SandSpirit from "../entities/npcs/sandSpirit.ts";
 import SandTotem from "../entities/npcs/sandTotem.ts";
 import Demon from "../entities/npcs/demon.ts";
 import Demon2 from "../entities/npcs/demon2.ts";
+import Ediog from "../entities/npcs/passive/humans/mages/ediog.ts";
+import Kinley from "../entities/npcs/passive/humans/merchants/Kinley.ts";
+import Peter from "../entities/npcs/passive/humans/merchants/peter.ts";
+import Oswald from "../entities/npcs/passive/humans/subitnof/oswald.ts";
+import Beatrice from "../entities/npcs/passive/humans/subitnof/beatrice.ts";
+import Boris from "../entities/npcs/passive/humans/subitnof/boris.ts";
+import Celine from "../entities/npcs/passive/humans/subitnof/celine.ts";
+import Ephan from "../entities/npcs/passive/humans/subitnof/ephan.ts";
+import Francis from "../entities/npcs/passive/humans/subitnof/francis.ts";
+import James from "../entities/npcs/passive/humans/subitnof/james.ts";
+import Jasmine from "../entities/npcs/passive/humans/subitnof/jasmine.ts";
+import Michael from "../entities/npcs/passive/humans/subitnof/michael.ts";
+import Reeves from "../entities/npcs/passive/humans/subitnof/reeves.ts";
+import Lugrus from "../entities/npcs/passive/humans/subitnof/lugrus.ts";
+import Cooper from "../entities/npcs/passive/humans/subitnof/cooper.ts";
+import Marcus from "../entities/npcs/passive/humans/subitnof/marcus.ts";
+import Marty from "../entities/npcs/passive/humans/subitnof/marty.ts";
+import CityGuard from "../entities/npcs/passive/humans/subitnof/cityGuard.ts";
+import Mathuis from "../entities/npcs/passive/humans/kharjid/mathuis.ts";
+import Achmed from "../entities/npcs/passive/humans/kharjid/achmed.ts";
+import Jamul from "../entities/npcs/passive/humans/kharjid/jamul.ts";
+import Abid from "../entities/npcs/passive/humans/kharjid/abid.ts";
 
 export const MapDimensionsHeightWidth: number[] = [10, 10]
 export const NpcSpawns = {
@@ -958,7 +980,7 @@ export const NpcSpawns = {
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,new Ediog(),0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
   Plains13: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -1081,11 +1103,11 @@ export const NpcSpawns = {
   [0,0,0,0,0,0,0,new Horse2(),0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,new Kinley(),0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,new Horse(),0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,new Peter(),0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
   Plains19: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -1169,36 +1191,36 @@ export const NpcSpawns = {
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
   Subitnof1: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,new Boris(),0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,new Reeves(),0,0,0],
+  [0,0,new Jasmine(),0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,new Cow(),0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,new Francis(),0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,new Chicken(),0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,new Michael(),0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,new Celine(),0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,new Chicken(),0,0,0,0,0,0,0,0,0,0,0,0]],
-  Subitnof2: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  Subitnof2: [[0,0,new CityGuard(),0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,new Chicken(),0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,new James(),0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,new Oswald(),0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,new Beatrice(),0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,new Ephan(),0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
   Plains20: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -1266,7 +1288,7 @@ export const NpcSpawns = {
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
   Desert6: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,new SandSnake(),0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,new AdamantGhost(),0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,new SandCat(),0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -1331,17 +1353,17 @@ export const NpcSpawns = {
   Subitnof3: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,new Marcus(),0,0,new Chicken(),0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,new Lugrus(),0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,new CityGuard(),0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,new Cooper(),0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,new Marty(),0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
   Subitnof4: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -1354,10 +1376,10 @@ export const NpcSpawns = {
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,new CityGuard(),0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0,0,0,0,0,new CityGuard(),0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
   Plains23: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
@@ -1618,18 +1640,18 @@ export const NpcSpawns = {
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
   Kharjid: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,new Camel(),0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,new Camel(),0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,new Achmed(),0,0,0,0,0,0,0,0,new Abid(),0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,new Mathuis(),0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,new Camel(),0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,new Jamul(),0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]],
   Desert16: [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],

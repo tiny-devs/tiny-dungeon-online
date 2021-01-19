@@ -31,7 +31,7 @@ import FireArmour from "./fireArmour.ts"
 import FireLegs from "./fireLegs.ts"
 import FireDagger from "./fireDagger.ts"
 import FireSword from "./fireSword.ts"
-import Coffee from "./coffee.ts"
+import Coffee from "./consumable/coffee.ts"
 
 export default class Bag {
     public items: ItemBase[] = []

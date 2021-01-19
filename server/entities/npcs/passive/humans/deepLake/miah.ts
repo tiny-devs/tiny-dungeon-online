@@ -1,6 +1,6 @@
-import { Npcs } from '../../../../Enums.ts'
-import NpcBase from '../../npcBase.ts'
-import MiahDialog from "../dialogs/miahDialog.ts"
+import { Npcs } from '../../../../../Enums.ts'
+import NpcBase from '../../../npcBase.ts'
+import MiahDialog from "../../dialogs/miahDialog.ts"
 
 export default class Miah extends NpcBase {
     constructor() {

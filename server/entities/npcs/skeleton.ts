@@ -1,6 +1,6 @@
 import { Npcs } from '../../Enums.ts'
 import NpcBase from './npcBase.ts'
-import Coffee from '../items/coffee.ts'
+import Coffee from '../items/consumable/coffee.ts'
 import BronzeDagger from '../items/bronzeDagger.ts'
 import BronzeSword from '../items/bronzeDagger.ts'
 import IronHelm from '../items/ironHelm.ts'
