@@ -518,8 +518,14 @@ export class ClientHandler {
           this.broadcastMessage(message)
           break
         case '/find':
-            this.findPlayer(adm, args[0])
-            break
+          this.findPlayer(adm, args[0])
+          break
+        case '/tp':
+          this.teleport(adm, args[0])
+          break
+        case '/help':
+          this.unicastMessage(adm, `commands: kick [player], global [message], find [player], tp [place]`)
+          break
         default:
           break
       }
@@ -589,10 +595,24 @@ export class ClientHandler {
       for (const player of room.players) {
         if (player.name == name) {
           this.unicastMessage(adm, `${Rooms[player.currentRoom.id]} (${player.currentRoom.id})`)
+          return
         }
       }
     }
     this.unicastMessage(adm, 'player not found')
+  }
+
+  private teleport(adm: Player, place: string): boolean {
+    try {
+      const roomsAny = Rooms as any
+      let roomId = roomsAny[place]
+      if (roomId) {
+        adm.teleport(roomId)
+      }
+    } catch (e) {
+      this.handleExceptions(e, adm, 'teleport')
+    }
+    return false
   }
 
   private checkNameDuplicate(name: string, player: Player): boolean {

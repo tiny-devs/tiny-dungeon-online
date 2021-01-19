@@ -7,6 +7,7 @@ import { WebSocket } from 'https://deno.land/std@0.77.0/ws/mod.ts'
 import Quest from './npcs/quests/quest.ts'
 import QuestBase from "./npcs/quests/questBase.ts"
 import ItemBase from "./items/itemBase.ts"
+import { Admins } from "../data/admins.ts"
 
 export class Player {
     public id: string
@@ -385,6 +386,17 @@ export class Player {
 
     public totalHp() {
         return this.maxHp + this.level - 1
+    }
+
+    public teleport(roomId: Rooms) {
+        const isAdmin = Admins.some(a => a.name == this.name)
+        if (isAdmin) {
+            this.fightingNpcId = null
+            this.currentRoomId = roomId
+            this.x = 0
+            this.y = 0
+            this.clientHandler.broadcastPlayerMove(this, Direction.Right)
+        }
     }
 
     private respawn() {
