@@ -5,7 +5,7 @@ export default class MartyDialog extends DialogBase {
         super(['I\'m Marty',
         'cool armour you got there!',
         'Talk to you later, I\'m out of time',
-        'just remeber: if you put your mind to it,',
+        'just remeber: if you put your mind to it',
         'you can accomplish anything!',''])
     }
 }
