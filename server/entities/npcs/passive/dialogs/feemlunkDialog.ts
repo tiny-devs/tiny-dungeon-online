@@ -11,6 +11,6 @@ export default class FeemlunkDialog extends DialogBase {
         'that the tree emanates in us',
         'in order to emanate this power it needs',
         'not only strong roots, but also, the power',
-        'of the Magi Stone. A mystical rock located underground.'])
+        'of the Magi Stone. A mystical rock located underground.',''])
     }
 }

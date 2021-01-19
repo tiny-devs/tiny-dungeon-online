@@ -16,7 +16,6 @@ export default class EdiogDialog extends DialogBase {
         'We think there might have been',
         'some sort of portal that brought them',
         'to this land, about 3000 years ago',
-        'but thats all I can share for now.',
-        ''])
+        'but thats all I can share for now.',''])
     }
 }

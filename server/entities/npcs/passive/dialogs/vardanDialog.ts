@@ -16,6 +16,6 @@ export default class VardanDialog extends DialogBase {
         'be very careful there!',
         'By the way, we would appreciate if you could',
         'take care of some monsters around here',
-        '-quest: kill 10 imps of each type-'])
+        '-quest: kill 10 imps of each type-',''])
     }
 }
