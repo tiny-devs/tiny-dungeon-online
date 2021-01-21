@@ -1,6 +1,6 @@
 import { Npcs } from '../../../../../Enums.ts'
 import NpcBase from '../../../npcBase.ts'
-import HelpTheLakeVillage from "../../../quests/humans/helpTheLakeVillage.ts"
+import HelpTheLakeVillage from "../../../quests/humans/deepLake/helpTheLakeVillage.ts"
 import VardanDialog from "../../dialogs/vardanDialog.ts"
 
 export default class Vardan extends NpcBase {

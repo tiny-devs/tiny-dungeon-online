@@ -1,4 +1,4 @@
-import { Npcs, Quests, RewardType, StepType } from "../../../Enums.ts"
+import { Items, Npcs, Quests, RewardType, StepType } from "../../../Enums.ts"
 import ItemBase from "../../items/itemBase.ts"
 import { Player } from "../../player.ts"
 import QuestBase from "./questBase.ts"
@@ -25,6 +25,37 @@ export default class Quest {
         this.itemReward = questData.itemReward
         this.xpReward = questData.xpReward
         this.newDialogAfterComplete = questData.newDialogAfterComplete
+    }
+
+    public checkAddItemToHave(item: Items) {
+        if (this.isCompleted) {
+            return
+        }
+        this.steps[this.currentStep].checkAddItemToHave(item)
+    }
+    public checkRemoveItemToHave(item: Items) {
+        if (this.isCompleted) {
+            return
+        }
+        this.steps[this.currentStep].checkRemoveItemToHave(item)
+    }
+
+    public checkItemsToHave(player: Player): boolean {
+        if (this.isCompleted) {
+            return false
+        }
+
+        for (const item of player.bag.items) {
+            this.checkAddItemToHave(item.itemId)
+        }
+
+        const stepCompleted = !this.steps[this.currentStep].itemsToHave.some(i => i.amount > 0)
+        if (stepCompleted) {
+            player.removeItemsFromQuest(this.steps[this.currentStep].itemsToHave)
+            this.goToNextStep(player)
+            return true
+        }
+        return false
     }
 
     public checkLevelToReach(player: Player) {

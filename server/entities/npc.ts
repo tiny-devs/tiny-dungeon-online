@@ -1,4 +1,4 @@
-import { Direction, PveAttacker, ItemType } from '../Enums.ts'
+import { Direction, PveAttacker, ItemType, StepType } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { Player } from './player.ts'
 import { PveData } from '../pve/pveData.ts'
@@ -144,11 +144,19 @@ export class Npc {
   public talkTo(player: Player) {
     const playerQuest = player.quests.find(q => q.id == this.quest?.id)
     const npcFromQuestStep = player.quests.find(q => q.steps[q.currentStep].npcToTalk == this.name)
+    const questStepItemRetrieve = player.quests.find(q => q.steps[q.currentStep].type == StepType.ItemsToHave)
+    let gaveItems = false
 
     if (this.dialog != null) {
       const hasEverTalked = this.dialog.playerCurrentLine.some(d => d.playerId == player.id)
       if (hasEverTalked) {
-        if (npcFromQuestStep) {
+        if (npcFromQuestStep && questStepItemRetrieve) {
+          gaveItems = questStepItemRetrieve.checkItemsToHave(player)
+          if (gaveItems) {
+            this.room.clientHandler.unicastDialog(player, '-you give the quest items-')
+          }
+        }
+        if (npcFromQuestStep && !gaveItems) {
           let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
           if (newLine != '') {
             this.room.clientHandler.unicastDialog(player, newLine)
@@ -161,7 +169,7 @@ export class Npc {
             }
             this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
           }
-        } else {
+        } else if (!npcFromQuestStep){
           var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
           if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines-1) {
             if (this.quest != null && !playerQuest){

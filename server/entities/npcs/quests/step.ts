@@ -1,4 +1,4 @@
-import { Npcs, StepType } from "../../../Enums.ts"
+import { Items, Npcs, StepType } from "../../../Enums.ts"
 import { MonstersToKill } from "./monstersToKill.ts"
 import { ItemsToHave } from "./itemsToHave.ts"
 import StepBase from "./stepBase.ts"
@@ -24,6 +24,27 @@ export default class Step {
             this.itemsToHave.push(new ItemsToHave(itemToHave))
         }
         this.levelToReach = stepData.levelToReach
+    }
+
+    public checkAddItemToHave(item: Items) {
+        if (this.type == StepType.ItemsToHave) {
+            const itemToHave = this.itemsToHave.find(i => (i.item == item) && i.amount > 0)
+            if (itemToHave) {
+                itemToHave.amount -= 1
+                return { validItem: true }
+            }
+        }
+        return { validItem: false }
+    }
+    public checkRemoveItemToHave(item: Items) {
+        if (this.type == StepType.ItemsToHave) {
+            const itemToHave = this.itemsToHave.find(i => (i.item == item) && (i.amount < i.amountTotal))
+            if (itemToHave) {
+                itemToHave.amount += 1
+                return { validItem: true }
+            }
+        }
+        return { validItem: false }
     }
 
     public checkLevelToReach(level: number) {

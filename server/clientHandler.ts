@@ -402,11 +402,24 @@ export class ClientHandler {
     }
   }
 
+  public unicastPlayerBag(player: Player) {
+    try{
+        let data = `${Command.LoadBag},${player.id}@`
+        for (const item of player.bag.items) {
+          data += `${item.itemId},`
+        }
+  
+        this.send(player,data)
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastPlayerBag')
+    }
+  }
+
   private async unicastPlayerDataLoaded(player: Player, dataHash: string) {
     try{
       const success = await this.loadPlayerDataFromHash(player, dataHash)
       if (!success) {
-        this.send(player,`${Command.EraseSave}`)
+        this.unicastError(player, 'Error loading your data')
       } else {
         let data = `${Command.Load},${player.id},`+
         `${player.hp},${player.totalHp()},${player.totalAttack()},${player.totalDefense()},`+

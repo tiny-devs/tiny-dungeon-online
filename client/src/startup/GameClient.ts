@@ -11,6 +11,7 @@ import Gear from '../entities/items/Gear'
 import { ParseRank } from '../parser/ParseRank'
 import { ParseLoad } from '../parser/ParseLoad'
 import { ParsePlayerIdUpdate } from '../parser/ParsePlayerIdUpdate'
+import { ParseLoadBag } from '../parser/ParseLoadBag'
 
 export class GameClient {
     public loggedIn: boolean
@@ -505,6 +506,10 @@ export class GameClient {
         console.log('data erased')
     }
 
+    reloadPlayerBag(loadData: ParseLoadBag) {
+        this.reloadItems(loadData.itemsIds)
+    }
+
     loadPlayerData(loadData: ParseLoad) {
         this.game.spritesLayer.updatePlayerId(this.playerId, loadData.id)
         this.playerId = loadData.id
@@ -517,8 +522,15 @@ export class GameClient {
     }
 
     loadItems(items: ItemsIds[]) {
-        for (const item of items) {
-            this.bag.addItem(item, 0, this.playerId)
+        for (const itemId of items) {
+            this.bag.addItem(itemId, 0, this.playerId)
+        }
+    }
+
+    reloadItems(items: ItemsIds[]) {
+        this.bag.removeAllItems()
+        for (const itemId of items) {
+            this.bag.addItem(itemId, 0, this.playerId)
         }
     }
 

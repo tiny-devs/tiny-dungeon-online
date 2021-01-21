@@ -32,6 +32,7 @@ import FireLegs from "./fireLegs.ts"
 import FireDagger from "./fireDagger.ts"
 import FireSword from "./fireSword.ts"
 import Coffee from "./consumable/coffee.ts"
+import JamulsMachete from "./jamulsMachete.ts"
 
 export default class Bag {
     public items: ItemBase[] = []
@@ -69,6 +70,7 @@ export default class Bag {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
                 this.player.currentRoom.addItem(this.player.y,this.player.x,item)
                 this.removeItem(item)
+                this.player.checkRemoveItemToHaveForQuest(itemId)
                 return true
             }
         }
@@ -91,6 +93,9 @@ export default class Bag {
     public getItemFromItemId(item: Items): ItemBase | null {
         if (item == Items.Coffee) {
             return new Coffee(0)
+        }
+        if (item == Items.JamulsMachete) {
+            return new JamulsMachete(0)
         }
         if (item == Items.WoodenHelm) {
             return new WoodenHelm(0)
@@ -190,6 +195,16 @@ export default class Bag {
         const index = this.items.indexOf(item)
         if (index > -1) {
             this.items.splice(index, 1)
+        }
+    }
+
+    removeItemFromQuest(itemId: Items) {
+        const item = this.items.find(i => i.itemId == itemId)
+        if (item) {
+            const index = this.items.indexOf(item)
+            if (index > -1) {
+                this.items.splice(index, 1)
+            }
         }
     }
 }

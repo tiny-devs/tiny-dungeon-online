@@ -8,6 +8,7 @@ import Quest from './npcs/quests/quest.ts'
 import QuestBase from "./npcs/quests/questBase.ts"
 import ItemBase from "./items/itemBase.ts"
 import { Admins } from "../data/admins.ts"
+import { ItemsToHave } from "./npcs/quests/itemsToHave.ts"
 
 export class Player {
     public id: string
@@ -306,6 +307,18 @@ export class Player {
         }
     }
 
+    public checkAddItemToHaveForQuest(item: Items) {
+        for (const quest of this.quests) {
+            quest.checkAddItemToHave(item)
+        }
+    }
+
+    public checkRemoveItemToHaveForQuest(item: Items) {
+        for (const quest of this.quests) {
+            quest.checkRemoveItemToHave(item)
+        }
+    }
+
     public getItemFromQuest(item: ItemBase): boolean {
         if (item) {
             const gotItem = this.bag.addItem(item)
@@ -315,6 +328,18 @@ export class Player {
             }
         }
         return false
+    }
+
+    public removeItemsFromQuest(items: ItemsToHave[]): boolean {
+        if (items) {
+            for (const itemToHave of items) {
+                for (let i=0;i<itemToHave.amountTotal;i++) {
+                    this.bag.removeItemFromQuest(itemToHave.item)
+                }
+            }
+            this.clientHandler.unicastPlayerBag(this)
+        }
+        return true
     }
 
     public addHp(amount: number) {
@@ -429,6 +454,7 @@ export class Player {
             const gotItem = this.bag.addItem(item)
             if (gotItem) {
                 this.currentRoom.removeItem(y,x,this.id)
+                this.checkAddItemToHaveForQuest(item.itemId)
                 return true
             }
         }

@@ -4,6 +4,7 @@ export default class LugrusDialog extends DialogBase {
     constructor() {
         super(['Hi man, I\'m Lugrus',
         'some people call me Uui',
-        'I hate the giant rats around the city',''])
+        'I hate the giant rats around the city',
+        '-quest: damn rats-',''])
     }
 }

@@ -23,7 +23,8 @@ export enum Command {
     Load,
     UpdatePlayerId,
     Exit,
-    EraseSave
+    EraseSave,
+    LoadBag
 }
 
 export enum Direction {
@@ -218,6 +219,7 @@ export enum Items {
     Empty = 0,
     Coffee,
     Coin,
+    JamulsMachete,
     WoodenDagger,
     WoodenSword,
     BronzeDagger,
@@ -254,7 +256,8 @@ export enum ItemType {
     Money = 0,
     Consumable,
     Weareable,
-    Temporary
+    Temporary,
+    Quest
 }
 
 export enum GearType {
@@ -267,13 +270,15 @@ export enum GearType {
 
 export enum Quests {
     FlowerForMytklash,
-    HelpTheVillage
+    HelpTheVillage,
+    DamnRats,
 }
 
 export enum StepType {
     MonstersToKill,
     NpcToTalk,
-    LevelToReach
+    LevelToReach,
+    ItemsToHave
 }
 
 export enum RewardType {
