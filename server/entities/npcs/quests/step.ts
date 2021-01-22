@@ -26,7 +26,7 @@ export default class Step {
         this.levelToReach = stepData.levelToReach
     }
 
-    public checkAddItemToHave(item: Items) {
+    public checkItemToHave(item: Items) {
         if (this.type == StepType.ItemsToHave) {
             const itemToHave = this.itemsToHave.find(i => (i.item == item) && i.amount > 0)
             if (itemToHave) {
@@ -36,15 +36,13 @@ export default class Step {
         }
         return { validItem: false }
     }
-    public checkRemoveItemToHave(item: Items) {
+
+    public resetAmountItemsToHave() {
         if (this.type == StepType.ItemsToHave) {
-            const itemToHave = this.itemsToHave.find(i => (i.item == item) && (i.amount < i.amountTotal))
-            if (itemToHave) {
-                itemToHave.amount += 1
-                return { validItem: true }
+            for (let itemToHave of this.itemsToHave) {
+                itemToHave.amount = itemToHave.amountTotal
             }
         }
-        return { validItem: false }
     }
 
     public checkLevelToReach(level: number) {

@@ -33,6 +33,11 @@ import FireDagger from "./fireDagger.ts"
 import FireSword from "./fireSword.ts"
 import Coffee from "./consumable/coffee.ts"
 import JamulsMachete from "./jamulsMachete.ts"
+import JamulsGuitar from "./jamulsGuitar.ts"
+import CactusJuice from "./cactusJuice.ts"
+import LargeHp from "./consumable/largeHp.ts"
+import SmallHp from "./consumable/smallHp.ts"
+import Bread from "./consumable/bread.ts"
 
 export default class Bag {
     public items: ItemBase[] = []
@@ -70,7 +75,6 @@ export default class Bag {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
                 this.player.currentRoom.addItem(this.player.y,this.player.x,item)
                 this.removeItem(item)
-                this.player.checkRemoveItemToHaveForQuest(itemId)
                 return true
             }
         }
@@ -94,8 +98,23 @@ export default class Bag {
         if (item == Items.Coffee) {
             return new Coffee(0)
         }
+        if (item == Items.Bread) {
+            return new Bread(0)
+        }
+        if (item == Items.SmallHp) {
+            return new SmallHp(0)
+        }
+        if (item == Items.LargeHp) {
+            return new LargeHp(0)
+        }
         if (item == Items.JamulsMachete) {
             return new JamulsMachete(0)
+        }
+        if (item == Items.JamulsGuitar) {
+            return new JamulsGuitar(0)
+        }
+        if (item == Items.CactusJuice) {
+            return new CactusJuice(0)
         }
         if (item == Items.WoodenHelm) {
             return new WoodenHelm(0)

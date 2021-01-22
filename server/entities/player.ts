@@ -307,18 +307,6 @@ export class Player {
         }
     }
 
-    public checkAddItemToHaveForQuest(item: Items) {
-        for (const quest of this.quests) {
-            quest.checkAddItemToHave(item)
-        }
-    }
-
-    public checkRemoveItemToHaveForQuest(item: Items) {
-        for (const quest of this.quests) {
-            quest.checkRemoveItemToHave(item)
-        }
-    }
-
     public getItemFromQuest(item: ItemBase): boolean {
         if (item) {
             const gotItem = this.bag.addItem(item)
@@ -454,7 +442,6 @@ export class Player {
             const gotItem = this.bag.addItem(item)
             if (gotItem) {
                 this.currentRoom.removeItem(y,x,this.id)
-                this.checkAddItemToHaveForQuest(item.itemId)
                 return true
             }
         }

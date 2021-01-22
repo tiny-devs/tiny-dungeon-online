@@ -219,7 +219,6 @@ export enum Items {
     Empty = 0,
     Coffee,
     Coin,
-    JamulsMachete,
     WoodenDagger,
     WoodenSword,
     BronzeDagger,
@@ -250,6 +249,12 @@ export enum Items {
     BluriteLegs,
     AdamantLegs,
     FireLegs,
+    Bread,
+    SmallHp,
+    LargeHp,
+    JamulsMachete,
+    JamulsGuitar,
+    CactusJuice,
 }
 
 export enum ItemType {
@@ -272,6 +277,8 @@ export enum Quests {
     FlowerForMytklash,
     HelpTheVillage,
     DamnRats,
+    JamulsMachete,
+    TheSacredStone,
 }
 
 export enum StepType {
@@ -283,5 +290,6 @@ export enum StepType {
 
 export enum RewardType {
     Xp,
-    Item
+    Item,
+    Both
 }

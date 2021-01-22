@@ -27,17 +27,18 @@ export default class Quest {
         this.newDialogAfterComplete = questData.newDialogAfterComplete
     }
 
-    public checkAddItemToHave(item: Items) {
+    private checkItemToHave(item: Items) {
         if (this.isCompleted) {
             return
         }
-        this.steps[this.currentStep].checkAddItemToHave(item)
+        this.steps[this.currentStep].checkItemToHave(item)
     }
-    public checkRemoveItemToHave(item: Items) {
+
+    private resetAmountItemsToHave() {
         if (this.isCompleted) {
             return
         }
-        this.steps[this.currentStep].checkRemoveItemToHave(item)
+        this.steps[this.currentStep].resetAmountItemsToHave()
     }
 
     public checkItemsToHave(player: Player): boolean {
@@ -46,7 +47,7 @@ export default class Quest {
         }
 
         for (const item of player.bag.items) {
-            this.checkAddItemToHave(item.itemId)
+            this.checkItemToHave(item.itemId)
         }
 
         const stepCompleted = !this.steps[this.currentStep].itemsToHave.some(i => i.amount > 0)
@@ -54,6 +55,8 @@ export default class Quest {
             player.removeItemsFromQuest(this.steps[this.currentStep].itemsToHave)
             this.goToNextStep(player)
             return true
+        } else {
+            this.resetAmountItemsToHave()
         }
         return false
     }
@@ -91,7 +94,7 @@ export default class Quest {
             }
 
             if (this.steps[this.currentStep].npcLines.length <= this.steps[this.currentStep].playerCurrentLine+1) {
-                if (this.steps[this.currentStep].type != StepType.MonstersToKill) {
+                if (this.steps[this.currentStep].type == StepType.NpcToTalk) {
                     this.goToNextStep(player)
                 }
                 this.steps[this.currentStep].playerCurrentLine = 0
@@ -119,11 +122,11 @@ export default class Quest {
     }
 
     public completeQuest(player: Player) {
-        if (this.reward == RewardType.Xp) {
+        if (this.reward == RewardType.Xp || this.reward == RewardType.Both) {
             player.addXp(this.xpReward)
             this.isCompleted = true
         }
-        if (this.reward == RewardType.Item) {
+        if (this.reward == RewardType.Item || this.reward == RewardType.Both) {
             if (this.itemReward) {
                 const gotItem = player.getItemFromQuest(this.itemReward)
                 if (gotItem) {

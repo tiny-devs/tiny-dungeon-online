@@ -146,7 +146,6 @@ export enum ItemsIds {
     Empty = 0,
     Coffee,
     Coin,
-    JamulsMachete,
     WoodenDagger,
     WoodenSword,
     BronzeDagger,
@@ -177,6 +176,12 @@ export enum ItemsIds {
     BluriteLegs,
     AdamantLegs,
     FireLegs,
+    Bread,
+    SmallHp,
+    LargeHp,
+    JamulsMachete,
+    JamulsGuitar,
+    CactusJuice,
 }
 
 export enum GearType {

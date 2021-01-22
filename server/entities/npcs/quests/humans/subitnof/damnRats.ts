@@ -1,6 +1,5 @@
 import { Items, Npcs, Quests, RewardType, StepType } from "../../../../../Enums.ts"
 import QuestBase from "../../questBase.ts"
-import BluriteArmour from "../../../../items/bluriteArmour.ts"
 import StepBase from "../../stepBase.ts"
 import { MonstersToKillBase } from "../../monstersToKillBase.ts"
 import { ItemsToHaveBase } from "../../itemsToHaveBase.ts"

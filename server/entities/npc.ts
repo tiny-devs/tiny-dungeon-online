@@ -154,6 +154,11 @@ export class Npc {
           gaveItems = questStepItemRetrieve.checkItemsToHave(player)
           if (gaveItems) {
             this.room.clientHandler.unicastDialog(player, '-you give the quest items-')
+          } else {
+            let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
+            if (newLine != '') {
+              this.room.clientHandler.unicastDialog(player, newLine)
+            }
           }
         }
         if (npcFromQuestStep && !gaveItems) {
@@ -257,7 +262,7 @@ export class Npc {
       let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
 
       const damageTaken = player.getAttackDamage()
-      let enemyDefended = this.takeDamage(damageTaken, player.checkCriticalHit(damageTaken))
+      let enemyDefended = this.takeDamage(damageTaken, player.checkCriticalHit(damageTaken), player)
   
       playerAttackData.damageCaused = damageTaken - enemyDefended
       playerAttackData.damageDefended = enemyDefended
@@ -296,7 +301,7 @@ export class Npc {
     return Math.floor(luckFactor * (this.defense))
   }
 
-  private takeDamage(dmg: number, crit: boolean): number {
+  private takeDamage(dmg: number, crit: boolean, player: Player): number {
     let defense = this.getDefenseFromDamage(crit)
     defense = defense > dmg ? dmg : defense
     const actualDamage = (dmg - defense)
@@ -304,14 +309,14 @@ export class Npc {
     this.hp-= actualDamage < 0 ? 0 : actualDamage
     if (this.hp <= 0) {
         this.hp = 0
-        this.die()
+        this.die(player)
     }
 
     return defense
   }
 
-  private die() {
-    this.dropStuff()
+  private die(player: Player) {
+    this.dropStuff(player)
     this.dead = true
     this.x = -1
     this.y = -1
@@ -324,7 +329,7 @@ export class Npc {
     }, this.respawnTime);
   }
 
-  private dropStuff() {
+  private dropStuff(player: Player) {
     for(const drop of this.drops) {
       const randomChance = Math.random()
       if (drop.dropChance >= randomChance) {
@@ -332,7 +337,15 @@ export class Npc {
           if (drop.type == ItemType.Money) {
             drop.coins = Math.floor(Math.random() * drop.coins) + 1 
           }
-          this.room.addItem(this.y,this.x,drop)
+          if (drop.type == ItemType.Quest) {
+            var isOnQuestStepThatNeedsItem = player.quests.some(
+              q => q.steps[q.currentStep].itemsToHave.some(s => s.item == drop.itemId))
+            if (isOnQuestStepThatNeedsItem) {
+              this.room.addItem(this.y,this.x,drop)
+            }
+          } else {
+            this.room.addItem(this.y,this.x,drop)
+          }
         }
       }
     }
