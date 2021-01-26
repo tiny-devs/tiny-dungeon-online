@@ -1,4 +1,4 @@
-import { Direction, Rooms, Items, Npcs } from '../Enums.ts'
+import { Direction, Rooms, Items, Npcs, Quests } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'
@@ -225,9 +225,18 @@ export class Player {
             gearData += 'empty'
         }
 
-        //let questData = `[` maybe later
+        let questData = `@`
+        let questCount = 0
+        for (const quest of this.quests) {
+            questCount += 1
+            const isCompleted = quest.isCompleted ? 1 : 0
+            questData += `${quest.id},${quest.currentStep},${isCompleted}`
+            if (questCount != this.quests.length) {
+                questData += ';'
+            }
+        }
 
-        return simpleData + bagData + gearData
+        return simpleData + bagData + gearData + questData
     }
 
     public loadPlayerDataFromSave(data: string): boolean {
@@ -269,9 +278,20 @@ export class Player {
                     }
                 }
             }
+
+            const questData = allData[4]?.split(';')
+            if (questData?.length > 0) {
+                for (let i=0;i<questData.length;i++) {
+                    const questDataInfos = questData[i].split(',')
+                    if (questDataInfos.length == 3) {
+                        this.loadQuest(+questDataInfos[0], +questDataInfos[1], +questDataInfos[2] == 1)
+                    }
+                }
+            }
     
             return true
         } catch (e) {
+            console.log(e)
             return false
         }
     }
@@ -285,6 +305,14 @@ export class Player {
                 })
             }, this.savePlayerInterval);
         }
+    }
+
+    public loadQuest(questId: Quests, currentStep: number, isCompleted: boolean) {
+        const questBase = Quest.getQuestFromQuestId(questId)
+        const quest = new Quest(questBase)
+        quest.currentStep = currentStep
+        quest.isCompleted = isCompleted
+        this.quests.push(quest)
     }
 
     public startChatTimeout() {
@@ -403,7 +431,7 @@ export class Player {
     }
 
     public teleport(roomId: Rooms) {
-        const isAdmin = Admins.some(a => a.name == this.name)
+        const isAdmin = this.isAdmin()
         if (isAdmin) {
             this.fightingNpcId = null
             this.currentRoomId = roomId
@@ -414,7 +442,7 @@ export class Player {
     }
 
     public spawnItem(itemId: Items): boolean {
-        const isAdmin = Admins.some(a => a.name == this.name)
+        const isAdmin = this.isAdmin()
         if (isAdmin) {
             if (itemId) {
                 const item = this.bag.getItemFromItemId(itemId)
@@ -438,6 +466,10 @@ export class Player {
         this.y = 0
         this.clientHandler.broadcastPlayerMove(this, Direction.Right)
         this.clientHandler.unicastPlayerStats(this)
+    }
+
+    public isAdmin(): boolean {
+        return Admins.some(a => a.name == this.name)
     }
 
     private notCollided(y: number, x: number): boolean {        

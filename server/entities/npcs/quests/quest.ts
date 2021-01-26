@@ -1,6 +1,11 @@
 import { Items, Npcs, Quests, RewardType, StepType } from "../../../Enums.ts"
 import ItemBase from "../../items/itemBase.ts"
 import { Player } from "../../player.ts"
+import FlowerForMytklash from "./gnomes/flowerForMytklash.ts"
+import TheSacredStone from "./humans/mages/theSacredStone.ts"
+import JamulsMachete from "./humans/kharjid/jamulsMachete.ts"
+import HelpTheLakeVillage from "./humans/deepLake/helpTheLakeVillage.ts"
+import DamnRats from "./humans/subitnof/damnRats.ts"
 import QuestBase from "./questBase.ts"
 import Step from "./step.ts"
 
@@ -175,5 +180,25 @@ export default class Quest {
                 }
             }
         }
+    }
+
+    public static getQuestFromQuestId(questId: Quests): any {
+        if (questId == Quests.DamnRats) {
+            return new DamnRats()
+        }
+        if (questId == Quests.FlowerForMytklash) {
+            return new FlowerForMytklash()
+        }
+        if (questId == Quests.HelpTheVillage) {
+            return new HelpTheLakeVillage()
+        }
+        if (questId == Quests.JamulsMachete) {
+            return new JamulsMachete()
+        }
+        if (questId == Quests.TheSacredStone) {
+            return new TheSacredStone()
+        }
+
+        return null
     }
 }

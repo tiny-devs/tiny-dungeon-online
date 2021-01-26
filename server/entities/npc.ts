@@ -152,7 +152,7 @@ export class Npc {
 
     if (this.dialog != null) {
       const hasEverTalked = this.dialog.playerCurrentLine.some(d => d.playerId == player.id)
-      if (hasEverTalked) {
+      if (hasEverTalked || npcFromAnyQuestStep) {
         if (npcFromQuestStep && questStepLevelReach) {
           questStepLevelReach.checkLevelToReach(player)
         }
