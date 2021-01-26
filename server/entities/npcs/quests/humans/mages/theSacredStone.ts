@@ -82,7 +82,7 @@ export default class TheSacredStone extends QuestBase {
                     ],[],0),
                 new StepBase(StepType.NpcToTalk,[],'francis',
                     [
-                        'So...',
+                        'Here...',
                         'He said some ancient evil wizards found it?',
                         'Well he is right, but don\'t be alarmed',
                         'Me and my family have nothing to do',
@@ -95,8 +95,6 @@ export default class TheSacredStone extends QuestBase {
                         'but if it is needed to restore peace',
                         'I only ask for recognition',
                         'may people know Francis Darci was a part of it',
-                        'here, take the stone!',
-                        ' ',
                     ],[],0),
                 new StepBase(StepType.LevelToReach,[],'francis', [],[],50),
                 new StepBase(StepType.ItemsToReceive,[], 'francis', [],[],0,

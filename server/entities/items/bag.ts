@@ -73,7 +73,7 @@ export default class Bag {
 
     public dropItem(itemId: Items): boolean {
         const item = this.items.find(i => i.itemId == itemId)
-        if (item) {
+        if (item && item.type !== ItemType.Quest) {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
                 this.player.currentRoom.addItem(this.player.y,this.player.x,item)
                 this.removeItem(item)

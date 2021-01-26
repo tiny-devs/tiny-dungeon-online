@@ -312,6 +312,7 @@ export class Player {
             const gotItem = this.bag.addItem(item)
             if (gotItem) {
                 this.clientHandler.roomcastItemPick(this.currentRoomId,-1,-1,item.itemId,item.coins,this.id)
+                this.clientHandler.unicastPlayerDataHashSave(this)
                 return true
             }
         }
