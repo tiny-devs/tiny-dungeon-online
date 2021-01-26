@@ -297,12 +297,24 @@ export class GameClient {
 
             let direction = 0
             if (e.keyCode == 38 || e.keyCode == 87) {
+                if (e.preventDefault) {
+                    e.preventDefault()
+                }
                 direction = Direction.Up
             } else if (e.keyCode == 40 || e.keyCode == 83) {
+                if (e.preventDefault) {
+                    e.preventDefault()
+                }
                 direction = Direction.Down
             } else if (e.keyCode == 37 || e.keyCode == 65) {
+                if (e.preventDefault) {
+                    e.preventDefault()
+                }
                 direction = Direction.Left
             } else if (e.keyCode == 39 || e.keyCode == 68) {
+                if (e.preventDefault) {
+                    e.preventDefault()
+                }
                 direction = Direction.Right
             } else if (e.keyCode == 13 && !this.isTyping && this.canChat) {
                 this.chatMessageElement.focus()
