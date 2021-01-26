@@ -46,7 +46,7 @@ import SandTotem from "../entities/npcs/sandTotem.ts";
 import Demon from "../entities/npcs/demon.ts";
 import Demon2 from "../entities/npcs/demon2.ts";
 import Ediog from "../entities/npcs/passive/humans/mages/ediog.ts";
-import Kinley from "../entities/npcs/passive/humans/merchants/Kinley.ts";
+import Kinley from "../entities/npcs/passive/humans/merchants/kinley.ts";
 import Peter from "../entities/npcs/passive/humans/merchants/peter.ts";
 import Oswald from "../entities/npcs/passive/humans/subitnof/oswald.ts";
 import Beatrice from "../entities/npcs/passive/humans/subitnof/beatrice.ts";
