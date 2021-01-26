@@ -5,6 +5,6 @@ export default class MiahDialog extends DialogBase {
         super(['Hi, my name is Miah',
         'I\'m sick of all the monsters arround here',
         'why the hell would someone build a village',
-        'in the middle of the woods?'])
+        'in the middle of the woods?',''])
     }
 }

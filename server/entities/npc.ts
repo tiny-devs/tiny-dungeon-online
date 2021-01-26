@@ -1,4 +1,4 @@
-import { Direction, PveAttacker, ItemType } from '../Enums.ts'
+import { Direction, PveAttacker, ItemType, StepType } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { Player } from './player.ts'
 import { PveData } from '../pve/pveData.ts'
@@ -6,6 +6,7 @@ import NpcBase from './npcs/npcBase.ts'
 import ItemBase from './items/itemBase.ts'
 import DialogBase from "./npcs/passive/dialogs/dialogBase.ts"
 import QuestBase from "./npcs/quests/questBase.ts"
+import Quest from "./npcs/quests/quest.ts"
 
 export class Npc {
   public id: number
@@ -144,41 +145,110 @@ export class Npc {
   public talkTo(player: Player) {
     const playerQuest = player.quests.find(q => q.id == this.quest?.id)
     const npcFromQuestStep = player.quests.find(q => q.steps[q.currentStep].npcToTalk == this.name)
+    const npcFromAnyQuestStep = player.quests.find(q => q.steps.find(s => s.npcToTalk == this.name))
+    const questStepItemRetrieve = player.quests.find(q => q.steps[q.currentStep].type == StepType.ItemsToHave && q.steps[q.currentStep].npcToTalk == this.name)
+    const questStepItemReceive = player.quests.find(q => q.steps[q.currentStep].type == StepType.ItemsToReceive && q.steps[q.currentStep].npcToTalk == this.name)
+    const questStepLevelReach = player.quests.find(q => q.steps[q.currentStep].type == StepType.LevelToReach && q.steps[q.currentStep].npcToTalk == this.name)
+    let tradedItems = false
 
     if (this.dialog != null) {
       const hasEverTalked = this.dialog.playerCurrentLine.some(d => d.playerId == player.id)
-      if (hasEverTalked) {
-        if (npcFromQuestStep) {
+      if (hasEverTalked || npcFromAnyQuestStep) {
+        if (npcFromQuestStep && questStepLevelReach) {
+          questStepLevelReach.checkLevelToReach(player)
+        }
+        if (npcFromQuestStep && (questStepItemRetrieve || questStepItemReceive)) {
+          if (questStepItemRetrieve) {
+            tradedItems = questStepItemRetrieve.checkItemsToHave(player)
+            if (tradedItems) {
+              this.room.clientHandler.unicastDialog(player, '-you give the quest items-')
+              return
+            } else {
+              let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
+              if (newLine != '') {
+                this.room.clientHandler.unicastDialog(player, newLine)
+                return
+              } else {
+                this.unicastDefaultDialogNoQuestCheck(player)
+              }
+            }
+            return
+          }
+          if (questStepItemReceive) {
+            tradedItems = questStepItemReceive.checkGaveItems(player)
+            if (tradedItems) {
+              this.room.clientHandler.unicastDialog(player, '-you receive some quest items-')
+              return
+            } else {
+              this.room.clientHandler.unicastDialog(player, '-you dont have enough space-')
+              return
+            }
+          }
+        }
+        if (npcFromQuestStep && !tradedItems) {
           let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
           if (newLine != '') {
             this.room.clientHandler.unicastDialog(player, newLine)
+            return
           } else {
-            var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
-            if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
-              this.dialog.playerCurrentLine[index].line = 0
-            } else {
-              this.dialog.playerCurrentLine[index].line += 1
-            }
-            this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
+            this.unicastDefaultDialogNoQuestCheck(player)
           }
-        } else {
-          var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
-          if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines-1) {
-            if (this.quest != null && !playerQuest){
-              player.getNewQuest(this.quest)
+        } else if (!npcFromQuestStep){
+          if (npcFromAnyQuestStep) {
+            let newLine = npcFromAnyQuestStep.checkNpcDialog(this.name, player)
+            if (newLine != '') {
+              this.room.clientHandler.unicastDialog(player, newLine)
+              return
+            } else {
+              this.unicastDefaultDialog(player, playerQuest)
             }
+          } else {
+            this.unicastDefaultDialog(player, playerQuest)
+          }
+        }
+      } else {
+        this.dialog.playerCurrentLine.push({playerId:player.id, line:0,totalLines:this.dialog.dialogs.length})
+        this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[0])
+      }
+    }
+  }
 
-            if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
-              this.dialog.playerCurrentLine[index].line = 0
-            } else {
-              this.dialog.playerCurrentLine[index].line += 1
-            }
+  private unicastDefaultDialogNoQuestCheck(player: Player) {
+    if (this.dialog) {
+      var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+      if (index != -1) {
+        if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
+          this.dialog.playerCurrentLine[index].line = 0
+        } else {
+          this.dialog.playerCurrentLine[index].line += 1
+        }
+        this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
+      } else {
+        this.dialog.playerCurrentLine.push({playerId:player.id, line:0,totalLines:this.dialog.dialogs.length})
+        this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[0])
+      }
+    }
+  }
+
+  private unicastDefaultDialog(player: Player, playerQuest: Quest | undefined) {
+    if (this.dialog) {
+      var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+      if (index != -1) {
+        if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines-1) {
+          if (this.quest != null && !playerQuest){
+            player.getNewQuest(this.quest)
           }
-          else {
+    
+          if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
+            this.dialog.playerCurrentLine[index].line = 0
+          } else {
             this.dialog.playerCurrentLine[index].line += 1
           }
-          this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
         }
+        else {
+          this.dialog.playerCurrentLine[index].line += 1
+        }
+        this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
       } else {
         this.dialog.playerCurrentLine.push({playerId:player.id, line:0,totalLines:this.dialog.dialogs.length})
         this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[0])
@@ -249,7 +319,7 @@ export class Npc {
       let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
 
       const damageTaken = player.getAttackDamage()
-      let enemyDefended = this.takeDamage(damageTaken, player.checkCriticalHit(damageTaken))
+      let enemyDefended = this.takeDamage(damageTaken, player.checkCriticalHit(damageTaken), player)
   
       playerAttackData.damageCaused = damageTaken - enemyDefended
       playerAttackData.damageDefended = enemyDefended
@@ -288,7 +358,7 @@ export class Npc {
     return Math.floor(luckFactor * (this.defense))
   }
 
-  private takeDamage(dmg: number, crit: boolean): number {
+  private takeDamage(dmg: number, crit: boolean, player: Player): number {
     let defense = this.getDefenseFromDamage(crit)
     defense = defense > dmg ? dmg : defense
     const actualDamage = (dmg - defense)
@@ -296,14 +366,14 @@ export class Npc {
     this.hp-= actualDamage < 0 ? 0 : actualDamage
     if (this.hp <= 0) {
         this.hp = 0
-        this.die()
+        this.die(player)
     }
 
     return defense
   }
 
-  private die() {
-    this.dropStuff()
+  private die(player: Player) {
+    this.dropStuff(player)
     this.dead = true
     this.x = -1
     this.y = -1
@@ -316,7 +386,7 @@ export class Npc {
     }, this.respawnTime);
   }
 
-  private dropStuff() {
+  private dropStuff(player: Player) {
     for(const drop of this.drops) {
       const randomChance = Math.random()
       if (drop.dropChance >= randomChance) {
@@ -324,7 +394,15 @@ export class Npc {
           if (drop.type == ItemType.Money) {
             drop.coins = Math.floor(Math.random() * drop.coins) + 1 
           }
-          this.room.addItem(this.y,this.x,drop)
+          if (drop.type == ItemType.Quest || drop.type == ItemType.QuestConsumable) {
+            var isOnQuestStepThatNeedsItem = player.quests.some(
+              q => q.steps[q.currentStep].itemsToHave.some(s => s.item == drop.itemId))
+            if (isOnQuestStepThatNeedsItem) {
+              this.room.addItem(this.y,this.x,drop)
+            }
+          } else {
+            this.room.addItem(this.y,this.x,drop)
+          }
         }
       }
     }

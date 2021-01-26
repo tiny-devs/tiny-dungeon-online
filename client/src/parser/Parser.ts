@@ -22,6 +22,7 @@ import { ParseChat } from './ParseChat'
 import { ParseSave } from './ParseSave'
 import { ParseLoad } from './ParseLoad'
 import { ParsePlayerIdUpdate } from './ParsePlayerIdUpdate'
+import { ParseLoadBag } from './ParseLoadBag'
 
 export class Parser {
     private client: GameClient
@@ -97,6 +98,9 @@ export class Parser {
                     break
                 case Command.Exit:
                     this.parseExit(data)
+                    break
+                case Command.LoadBag:
+                    this.parseLoadBag(data)
                     break
                 case Command.EraseSave:
                     this.client.resetPlayerData()
@@ -230,8 +234,9 @@ export class Parser {
     private parseDialog(data: string) {
         const dialogData = new ParseDialog(data)
         const isQuestStart = dialogData.message.includes('-quest')
+        const isWarning = dialogData.message[0] == '-'
 
-        this.client.displayDialog(dialogData.message, isQuestStart)
+        this.client.displayDialog(dialogData.message, isQuestStart, isWarning)
     }
 
     private parseChat(data: string) {
@@ -250,6 +255,12 @@ export class Parser {
         const loadData = new ParseLoad(data)
 
         this.client.loadPlayerData(loadData)
+    }
+
+    private parseLoadBag(data: string) {
+        const loadData = new ParseLoadBag(data)
+
+        this.client.reloadPlayerBag(loadData)
     }
 
     private parseExit(data: string) {

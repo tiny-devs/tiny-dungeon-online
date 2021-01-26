@@ -1,6 +1,6 @@
-import { Npcs } from '../../../../Enums.ts'
-import NpcBase from '../../npcBase.ts'
-import EdmondDialog from "../dialogs/edmondDialog.ts"
+import { Npcs } from '../../../../../Enums.ts'
+import NpcBase from '../../../npcBase.ts'
+import EdmondDialog from "../../dialogs/edmondDialog.ts"
 
 export default class Edmond extends NpcBase {
     constructor() {

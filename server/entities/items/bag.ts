@@ -31,7 +31,15 @@ import FireArmour from "./fireArmour.ts"
 import FireLegs from "./fireLegs.ts"
 import FireDagger from "./fireDagger.ts"
 import FireSword from "./fireSword.ts"
-import Coffee from "./coffee.ts"
+import Coffee from "./consumable/coffee.ts"
+import JamulsMachete from "./jamulsMachete.ts"
+import JamulsGuitar from "./jamulsGuitar.ts"
+import CactusJuice from "./consumable/cactusJuice.ts"
+import LargeHp from "./consumable/largeHp.ts"
+import SmallHp from "./consumable/smallHp.ts"
+import Bread from "./consumable/bread.ts"
+import SacredStone from "./sacredStone.ts"
+import SacredFireSword from "./sacredFireSword.ts"
 
 export default class Bag {
     public items: ItemBase[] = []
@@ -46,7 +54,7 @@ export default class Bag {
     public useItem(itemId: Items): any {
         const item = this.items.find(i => i.itemId == itemId)
         if (item) {
-            if (item.type == ItemType.Consumable) {
+            if (item.type == ItemType.Consumable || item.type == ItemType.QuestConsumable) {
                 this.player.addHp(item.healthRefuel)
                 this.removeItem(item)
                 return {used:true,wore:false}
@@ -65,7 +73,7 @@ export default class Bag {
 
     public dropItem(itemId: Items): boolean {
         const item = this.items.find(i => i.itemId == itemId)
-        if (item) {
+        if (item && ((item.type !== ItemType.Quest && item.type !== ItemType.QuestConsumable) || this.player.isAdmin())) {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
                 this.player.currentRoom.addItem(this.player.y,this.player.x,item)
                 this.removeItem(item)
@@ -91,6 +99,30 @@ export default class Bag {
     public getItemFromItemId(item: Items): ItemBase | null {
         if (item == Items.Coffee) {
             return new Coffee(0)
+        }
+        if (item == Items.Bread) {
+            return new Bread(0)
+        }
+        if (item == Items.SmallHp) {
+            return new SmallHp(0)
+        }
+        if (item == Items.LargeHp) {
+            return new LargeHp(0)
+        }
+        if (item == Items.SacredStone) {
+            return new SacredStone(0)
+        }
+        if (item == Items.SacredFireSword) {
+            return new SacredFireSword(0)
+        }
+        if (item == Items.JamulsMachete) {
+            return new JamulsMachete(0)
+        }
+        if (item == Items.JamulsGuitar) {
+            return new JamulsGuitar(0)
+        }
+        if (item == Items.CactusJuice) {
+            return new CactusJuice(0)
         }
         if (item == Items.WoodenHelm) {
             return new WoodenHelm(0)
@@ -190,6 +222,16 @@ export default class Bag {
         const index = this.items.indexOf(item)
         if (index > -1) {
             this.items.splice(index, 1)
+        }
+    }
+
+    removeItemFromQuest(itemId: Items) {
+        const item = this.items.find(i => i.itemId == itemId)
+        if (item) {
+            const index = this.items.indexOf(item)
+            if (index > -1) {
+                this.items.splice(index, 1)
+            }
         }
     }
 }

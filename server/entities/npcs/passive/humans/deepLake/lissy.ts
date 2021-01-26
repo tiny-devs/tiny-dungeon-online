@@ -1,6 +1,6 @@
-import { Npcs } from '../../../../Enums.ts'
-import NpcBase from '../../npcBase.ts'
-import LissyDialog from "../dialogs/lissyDialog.ts"
+import { Npcs } from '../../../../../Enums.ts'
+import NpcBase from '../../../npcBase.ts'
+import LissyDialog from "../../dialogs/lissyDialog.ts"
 
 export default class Lissy extends NpcBase {
     constructor() {
