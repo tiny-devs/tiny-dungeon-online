@@ -255,6 +255,8 @@ export enum Items {
     JamulsMachete,
     JamulsGuitar,
     CactusJuice,
+    SacredStone,
+    SacredFireSword,
 }
 
 export enum ItemType {
@@ -285,7 +287,8 @@ export enum StepType {
     MonstersToKill,
     NpcToTalk,
     LevelToReach,
-    ItemsToHave
+    ItemsToHave,
+    ItemsToReceive
 }
 
 export enum RewardType {

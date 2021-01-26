@@ -536,8 +536,11 @@ export class ClientHandler {
         case '/tp':
           this.teleport(adm, args[0])
           break
+        case '/item':
+          this.spawnItem(adm, args[0])
+          break
         case '/help':
-          this.unicastMessage(adm, `commands: kick [player], global [message], find [player], tp [place]`)
+          this.unicastMessage(adm, `commands: kick [player], global [message], find [player], tp [PlaceName], item [ItemName]`)
           break
         default:
           break
@@ -618,12 +621,27 @@ export class ClientHandler {
   private teleport(adm: Player, place: string): boolean {
     try {
       const roomsAny = Rooms as any
-      let roomId = roomsAny[place]
+      const placeUpperCase = place.charAt(0).toUpperCase() + place.slice(1)
+      let roomId = roomsAny[placeUpperCase]
       if (roomId) {
         adm.teleport(roomId)
       }
     } catch (e) {
       this.handleExceptions(e, adm, 'teleport')
+    }
+    return false
+  }
+
+  private spawnItem(adm: Player, itemName: string): boolean {
+    try {
+      const itemsAny = Items as any
+      const itemNameUpperCase = itemName.charAt(0).toUpperCase() + itemName.slice(1)
+      let item = itemsAny[itemNameUpperCase]
+      if (item) {
+        adm.spawnItem(item)
+      }
+    } catch (e) {
+      this.handleExceptions(e, adm, 'spawnItem')
     }
     return false
   }

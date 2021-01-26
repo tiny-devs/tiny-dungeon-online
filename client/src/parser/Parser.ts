@@ -234,8 +234,9 @@ export class Parser {
     private parseDialog(data: string) {
         const dialogData = new ParseDialog(data)
         const isQuestStart = dialogData.message.includes('-quest')
+        const isWarning = dialogData.message[0] == '-'
 
-        this.client.displayDialog(dialogData.message, isQuestStart)
+        this.client.displayDialog(dialogData.message, isQuestStart, isWarning)
     }
 
     private parseChat(data: string) {

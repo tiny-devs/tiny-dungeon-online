@@ -61,10 +61,44 @@ export default class Quest {
         return false
     }
 
+    public checkGaveItems(player: Player): boolean {
+        if (this.isCompleted) {
+            return false
+        }
+        let gotItem = false
+        if (this.steps[this.currentStep].type == StepType.ItemsToReceive) {
+            const itemsToGive = this.steps[this.currentStep].itemsToGive
+            if (itemsToGive.length > 0) {
+                const hasBagSpace = (player.bag.size - player.bag.items.length) >= itemsToGive.length
+                if (hasBagSpace) {
+                    for (const item of itemsToGive) {
+                        gotItem = player.getItemFromQuest(item)
+                        if (!gotItem) {
+                            return false
+                        }
+                    }
+                } else {
+                    return false
+                }
+
+                if (hasBagSpace && gotItem) {
+                    this.goToNextStep(player)
+                    return true
+                }
+                
+            } else {
+                return false
+            }
+        }
+        return false
+    }
+
     public checkLevelToReach(player: Player) {
         const reachedLevel = this.steps[this.currentStep].checkLevelToReach(player.level)
         if (reachedLevel) {
             this.goToNextStep(player)
+        } else {
+            return `You need to be level ${this.steps[this.currentStep].levelToReach} before continuing`
         }
     }
 
@@ -84,28 +118,35 @@ export default class Quest {
 
     public checkNpcDialog(npc: string, player: Player) {
         if (this.isCompleted) {
-            return this.newDialogAfterComplete
-        }
-
-        const stepReturn = this.steps[this.currentStep].checkNpcDialog(npc)
-        if (stepReturn.validNpc) {
-            if (this.isCompleted) {
+            if (this.steps[this.currentStep].npcToTalk == npc) {
                 return this.newDialogAfterComplete
-            }
-
-            if (this.steps[this.currentStep].npcLines.length <= this.steps[this.currentStep].playerCurrentLine+1) {
-                if (this.steps[this.currentStep].type == StepType.NpcToTalk) {
-                    this.goToNextStep(player)
-                }
-                this.steps[this.currentStep].playerCurrentLine = 0
             } else {
-                this.steps[this.currentStep].playerCurrentLine += 1
+                return ''
             }
-
-            return stepReturn.line
-        } else {
-            return ''
         }
+        let line = ''
+
+        for (let i = this.currentStep; i >= 0; i--) {
+            const stepReturn = this.steps[i].checkNpcDialog(npc)
+            if (stepReturn.validNpc) {
+                if (this.steps[i].npcLines.length <= this.steps[i].playerCurrentLine+1) {
+                    if (this.steps[i].type == StepType.NpcToTalk) {
+                        if (i == this.currentStep) {
+                            this.goToNextStep(player)
+                        }
+                    }
+                    this.steps[i].playerCurrentLine = 0
+                } else {
+                    this.steps[i].playerCurrentLine += 1
+                }
+    
+                line = stepReturn.line
+                i=-1
+                break
+            }
+        }
+
+        return line
     }
 
     public goToNextStep(player: Player) {

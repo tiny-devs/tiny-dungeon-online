@@ -1,7 +1,8 @@
-import { Items, Npcs, Quests, RewardType, StepType } from "../../../../../Enums.ts"
+import { Items, Quests, RewardType, StepType } from "../../../../../Enums.ts"
 import QuestBase from "../../questBase.ts"
 import StepBase from "../../stepBase.ts"
-import { MonstersToKillBase } from "../../monstersToKillBase.ts"
+import SacredFireSword from "../../../../items/sacredFireSword.ts"
+import SacredStone from "../../../../items/sacredStone.ts"
 import { ItemsToHaveBase } from "../../itemsToHaveBase.ts"
 
 export default class TheSacredStone extends QuestBase {
@@ -27,6 +28,7 @@ export default class TheSacredStone extends QuestBase {
                         'can drop. You\'ll find them in the desert.',
                         'I need 3 doses of that',
                         'now stay away from me.',
+                        ' ',
                     ],[],0),
                 new StepBase(StepType.ItemsToHave,[],'francis', [],
                     [
@@ -45,6 +47,7 @@ export default class TheSacredStone extends QuestBase {
                         'go back to Ediog and ask him',
                         'what does he know about the stone',
                         'then come back and tell me',
+                        ' ',
                     ],[],0),
                 new StepBase(StepType.NpcToTalk,[],'ediog',
                     [
@@ -66,28 +69,83 @@ export default class TheSacredStone extends QuestBase {
                         'I don\'t understand',
                         'how nor why could Francis have it',
                         'we have to get it...',
+                        'go back to him and report all this',
+                        'Oh, I didn\'t mention something',
+                        'the sacred stone curses anyone carrying it',
+                        'when they\'re too weak',
+                        'that\'s probably why Francis was sick',
+                        'only remains from a cursed creature can heal',
+                        'from the curse, that\'s why Cactus Juice',
+                        'saved Francis. So be careful!',
+                        '-only level 50 or more can carry the stone-',
+                        ' ',
                     ],[],0),
-                new StepBase(StepType.MonstersToKill,
+                new StepBase(StepType.NpcToTalk,[],'francis',
                     [
-                        new MonstersToKillBase(Npcs.Rat, 25),
-                    ],
-                    'lugrus',[],[],0),
-                new StepBase(StepType.NpcToTalk,[],'lugrus',
-                    [
-                        'No way, you actually killed 25 rats!',
-                        'Thats impressive',
-                        'Since you\'re already into it',
-                        'Could you bring me a cup of coffee?'
+                        'So...',
+                        'He said some ancient evil wizards found it?',
+                        'Well he is right, but don\'t be alarmed',
+                        'Me and my family have nothing to do',
+                        'with dark magic. I have the stone',
+                        'because my ancestors fought the wizards',
+                        'at the Great Wizards War, back in 5419',
+                        'almost 600 years ago',
+                        'My friend, this stone means more to me',
+                        'than anything in the world',
+                        'but if it is needed to restore peace',
+                        'I only ask for recognition',
+                        'may people know Francis Darci was a part of it',
+                        'here, take the stone!',
+                        ' ',
                     ],[],0),
-                new StepBase(StepType.NpcToTalk,[],'lugrus',
-                [
-                    'Thanks man, you deserve some xp',
-                    '-you received 500xp!-'
-                ],[],0),
+                new StepBase(StepType.LevelToReach,[],'francis', [],[],50),
+                new StepBase(StepType.ItemsToReceive,[], 'francis', [],[],0,
+                    [
+                        new SacredStone(0)
+                    ]),
+                new StepBase(StepType.ItemsToHave,[],'ediog', [],
+                    [
+                        new ItemsToHaveBase(Items.SacredStone, 1)
+                    ],0),
+                new StepBase(StepType.NpcToTalk,[],'ediog',
+                    [
+                        'I can\'t believe my eyes',
+                        'The Sacred Stone!',
+                        'This will be remembered, hero',
+                        'And yes, Francis Collaboration',
+                        'will be forever engraved',
+                        'in Tiny Land\'s history!',
+                        'in appreciation for you work',
+                        'I\'ll use my magic to canalize',
+                        'some of the power of the stone',
+                        'to a Fire Sword!',
+                        'bring me a fire sword to make it sacred',
+                        'For what I know, only dog-like demons',
+                        'carry Fire Swords... You might have to kill some!',
+                        'it will be hard',
+                        'but the reward will be worth it!',
+                        ' ',
+                    ],[],0),
+                new StepBase(StepType.ItemsToHave,[],'ediog', [],
+                    [
+                        new ItemsToHaveBase(Items.FireSword, 1)
+                    ],0),
+                new StepBase(StepType.NpcToTalk,[],'ediog',
+                    [
+                        '-you see Ediog saying some words-',
+                        '-a weird aura comes out of the stone-',
+                        '-the aura enters the sword-',
+                        'Here you go, hero',
+                        'thanks for everything!',
+                        'we will be researching over the stone',
+                        'may someday Tiny Land be a safe place again!',
+                        '-you received 1500 xp!-',
+                        '-you received Sacred Fire Sword!-',
+                    ],[],0),
             ],
-            RewardType.Xp,
-            null,
-            500,
-            'Hey! Lugrus here.')
+            RewardType.Both,
+            new SacredFireSword(0),
+            1500,
+            'Hi there, hero! The mages are busy researching the stone!')
     }
 }

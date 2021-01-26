@@ -144,27 +144,49 @@ export class Npc {
   public talkTo(player: Player) {
     const playerQuest = player.quests.find(q => q.id == this.quest?.id)
     const npcFromQuestStep = player.quests.find(q => q.steps[q.currentStep].npcToTalk == this.name)
+    const npcFromAnyQuestStep = player.quests.find(q => q.steps.find(s => s.npcToTalk == this.name))
     const questStepItemRetrieve = player.quests.find(q => q.steps[q.currentStep].type == StepType.ItemsToHave)
-    let gaveItems = false
+    const questStepItemReceive = player.quests.find(q => q.steps[q.currentStep].type == StepType.ItemsToReceive)
+    const questStepLevelReach = player.quests.find(q => q.steps[q.currentStep].type == StepType.LevelToReach)
+    let tradedItems = false
 
     if (this.dialog != null) {
       const hasEverTalked = this.dialog.playerCurrentLine.some(d => d.playerId == player.id)
       if (hasEverTalked) {
-        if (npcFromQuestStep && questStepItemRetrieve) {
-          gaveItems = questStepItemRetrieve.checkItemsToHave(player)
-          if (gaveItems) {
-            this.room.clientHandler.unicastDialog(player, '-you give the quest items-')
-          } else {
-            let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
-            if (newLine != '') {
-              this.room.clientHandler.unicastDialog(player, newLine)
+        if (npcFromQuestStep && questStepLevelReach) {
+          questStepLevelReach.checkLevelToReach(player)
+        }
+        if (npcFromQuestStep && (questStepItemRetrieve || questStepItemReceive)) {
+          if (questStepItemRetrieve) {
+            tradedItems = questStepItemRetrieve.checkItemsToHave(player)
+            if (tradedItems) {
+              this.room.clientHandler.unicastDialog(player, '-you give the quest items-')
+              return
+            } else {
+              let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
+              if (newLine != '') {
+                this.room.clientHandler.unicastDialog(player, newLine)
+                return
+              }
+            }
+            return
+          }
+          if (questStepItemReceive) {
+            tradedItems = questStepItemReceive.checkGaveItems(player)
+            if (tradedItems) {
+              this.room.clientHandler.unicastDialog(player, '-you receive some quest items-')
+              return
+            } else {
+              this.room.clientHandler.unicastDialog(player, '-you dont have enough space-')
+              return
             }
           }
         }
-        if (npcFromQuestStep && !gaveItems) {
+        if (npcFromQuestStep && !tradedItems) {
           let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
           if (newLine != '') {
             this.room.clientHandler.unicastDialog(player, newLine)
+            return
           } else {
             var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
             if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
@@ -173,24 +195,51 @@ export class Npc {
               this.dialog.playerCurrentLine[index].line += 1
             }
             this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
+            return
           }
         } else if (!npcFromQuestStep){
-          var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
-          if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines-1) {
-            if (this.quest != null && !playerQuest){
-              player.getNewQuest(this.quest)
-            }
-
-            if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
-              this.dialog.playerCurrentLine[index].line = 0
+          if (npcFromAnyQuestStep) {
+            let newLine = npcFromAnyQuestStep.checkNpcDialog(this.name, player)
+            if (newLine != '') {
+              this.room.clientHandler.unicastDialog(player, newLine)
+              return
             } else {
+              var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+              if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines-1) {
+                if (this.quest != null && !playerQuest){
+                  player.getNewQuest(this.quest)
+                }
+
+                if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
+                  this.dialog.playerCurrentLine[index].line = 0
+                } else {
+                  this.dialog.playerCurrentLine[index].line += 1
+                }
+              }
+              else {
+                this.dialog.playerCurrentLine[index].line += 1
+              }
+              this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
+              return
+            }
+          } else {
+            var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+            if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines-1) {
+              if (this.quest != null && !playerQuest){
+                player.getNewQuest(this.quest)
+              }
+
+              if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
+                this.dialog.playerCurrentLine[index].line = 0
+              } else {
+                this.dialog.playerCurrentLine[index].line += 1
+              }
+            }
+            else {
               this.dialog.playerCurrentLine[index].line += 1
             }
+            this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
           }
-          else {
-            this.dialog.playerCurrentLine[index].line += 1
-          }
-          this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[this.dialog.playerCurrentLine[index].line])
         }
       } else {
         this.dialog.playerCurrentLine.push({playerId:player.id, line:0,totalLines:this.dialog.dialogs.length})

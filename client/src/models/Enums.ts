@@ -182,6 +182,8 @@ export enum ItemsIds {
     JamulsMachete,
     JamulsGuitar,
     CactusJuice,
+    SacredStone,
+    SacredFireSword,
 }
 
 export enum GearType {

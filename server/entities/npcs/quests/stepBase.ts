@@ -1,4 +1,5 @@
 import { StepType } from "../../../Enums.ts"
+import ItemBase from "../../items/itemBase.ts"
 import { ItemsToHaveBase } from "./itemsToHaveBase.ts"
 import { MonstersToKillBase } from "./monstersToKillBase.ts"
 
@@ -10,6 +11,7 @@ export default class StepBase {
     public npcLines: string[]
     public playerCurrentLine: number = 0
     public itemsToHave: ItemsToHaveBase[] = []
+    public itemsToGive: ItemBase[] | null = null
     public levelToReach: number
 
     constructor(type: StepType,
@@ -17,12 +19,14 @@ export default class StepBase {
         npcToTalk: string,
         npcLines: string[],
         itemsToHaveBase: ItemsToHaveBase[],
-        levelToReach: number) {
+        levelToReach: number,
+        itemsToGive: ItemBase[] | null = null) {
         this.type = type
         this.monstersToKill = monstersToKillBase
         this.npcToTalk = npcToTalk
         this.npcLines = npcLines
         this.itemsToHave = itemsToHaveBase
         this.levelToReach = levelToReach
+        this.itemsToGive = itemsToGive
     }
 }

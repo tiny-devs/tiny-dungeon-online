@@ -404,12 +404,14 @@ export class GameClient {
         }
     }
 
-    displayDialog(message: string, isQuestStart: boolean) {
+    displayDialog(message: string, isQuestStart: boolean, isWarning: boolean) {
         if (!this.isShowingMessage) {
             clearTimeout(this.messageTimeout)
             
             if (isQuestStart) {
                 this.messageElement.style.color = Color.LightRed
+            } else if (isWarning){
+                this.messageElement.style.color = Color.Yellow
             } else {
                 this.messageElement.style.color = '#e5e5e5'
             }

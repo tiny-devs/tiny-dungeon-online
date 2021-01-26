@@ -38,6 +38,8 @@ import CactusJuice from "./cactusJuice.ts"
 import LargeHp from "./consumable/largeHp.ts"
 import SmallHp from "./consumable/smallHp.ts"
 import Bread from "./consumable/bread.ts"
+import SacredStone from "./sacredStone.ts"
+import SacredFireSword from "./sacredFireSword.ts"
 
 export default class Bag {
     public items: ItemBase[] = []
@@ -106,6 +108,12 @@ export default class Bag {
         }
         if (item == Items.LargeHp) {
             return new LargeHp(0)
+        }
+        if (item == Items.SacredStone) {
+            return new SacredStone(0)
+        }
+        if (item == Items.SacredFireSword) {
+            return new SacredFireSword(0)
         }
         if (item == Items.JamulsMachete) {
             return new JamulsMachete(0)
