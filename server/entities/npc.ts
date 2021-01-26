@@ -386,7 +386,7 @@ export class Npc {
           if (drop.type == ItemType.Money) {
             drop.coins = Math.floor(Math.random() * drop.coins) + 1 
           }
-          if (drop.type == ItemType.Quest) {
+          if (drop.type == ItemType.Quest || drop.type == ItemType.QuestConsumable) {
             var isOnQuestStepThatNeedsItem = player.quests.some(
               q => q.steps[q.currentStep].itemsToHave.some(s => s.item == drop.itemId))
             if (isOnQuestStepThatNeedsItem) {

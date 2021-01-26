@@ -15,7 +15,7 @@ export default class HelpTheLakeVillage extends QuestBase {
                         new MonstersToKillBase(Npcs.ImpMage, 10),
                     ],
                     'vardan',[],[],0),
-                new StepBase(StepType.NpcToTalk,[],'vardan',['You really killed all those imps!', 'Good job adventurer! We are far from having peace', 'but your help was precious. Take this armour as reward!', '-You received a Blurite Armour'],[],0),
+                new StepBase(StepType.NpcToTalk,[],'vardan',['You really killed all those imps!', 'Good job adventurer! We are far from having peace', 'but your help was precious. Take this armour as reward!', '-You received a Blurite Armour-'],[],0),
             ],
             RewardType.Item,
             new BluriteArmour(1),

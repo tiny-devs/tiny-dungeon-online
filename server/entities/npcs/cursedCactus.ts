@@ -1,7 +1,7 @@
 import { Npcs } from '../../Enums.ts'
 import NpcBase from './npcBase.ts'
 import AdamantHelm from '../items/adamantHelm.ts'
-import CactusJuice from '../items/cactusJuice.ts'
+import CactusJuice from '../items/consumable/cactusJuice.ts'
 
 export default class CursedCactus extends NpcBase {
     constructor() {

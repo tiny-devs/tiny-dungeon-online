@@ -264,7 +264,8 @@ export enum ItemType {
     Consumable,
     Weareable,
     Temporary,
-    Quest
+    Quest,
+    QuestConsumable,
 }
 
 export enum GearType {

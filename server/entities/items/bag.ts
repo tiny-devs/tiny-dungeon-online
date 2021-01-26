@@ -34,7 +34,7 @@ import FireSword from "./fireSword.ts"
 import Coffee from "./consumable/coffee.ts"
 import JamulsMachete from "./jamulsMachete.ts"
 import JamulsGuitar from "./jamulsGuitar.ts"
-import CactusJuice from "./cactusJuice.ts"
+import CactusJuice from "./consumable/cactusJuice.ts"
 import LargeHp from "./consumable/largeHp.ts"
 import SmallHp from "./consumable/smallHp.ts"
 import Bread from "./consumable/bread.ts"
@@ -54,7 +54,7 @@ export default class Bag {
     public useItem(itemId: Items): any {
         const item = this.items.find(i => i.itemId == itemId)
         if (item) {
-            if (item.type == ItemType.Consumable) {
+            if (item.type == ItemType.Consumable || item.type == ItemType.QuestConsumable) {
                 this.player.addHp(item.healthRefuel)
                 this.removeItem(item)
                 return {used:true,wore:false}
@@ -73,7 +73,7 @@ export default class Bag {
 
     public dropItem(itemId: Items): boolean {
         const item = this.items.find(i => i.itemId == itemId)
-        if (item && (item.type !== ItemType.Quest || this.player.isAdmin())) {
+        if (item && ((item.type !== ItemType.Quest && item.type !== ItemType.QuestConsumable) || this.player.isAdmin())) {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
                 this.player.currentRoom.addItem(this.player.y,this.player.x,item)
                 this.removeItem(item)
