@@ -8,6 +8,7 @@ import HelpTheLakeVillage from "./humans/deepLake/helpTheLakeVillage.ts"
 import DamnRats from "./humans/subitnof/damnRats.ts"
 import QuestBase from "./questBase.ts"
 import Step from "./step.ts"
+import WarriorSomeday from "./humans/subitnof/warriorSomeday.ts"
 
 export default class Quest {
     public id: Quests
@@ -197,6 +198,9 @@ export default class Quest {
         }
         if (questId == Quests.TheSacredStone) {
             return new TheSacredStone()
+        }
+        if (questId == Quests.WarriorSomeday) {
+            return new WarriorSomeday()
         }
 
         return null

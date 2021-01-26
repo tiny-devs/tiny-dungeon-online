@@ -28,7 +28,18 @@ export default class Step {
         this.levelToReach = stepData.levelToReach
         if (stepData.itemsToGive != null) {
             for (const itemToGive of stepData.itemsToGive) {
-                this.itemsToGive.push(itemToGive)
+                this.itemsToGive.push(new ItemBase(itemToGive.id,
+                    itemToGive.itemId,
+                    itemToGive.type,
+                    itemToGive.gearType,
+                    itemToGive.coins,
+                    itemToGive.despawnTime,
+                    itemToGive.level,
+                    itemToGive.isDefensive,
+                    itemToGive.bonusAttack,
+                    itemToGive.bonusDefense,
+                    itemToGive.healthRefuel,
+                    itemToGive.dropChance))
             }
         }
         

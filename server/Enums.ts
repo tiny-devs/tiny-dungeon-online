@@ -282,6 +282,7 @@ export enum Quests {
     DamnRats,
     JamulsMachete,
     TheSacredStone,
+    WarriorSomeday
 }
 
 export enum StepType {

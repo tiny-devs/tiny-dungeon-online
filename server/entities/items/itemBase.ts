@@ -12,6 +12,7 @@ export default class ItemBase {
     public bonusDefense: number
     public healthRefuel: number
     public dropChance: number
+    public isDefensive: boolean
 
     constructor(id: number,
     itemId: Items,
@@ -32,6 +33,7 @@ export default class ItemBase {
         this.despawnTime = despawnTime == 0 ? 30000 : despawnTime
         this.coins = coins
         this.level = level
+        this.isDefensive = isDefensive
         this.bonusAttack = !isDefensive ? Math.floor(level/2) + 2 + bonusAttack : bonusAttack
         this.bonusDefense = isDefensive ? Math.floor(level/2) + 1 + bonusDefense : bonusDefense
         this.healthRefuel = healthRefuel
