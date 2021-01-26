@@ -17,7 +17,7 @@ export class ClientHandler {
   public playerNames: string[] = []
   public map: Map
   private topPlayers: {id:string,name:string,level:number}[]
-  private db: ConnectionManager | null = null
+  private db: ConnectionManager
   private playerDataManager: DataManager
   private admins: typeof Admins = Admins
   private regexBadWords: RegExp
@@ -30,11 +30,11 @@ export class ClientHandler {
 
     this.playerDataManager = new DataManager()
 
-    //this.db = new ConnectionManager()
+    this.db = new ConnectionManager()
     this.topPlayers = []
-    //  this.db.getRank().then(result => {
-    //   this.topPlayers = result
-    // })
+     this.db.getRank().then(result => {
+      this.topPlayers = result
+    })
     
     this.regexBadWords = new RegExp(badWords.map((word) => {
       let improvedWord = `(${word.split("").join("+(\\W|_)*")})`
@@ -509,9 +509,9 @@ export class ClientHandler {
     players.splice(0, players.length)
     if (updated) {
       this.topPlayers.splice(3)
-      // this.db.updateRank(this.topPlayers).then(() => {
-      //   this.broadcastRank()
-      // })
+      this.db.updateRank(this.topPlayers).then(() => {
+        this.broadcastRank()
+      })
     }
 
     return updated

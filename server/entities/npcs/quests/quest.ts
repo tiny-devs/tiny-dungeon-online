@@ -9,6 +9,7 @@ import DamnRats from "./humans/subitnof/damnRats.ts"
 import QuestBase from "./questBase.ts"
 import Step from "./step.ts"
 import WarriorSomeday from "./humans/subitnof/warriorSomeday.ts"
+import ZombieKiller from "./humans/kharjid/zombieKiller.ts"
 
 export default class Quest {
     public id: Quests
@@ -201,6 +202,9 @@ export default class Quest {
         }
         if (questId == Quests.WarriorSomeday) {
             return new WarriorSomeday()
+        }
+        if (questId == Quests.ZombieKiller) {
+            return new ZombieKiller()
         }
 
         return null
