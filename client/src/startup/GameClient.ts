@@ -289,6 +289,13 @@ export class GameClient {
     }
 
     checkKey(e: Partial<KeyboardEvent>) {
+        const arrowKeysCodes = [37,38,39,40]
+        if (e.preventDefault) {
+            if (arrowKeysCodes.some(code => code == e.keyCode)) {
+                e.preventDefault()
+            }
+        }
+
         this.afkTabMinCountdown = 9
         this.afkTabSecCountdown = 59
         this.restartAfkTimer()
@@ -297,24 +304,12 @@ export class GameClient {
 
             let direction = 0
             if (e.keyCode == 38 || e.keyCode == 87) {
-                if (e.preventDefault) {
-                    e.preventDefault()
-                }
                 direction = Direction.Up
             } else if (e.keyCode == 40 || e.keyCode == 83) {
-                if (e.preventDefault) {
-                    e.preventDefault()
-                }
                 direction = Direction.Down
             } else if (e.keyCode == 37 || e.keyCode == 65) {
-                if (e.preventDefault) {
-                    e.preventDefault()
-                }
                 direction = Direction.Left
             } else if (e.keyCode == 39 || e.keyCode == 68) {
-                if (e.preventDefault) {
-                    e.preventDefault()
-                }
                 direction = Direction.Right
             } else if (e.keyCode == 13 && !this.isTyping && this.canChat) {
                 this.chatMessageElement.focus()
