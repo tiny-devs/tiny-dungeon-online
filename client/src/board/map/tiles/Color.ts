@@ -68,8 +68,6 @@ export enum Color {
 export const PlayerColors = [
     Color.Black,
     Color.DarkBlue,
-    Color.DarkGrey,
     Color.DarkPurple,
-    Color.Yellow,
-    Color.Red,
+    Color.Wine,
 ]

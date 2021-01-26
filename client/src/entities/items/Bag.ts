@@ -76,6 +76,18 @@ export default class Bag {
         }
     }
 
+    public removeAllItems() {
+        for (let i=0; i < this.size; i++) {
+            const anyItemAtPosition = this.items[i] != undefined && this.items[i] != null
+            if (anyItemAtPosition) {
+                const canvasId = this.items[i].layer.canvasId
+                const canvasBtn = document.getElementById(canvasId)!
+                this.itemsHolderEl.removeChild(canvasBtn)
+            }
+        }
+        this.items.splice(0);
+    }
+
     private getItemSprite(itemId: ItemsIds) {
         let keyOfItemId = ItemsIds[itemId]
         let items = Items as any

@@ -4,8 +4,6 @@ import { Main } from './Main'
 import { Parser } from '../parser/Parser'
 import { Command, PveAttacker, Rooms, Direction, ItemsIds, GearType } from '../models/Enums'
 import { Color, PlayerColors } from '../board/map/tiles/Color'
-import { Woods } from '../board/map/Woods'
-import { InitialRoom } from '../board/map/InitialRoom'
 import Bag from '../entities/items/Bag'
 import { ParseItemPick } from '../parser/ParseItemPick'
 import { ParseItemRemove } from '../parser/ParseItemRemove'
@@ -13,6 +11,7 @@ import Gear from '../entities/items/Gear'
 import { ParseRank } from '../parser/ParseRank'
 import { ParseLoad } from '../parser/ParseLoad'
 import { ParsePlayerIdUpdate } from '../parser/ParsePlayerIdUpdate'
+import { ParseLoadBag } from '../parser/ParseLoadBag'
 
 export class GameClient {
     public loggedIn: boolean
@@ -61,7 +60,7 @@ export class GameClient {
     private ws: WebSocket | null
     private playerMatrix: number[][]
     private parser: Parser
-    private currentRoom: InitialRoom | Woods
+    private currentRoom: any
     private canMove: boolean
     private chatTimeout: number = 5
     private canChat: boolean = true
@@ -198,7 +197,7 @@ export class GameClient {
         this.playerId = ''
         this.bag = new Bag(this)
         this.gear = new Gear(this)
-        this.currentRoomId = Rooms.Initial
+        this.currentRoomId = Rooms.InitialRoom
         this.playerMatrix = clientConfigs.playerMatrix
         this.parser = new Parser(this)
         this.currentRoom = this.game.map.rooms[0]
@@ -298,12 +297,24 @@ export class GameClient {
 
             let direction = 0
             if (e.keyCode == 38 || e.keyCode == 87) {
+                if (e.preventDefault) {
+                    e.preventDefault()
+                }
                 direction = Direction.Up
             } else if (e.keyCode == 40 || e.keyCode == 83) {
+                if (e.preventDefault) {
+                    e.preventDefault()
+                }
                 direction = Direction.Down
             } else if (e.keyCode == 37 || e.keyCode == 65) {
+                if (e.preventDefault) {
+                    e.preventDefault()
+                }
                 direction = Direction.Left
             } else if (e.keyCode == 39 || e.keyCode == 68) {
+                if (e.preventDefault) {
+                    e.preventDefault()
+                }
                 direction = Direction.Right
             } else if (e.keyCode == 13 && !this.isTyping && this.canChat) {
                 this.chatMessageElement.focus()
@@ -405,12 +416,14 @@ export class GameClient {
         }
     }
 
-    displayDialog(message: string, isQuestStart: boolean) {
+    displayDialog(message: string, isQuestStart: boolean, isWarning: boolean) {
         if (!this.isShowingMessage) {
             clearTimeout(this.messageTimeout)
             
             if (isQuestStart) {
                 this.messageElement.style.color = Color.LightRed
+            } else if (isWarning){
+                this.messageElement.style.color = Color.Yellow
             } else {
                 this.messageElement.style.color = '#e5e5e5'
             }
@@ -507,6 +520,10 @@ export class GameClient {
         console.log('data erased')
     }
 
+    reloadPlayerBag(loadData: ParseLoadBag) {
+        this.reloadItems(loadData.itemsIds)
+    }
+
     loadPlayerData(loadData: ParseLoad) {
         this.game.spritesLayer.updatePlayerId(this.playerId, loadData.id)
         this.playerId = loadData.id
@@ -519,8 +536,15 @@ export class GameClient {
     }
 
     loadItems(items: ItemsIds[]) {
-        for (const item of items) {
-            this.bag.addItem(item, 0, this.playerId)
+        for (const itemId of items) {
+            this.bag.addItem(itemId, 0, this.playerId)
+        }
+    }
+
+    reloadItems(items: ItemsIds[]) {
+        this.bag.removeAllItems()
+        for (const itemId of items) {
+            this.bag.addItem(itemId, 0, this.playerId)
         }
     }
 

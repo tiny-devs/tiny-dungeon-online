@@ -23,7 +23,8 @@ export enum Command {
     Load,
     UpdatePlayerId,
     Exit,
-    EraseSave
+    EraseSave,
+    LoadBag
 }
 
 export enum Direction {
@@ -34,7 +35,7 @@ export enum Direction {
 }
 
 export enum Rooms {
-    Initial = 0,
+    InitialRoom = 0,
     Woods,
     Woods2,
     Woods3,
@@ -84,10 +85,65 @@ export enum Rooms {
     Plains7,
     Plains8,
     Plains9,
+    River1,
+    River2,
+    River3,
+    Plains10,
+    Plains11,
+    Plains12,
+    Mages,
+    Plains13,
+    Plains14,
+    Desert1,
+    Plains15,
+    Plains16,
+    Plains17,
+    Plains18,
+    Merchants,
+    Plains19,
+    Desert2,
+    Desert3,
+    Desert4,
+    Desert5,
+    Subitnof1,
+    Subitnof2,
+    Plains20,
+    Sadlac,
+    Plains21,
+    Plains22,
+    Desert6,
+    Desert7,
+    Desert8,
+    Desert9,
+    Subitnof3,
+    Subitnof4,
+    Plains23,
+    Plains24,
+    Plains25,
+    Plains26,
+    Desert10,
+    Desert11,
+    Desert12,
+    Desert13,
+    Plains27,
+    Plains28,
+    Plains29,
+    Plains30,
+    Plains31,
+    Plains32,
+    Desert14,
+    Desert15,
+    Kharjid,
+    Desert16,
 }
 
 export enum Npcs {
     Dog = 1,
+    Chicken,
+    Cow,
+    Horse,
+    Horse2,
+    Camel,
     Spider,
     ImpMeelee,
     ImpArcher,
@@ -101,6 +157,23 @@ export enum Npcs {
     Ligneus,
     Skeleton,
     SkeletonKnight,
+    Rat,
+    ButterFlew,
+    GrassSnake,
+    Document,
+    EvilEye,
+    WaterBlob,
+    Ogre,
+    AdamantGhost,
+    FireBlob,
+    SandCat,
+    SandSnake,
+    Zombie,
+    CursedCactus,
+    SandSpirit,
+    SandTotem,
+    Demon,
+    Demon2,
     Zero,
     FemaleGnome,
     MaleGnome,
@@ -111,6 +184,30 @@ export enum Npcs {
     BlackFemaleFarmer,
     OldMan,
     MytklashsFlower,
+    Wizard1,
+    Wizard2,
+    Wizard3,
+    Merchant1,
+    Merchant2,
+    CityMale1,
+    CityMale2,
+    CityMale3,
+    CityMale4,
+    CityMale5,
+    CityMale6,
+    CityMale7,
+    CityMale8,
+    CityMale9,
+    CityOldMale1,
+    CityOldMale2,
+    CityFemale1,
+    CityFemale2,
+    CityFemale3,
+    CityGuard,
+    DesertMale1,
+    DesertMale2,
+    DesertMale3,
+    DesertMale4
 }
 
 export enum PveAttacker {
@@ -152,13 +249,23 @@ export enum Items {
     BluriteLegs,
     AdamantLegs,
     FireLegs,
+    Bread,
+    SmallHp,
+    LargeHp,
+    JamulsMachete,
+    JamulsGuitar,
+    CactusJuice,
+    SacredStone,
+    SacredFireSword,
 }
 
 export enum ItemType {
     Money = 0,
     Consumable,
     Weareable,
-    Temporary
+    Temporary,
+    Quest,
+    QuestConsumable,
 }
 
 export enum GearType {
@@ -171,16 +278,24 @@ export enum GearType {
 
 export enum Quests {
     FlowerForMytklash,
-    HelpTheVillage
+    HelpTheVillage,
+    DamnRats,
+    JamulsMachete,
+    TheSacredStone,
+    WarriorSomeday,
+    ZombieKiller
 }
 
 export enum StepType {
     MonstersToKill,
     NpcToTalk,
-    LevelToReach
+    LevelToReach,
+    ItemsToHave,
+    ItemsToReceive
 }
 
 export enum RewardType {
     Xp,
-    Item
+    Item,
+    Both
 }

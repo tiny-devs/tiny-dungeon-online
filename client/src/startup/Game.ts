@@ -40,6 +40,6 @@ export class Game {
         this.gridConfig.columns = serverRules.boardColumns
 
         this.board.draw()
-        this.map.rooms[Rooms.Initial].draw()
+        this.map.rooms[Rooms.InitialRoom].draw()
     }
 }

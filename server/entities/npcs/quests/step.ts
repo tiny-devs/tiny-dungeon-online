@@ -1,7 +1,8 @@
-import { Npcs, StepType } from "../../../Enums.ts"
+import { Items, Npcs, StepType } from "../../../Enums.ts"
 import { MonstersToKill } from "./monstersToKill.ts"
 import { ItemsToHave } from "./itemsToHave.ts"
 import StepBase from "./stepBase.ts"
+import ItemBase from "../../items/itemBase.ts"
 
 export default class Step {
     public isCompleted: boolean = false
@@ -11,6 +12,7 @@ export default class Step {
     public npcLines: string[]
     public playerCurrentLine: number = 0
     public itemsToHave: ItemsToHave[] = []
+    public itemsToGive: ItemBase[] = []
     public levelToReach: number
 
     constructor(stepData: StepBase) {
@@ -24,6 +26,42 @@ export default class Step {
             this.itemsToHave.push(new ItemsToHave(itemToHave))
         }
         this.levelToReach = stepData.levelToReach
+        if (stepData.itemsToGive != null) {
+            for (const itemToGive of stepData.itemsToGive) {
+                this.itemsToGive.push(new ItemBase(itemToGive.id,
+                    itemToGive.itemId,
+                    itemToGive.type,
+                    itemToGive.gearType,
+                    itemToGive.coins,
+                    itemToGive.despawnTime,
+                    itemToGive.level,
+                    itemToGive.isDefensive,
+                    itemToGive.bonusAttack,
+                    itemToGive.bonusDefense,
+                    itemToGive.healthRefuel,
+                    itemToGive.dropChance))
+            }
+        }
+        
+    }
+
+    public checkItemToHave(item: Items) {
+        if (this.type == StepType.ItemsToHave) {
+            const itemToHave = this.itemsToHave.find(i => (i.item == item) && i.amount > 0)
+            if (itemToHave) {
+                itemToHave.amount -= 1
+                return { validItem: true }
+            }
+        }
+        return { validItem: false }
+    }
+
+    public resetAmountItemsToHave() {
+        if (this.type == StepType.ItemsToHave) {
+            for (let itemToHave of this.itemsToHave) {
+                itemToHave.amount = itemToHave.amountTotal
+            }
+        }
     }
 
     public checkLevelToReach(level: number) {

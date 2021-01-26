@@ -1,4 +1,4 @@
-import { Direction, Rooms, Items, Npcs } from '../Enums.ts'
+import { Direction, Rooms, Items, Npcs, Quests, StepType } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'
@@ -7,6 +7,8 @@ import { WebSocket } from 'https://deno.land/std@0.77.0/ws/mod.ts'
 import Quest from './npcs/quests/quest.ts'
 import QuestBase from "./npcs/quests/questBase.ts"
 import ItemBase from "./items/itemBase.ts"
+import { Admins } from "../data/admins.ts"
+import { ItemsToHave } from "./npcs/quests/itemsToHave.ts"
 
 export class Player {
     public id: string
@@ -35,7 +37,8 @@ export class Player {
     public canChat: boolean = true
     public clientWs: WebSocket
     private afkTimeout: number = 0
-    private afkInterval: number = 601000 // 10:01 min
+    private afkTotalSeconds: number = 601 // 10:01 min
+    private currentAfkSecondsLeft: number = 601
     private canMove: boolean = true
     private savePlayerInterval: number = 300000 // 5 min
     private playerSaveTimeout: number = 0
@@ -62,10 +65,11 @@ export class Player {
         this.clientWs = clientWs
         this.clientHandler = clientHandler
         this.gear = new Gear(this, clientHandler)
+        this.afkTimer()
     }
 
     public move(key: Direction): boolean {
-        this.restartAfkTimer()
+        this.currentAfkSecondsLeft = this.afkTotalSeconds
         let validMove = false
 
         if (this.canMove) {
@@ -221,9 +225,29 @@ export class Player {
             gearData += 'empty'
         }
 
-        //let questData = `[` maybe later
+        let questData = `@`
+        let questCount = 0
+        for (const quest of this.quests) {
+            questCount += 1
+            const isCompleted = quest.isCompleted ? 1 : 0
 
-        return simpleData + bagData + gearData
+            let monstersToKillData = ''
+            let monstersCount = 0
+            for(const monsterToKill of quest.steps[quest.currentStep].monstersToKill) {
+                monstersCount += 1
+                monstersToKillData += `${monsterToKill.monster}:${monsterToKill.amount}`
+                if (monstersCount != quest.steps[quest.currentStep].monstersToKill.length) {
+                    monstersToKillData += '-'
+                }
+            }
+
+            questData += `${quest.id},${quest.currentStep},${isCompleted},${monstersToKillData}`
+            if (questCount != this.quests.length) {
+                questData += ';'
+            }
+        }
+
+        return simpleData + bagData + gearData + questData
     }
 
     public loadPlayerDataFromSave(data: string): boolean {
@@ -265,9 +289,21 @@ export class Player {
                     }
                 }
             }
+
+            const questData = allData[4]?.split(';')
+            if (questData?.length > 0 && questData[0] != "") {
+                for (let i=0;i<questData.length;i++) {
+                    const questDataInfos = questData[i].split(',')
+                    const monstersToKillData = questDataInfos[3].split('-')
+                    if (questDataInfos.length == 4) {
+                        this.loadQuest(+questDataInfos[0], +questDataInfos[1], +questDataInfos[2] == 1, monstersToKillData)
+                    }
+                }
+            }
     
             return true
         } catch (e) {
+            console.log(e)
             return false
         }
     }
@@ -281,6 +317,24 @@ export class Player {
                 })
             }, this.savePlayerInterval);
         }
+    }
+
+    public loadQuest(questId: Quests, currentStep: number, isCompleted: boolean, monstersKillData: string[]) {
+        const questBase = Quest.getQuestFromQuestId(questId)
+        const quest = new Quest(questBase)
+        quest.currentStep = currentStep
+        quest.isCompleted = isCompleted
+        if (!isCompleted && quest.steps[quest.currentStep].type == StepType.MonstersToKill) {
+            for(const monsterToKill of monstersKillData) {
+                const monsterId = monsterToKill.split(':')[0]
+                const amount = monsterToKill.split(':')[1]
+                let monsterStep = quest.steps[quest.currentStep].monstersToKill.find(m => m.monster == +monsterId)
+                if (monsterStep) {
+                    monsterStep.amount = +amount
+                }
+            }
+        }
+        this.quests.push(quest)
     }
 
     public startChatTimeout() {
@@ -303,15 +357,34 @@ export class Player {
         }
     }
 
-    public getItemFromQuest(item: ItemBase): boolean {
+    public getItemFromQuest(item: ItemBase, save: boolean): boolean {
         if (item) {
             const gotItem = this.bag.addItem(item)
             if (gotItem) {
                 this.clientHandler.roomcastItemPick(this.currentRoomId,-1,-1,item.itemId,item.coins,this.id)
+                if (save) {
+                    this.clientHandler.unicastPlayerDataHashSave(this)
+                }
                 return true
             }
         }
         return false
+    }
+
+    public finishQuest() {
+        this.clientHandler.unicastPlayerDataHashSave(this)
+    }
+
+    public removeItemsFromQuest(items: ItemsToHave[]): boolean {
+        if (items) {
+            for (const itemToHave of items) {
+                for (let i=0;i<itemToHave.amountTotal;i++) {
+                    this.bag.removeItemFromQuest(itemToHave.item)
+                }
+            }
+            this.clientHandler.unicastPlayerBag(this)
+        }
+        return true
     }
 
     public addHp(amount: number) {
@@ -385,13 +458,46 @@ export class Player {
         return this.maxHp + this.level - 1
     }
 
+    public teleport(roomId: Rooms) {
+        const isAdmin = this.isAdmin()
+        if (isAdmin) {
+            this.fightingNpcId = null
+            this.currentRoomId = roomId
+            this.x = 0
+            this.y = 0
+            this.clientHandler.broadcastPlayerMove(this, Direction.Right)
+        }
+    }
+
+    public spawnItem(itemId: Items): boolean {
+        const isAdmin = this.isAdmin()
+        if (isAdmin) {
+            if (itemId) {
+                const item = this.bag.getItemFromItemId(itemId)
+                if (item) {
+                    const gotItem = this.bag.addItem(item)
+                    if (gotItem) {
+                        this.clientHandler.roomcastItemPick(this.currentRoomId,-1,-1,item.itemId,item.coins,this.id)
+                        return true
+                    }
+                }
+            }
+        }
+        
+        return false
+    }
+
     private respawn() {
         this.fightingNpcId = null
-        this.currentRoomId = Rooms.Initial
+        this.currentRoomId = Rooms.InitialRoom
         this.x = 0
         this.y = 0
         this.clientHandler.broadcastPlayerMove(this, Direction.Right)
         this.clientHandler.unicastPlayerStats(this)
+    }
+
+    public isAdmin(): boolean {
+        return Admins.some(a => a.name == this.name)
     }
 
     private notCollided(y: number, x: number): boolean {        
@@ -421,12 +527,17 @@ export class Player {
         return false
     }
 
-    private restartAfkTimer(): void {
-        clearTimeout(this.afkTimeout)
+    private afkTimer(): void {
         if (!this.clientWs.isClosed) {
             this.afkTimeout = setTimeout(async () => {
-                this.clientHandler.kickPlayer(this.name, 'kicked for being afk')
-            }, this.afkInterval);
+                if (this.currentAfkSecondsLeft <= 0) {
+                    this.clientHandler.kickPlayer(this.name, 'kicked for being afk')
+                    clearTimeout(this.afkTimeout)
+                } else {
+                    this.currentAfkSecondsLeft-=1
+                    this.afkTimer()
+                }
+            }, 1000);
         }
     }
 
