@@ -79,7 +79,7 @@ export default class Quest {
                 const hasBagSpace = (player.bag.size - player.bag.items.length) >= itemsToGive.length
                 if (hasBagSpace) {
                     for (const item of itemsToGive) {
-                        gotItem = player.getItemFromQuest(item)
+                        gotItem = player.getItemFromQuest(item, true)
                         if (!gotItem) {
                             return false
                         }
@@ -170,17 +170,30 @@ export default class Quest {
     }
 
     public completeQuest(player: Player) {
-        if (this.reward == RewardType.Xp || this.reward == RewardType.Both) {
+        if (this.reward == RewardType.Xp) {
             player.addXp(this.xpReward)
             this.isCompleted = true
         }
-        if (this.reward == RewardType.Item || this.reward == RewardType.Both) {
+        if (this.reward == RewardType.Item) {
             if (this.itemReward) {
-                const gotItem = player.getItemFromQuest(this.itemReward)
+                const gotItem = player.getItemFromQuest(this.itemReward, false)
                 if (gotItem) {
                     this.isCompleted = true
                 }
             }
+        }
+        if (this.reward == RewardType.Both) {
+            if (this.itemReward) {
+                const gotItem = player.getItemFromQuest(this.itemReward, false)
+                if (gotItem) {
+                    player.addXp(this.xpReward)
+                    this.isCompleted = true
+                }
+            }
+        }
+
+        if (this.isCompleted) {
+            player.finishQuest()
         }
     }
 

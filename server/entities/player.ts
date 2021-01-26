@@ -1,4 +1,4 @@
-import { Direction, Rooms, Items, Npcs, Quests } from '../Enums.ts'
+import { Direction, Rooms, Items, Npcs, Quests, StepType } from '../Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'
@@ -230,7 +230,18 @@ export class Player {
         for (const quest of this.quests) {
             questCount += 1
             const isCompleted = quest.isCompleted ? 1 : 0
-            questData += `${quest.id},${quest.currentStep},${isCompleted}`
+
+            let monstersToKillData = ''
+            let monstersCount = 0
+            for(const monsterToKill of quest.steps[quest.currentStep].monstersToKill) {
+                monstersCount += 1
+                monstersToKillData += `${monsterToKill.monster}:${monsterToKill.amount}`
+                if (monstersCount != quest.steps[quest.currentStep].monstersToKill.length) {
+                    monstersToKillData += '-'
+                }
+            }
+
+            questData += `${quest.id},${quest.currentStep},${isCompleted},${monstersToKillData}`
             if (questCount != this.quests.length) {
                 questData += ';'
             }
@@ -280,11 +291,12 @@ export class Player {
             }
 
             const questData = allData[4]?.split(';')
-            if (questData?.length > 0) {
+            if (questData?.length > 0 && questData[0] != "") {
                 for (let i=0;i<questData.length;i++) {
                     const questDataInfos = questData[i].split(',')
-                    if (questDataInfos.length == 3) {
-                        this.loadQuest(+questDataInfos[0], +questDataInfos[1], +questDataInfos[2] == 1)
+                    const monstersToKillData = questDataInfos[3].split('-')
+                    if (questDataInfos.length == 4) {
+                        this.loadQuest(+questDataInfos[0], +questDataInfos[1], +questDataInfos[2] == 1, monstersToKillData)
                     }
                 }
             }
@@ -307,11 +319,21 @@ export class Player {
         }
     }
 
-    public loadQuest(questId: Quests, currentStep: number, isCompleted: boolean) {
+    public loadQuest(questId: Quests, currentStep: number, isCompleted: boolean, monstersKillData: string[]) {
         const questBase = Quest.getQuestFromQuestId(questId)
         const quest = new Quest(questBase)
         quest.currentStep = currentStep
         quest.isCompleted = isCompleted
+        if (!isCompleted && quest.steps[quest.currentStep].type == StepType.MonstersToKill) {
+            for(const monsterToKill of monstersKillData) {
+                const monsterId = monsterToKill.split(':')[0]
+                const amount = monsterToKill.split(':')[1]
+                let monsterStep = quest.steps[quest.currentStep].monstersToKill.find(m => m.monster == +monsterId)
+                if (monsterStep) {
+                    monsterStep.amount = +amount
+                }
+            }
+        }
         this.quests.push(quest)
     }
 
@@ -335,16 +357,22 @@ export class Player {
         }
     }
 
-    public getItemFromQuest(item: ItemBase): boolean {
+    public getItemFromQuest(item: ItemBase, save: boolean): boolean {
         if (item) {
             const gotItem = this.bag.addItem(item)
             if (gotItem) {
                 this.clientHandler.roomcastItemPick(this.currentRoomId,-1,-1,item.itemId,item.coins,this.id)
-                this.clientHandler.unicastPlayerDataHashSave(this)
+                if (save) {
+                    this.clientHandler.unicastPlayerDataHashSave(this)
+                }
                 return true
             }
         }
         return false
+    }
+
+    public finishQuest() {
+        this.clientHandler.unicastPlayerDataHashSave(this)
     }
 
     public removeItemsFromQuest(items: ItemsToHave[]): boolean {
