@@ -5,15 +5,18 @@ import { Rooms, ItemsIds } from '../../models/Enums'
 import { Npcs } from '../../entities/Npcs'
 import { Item } from '../../entities/items/Item'
 import { Items } from '../../entities/items/Items'
+import { Color } from '../map/tiles/Color'
 
 export class SpritesLayer {
     public ctx: CanvasRenderingContext2D
     public players: Player[]
+    public playerHasBeenSaved: boolean = false
 
     private game: Game
     private playerListElement: HTMLElement
     private npcs: Npc[]
     private items: any[]
+    private playerSavedTimeout: number = 0
 
     constructor(game: Game) {
         this.game = game
@@ -38,6 +41,9 @@ export class SpritesLayer {
         this.drawItems(clientRoomId)
         this.drawNpcs(clientRoomId)
         this.drawPlayers(clientRoomId)
+        if (this.playerHasBeenSaved) {
+            this.displayPlayerSavedMessage()
+        }
     }
 
     public clear() {
@@ -118,6 +124,25 @@ export class SpritesLayer {
                 item.draw()
             }
         })
+    }
+
+    displayPlayerSaved() {
+        clearTimeout(this.playerSavedTimeout)
+        this.playerHasBeenSaved = true
+        this.ctx.font = '20px arial';
+        this.ctx.textAlign = 'left'
+        this.ctx.fillStyle = Color.LightGreen3
+        this.ctx.fillText("Player saved", 5, 15);
+        this.playerSavedTimeout = setTimeout(() => {
+            this.playerHasBeenSaved = false
+        }, 5000)
+    }
+
+    displayPlayerSavedMessage() {
+        this.ctx.font = '20px arial'
+        this.ctx.textAlign = 'left'
+        this.ctx.fillStyle = Color.LightGreen
+        this.ctx.fillText("Player saved", 5, 15)
     }
 
     updatePlayerId(oldId: string, newId: string) {

@@ -392,12 +392,18 @@ export class Player {
     }
 
     public addXp(amount: number) {
-        const isLevelUp = (amount + this.xp) >= this.xpNeeded
-        const exceedingXp = isLevelUp ? +((amount + this.xp) - this.xpNeeded).toFixed(2) : 0
-
-        this.xp = isLevelUp ? exceedingXp : (amount + this.xp)
-        this.level = isLevelUp ? this.level+1 : this.level
-        this.xpNeeded = +((this.level**2)+10).toFixed(2)
+        let exceedingXp = 1
+        let isLevelUp = false
+        while (exceedingXp > 0) {
+            isLevelUp = (amount + this.xp) >= this.xpNeeded
+            exceedingXp = isLevelUp ? +((amount + this.xp) - this.xpNeeded).toFixed(2) : 0
+            amount = isLevelUp ? exceedingXp : amount
+    
+            this.xp = isLevelUp ? 0 : (amount + this.xp)
+            this.level = isLevelUp ? this.level+1 : this.level
+            this.hp = isLevelUp ? this.hp+1 : this.hp
+            this.xpNeeded = +((this.level**2)+10).toFixed(2)
+        }
 
         this.clientHandler.unicastPlayerStats(this)
         if (isLevelUp) {

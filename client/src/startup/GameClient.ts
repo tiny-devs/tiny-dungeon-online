@@ -400,6 +400,10 @@ export class GameClient {
         }
     }
 
+    displayPlayerSaved() {
+        this.game.spritesLayer.displayPlayerSaved()
+    }
+
     displayMessage(message: string) {
         if (!this.isShowingMessage) {
             this.isShowingMessage = true
@@ -507,7 +511,7 @@ export class GameClient {
 
     savePlayerData(playerHexData: string) {
         localStorage.setItem(this.localStorageLoadKey, playerHexData)
-        this.displayMessage('player saved!')
+        this.displayPlayerSaved()
     }
 
     resetPlayerData() {
