@@ -1,6 +1,6 @@
-import { listenAndServe } from "https://deno.land/std@0.85.0/http/server.ts";
-import { acceptWebSocket, acceptable } from "https://deno.land/std@0.85.0/ws/mod.ts";
-import * as flags from "https://deno.land/std@0.85.0/flags/mod.ts";
+import { listenAndServe } from "https://deno.land/std@0.100.0/http/server.ts";
+import { acceptWebSocket, acceptable } from "https://deno.land/std@0.100.0/ws/mod.ts";
+import * as flags from "https://deno.land/std@0.100.0/flags/mod.ts";
 import { ClientHandler } from "./server/clientHandler.ts";
 
 export class Server {
