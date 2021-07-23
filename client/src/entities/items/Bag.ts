@@ -104,6 +104,18 @@ export default class Bag {
         newButton.ontouchmove = (e) => this.clickItem(e, itemId)
         newButton.oncontextmenu = () => false
         this.itemsHolderEl.appendChild(newButton)
+        this.organizeBag();
         return elementId
+    }
+
+    private organizeBag(): void {
+        const inventoryList = <HTMLCanvasElement[]> Array.from(this.itemsHolderEl.childNodes);
+
+        this.itemsHolderEl.textContent = '';
+
+        inventoryList.sort((a, b) => +a.id.split('-')[0] - +b.id.split('-')[0]).forEach(item => {
+            this.itemsHolderEl.appendChild(item);
+        });
+
     }
 }
