@@ -8,7 +8,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, minimum-scale=1">
     <title>TLO</title>
     <link href="https://fonts.googleapis.com/css?family=Press+Start+2P" rel="stylesheet">
-
     <!-- Global site tag (gtag.js) - Google Analytics -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-QMDCFYG6EB"></script>
     <script>
@@ -18,102 +17,6 @@
 
       gtag('config', 'G-QMDCFYG6EB');
     </script>
-
-  </head>
-  <body>
-    <span id="forkongithub"><a href="https://github.com/tiny-devs/tiny-dungeon-online/" target="_blank">Fork me on GitHub</a></span>
-    
-    <div id="content">
-      <div class="title" id="title-content">
-        <h1 id="title">Tiny Land Online</h1>
-        <p id="sub-title">A Tiny Online RPG Game (v0.8!)</p>
-      </div>
-      <div class="login-flex-container">
-        <div id="login" class="login-flex-item">
-          <p>Draw yourself:</p>
-          <canvas id="draw" width="200" height="200"></canvas>
-          <br/>
-          <center>
-            <sub id="help-draw-desktop">left click: draw / right click: erase</sub>
-            <input type="button" value="reset" id="help-draw-mobile"></input>
-          </center>
-          <br/>
-          <p>Enter your name:</p>
-          <input id="player-name"></input>
-          <button id="confirm-btn">Create Hero</button>
-        </div>
-      </div>
-      <div id="game-container" class="game-flex-container">
-        <div id="game" class="game-flex-item">
-          <div id="layers">
-            <canvas id="background-layer" width="512" height="512" class="canvas-layer"></canvas>
-            <canvas id="solid-layer" width="512" height="512" class="canvas-layer"></canvas>
-            <canvas id="sprites-layer" width="512" height="512" class="canvas-layer"></canvas>
-          </div>
-          <div id="mobile-controls">
-            <center>
-              <br/>
-              <input type="button" value="▲" id="up"></input>
-              <br/>
-              <input type="button" value="◄" id="left"></input>
-              <input type="button" value="▼" id="down"></input>
-              <input type="button" value="►" id="right"></input>
-            </center>
-          </div>
-          <div id="chat">
-            <input id="chat-message"></input>
-            <input type="button" value="send" id="send-chat"></input>
-          </div>
-          <div id="game-messages">
-            <p id="message"></p>
-          </div>
-          <input type="button" value="show rank" id="show-rank"></input>
-          <input type="button" value="show players" id="show-players"></input>
-          <div id="game-rank">
-            <p>Top players:</p>
-            <ul>
-              <li id="top1"></li>
-              <li id="top2"></li>
-              <li id="top3"></li>
-            </ul>
-          </div>
-          <div id="game-info">
-            <p>Players Online:</p>
-            <ul id="player-list"></ul>
-          </div>
-        </div>
-        <div class="game-flex-item">
-          <h3 id="hp-text">HP: 10/10</h3>
-          <h3 id="xp-text">LVL 1</h3>
-          <div class="progress hp-progress">
-            <div id="hp-bar" class="bar" style="width:100%"></div>
-          </div>
-          <div class="progress xp-progress">
-            <div id="xp-bar" class="bar" style="width:0%"></div>
-          </div>
-          <h3 id="coins">Gold: 0</h3>
-          <div id="bag">
-            <div id="items"></div>
-          </div>
-          <div id="gear">
-            <canvas id="head" width="32" height="32" class="item-btn gear-slot"></canvas>
-            <canvas id="weapon" width="32" height="32" class="item-btn gear-slot"></canvas>
-            <canvas id="torso" width="32" height="32" class="item-btn gear-slot"></canvas>
-            <canvas id="legs" width="32" height="32" class="item-btn gear-slot"></canvas>
-            <h3 id="atk-text">atk: 0</h3>
-            <h3 id="def-text">def: 0</h3>
-          </div>
-          <div id="exit">
-            <input type="button" value="exit" id="exit-btn"></input>
-          </div>
-        </div>
-      </div>
-      <footer>
-        <a href="https://github.com/tiny-devs/tiny-dungeon-online/wiki/How-to-Play" target="_blank">how to play</a></p>
-      </footer>
-    </div>
-    <script src="js/bundle.js"></script>
-    <style>#forkongithub a{background:#000;color:#fff;text-decoration:none;font-family:arial,sans-serif;text-align:center;font-weight:bold;padding:5px 40px;font-size:1rem;line-height:2rem;position:relative;transition:0.5s;}#forkongithub a:hover{background:#c11;color:#fff;}#forkongithub a::before,#forkongithub a::after{content:"";width:100%;display:block;position:absolute;top:1px;left:0;height:1px;background:#fff;}#forkongithub a::after{bottom:1px;top:auto;}@media screen and (min-width:800px){#forkongithub{position:fixed;display:block;top:0;right:0;width:200px;overflow:hidden;height:200px;z-index:9999;}#forkongithub a{width:200px;position:absolute;top:60px;right:-60px;transform:rotate(45deg);-webkit-transform:rotate(45deg);-ms-transform:rotate(45deg);-moz-transform:rotate(45deg);-o-transform:rotate(45deg);box-shadow:4px 4px 10px rgba(0,0,0,0.8);}}</style>
     <style>
       body {
         font-family: "Press Start 2P";
@@ -298,6 +201,139 @@
       a {
         color: #595959;
       }
+
+      .loading {
+        position: fixed !important;
+        z-index: 999;
+        height: 2em;
+        width: 2em;
+        overflow: show;
+        margin: auto;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+      }
+      .loading:before {
+        content: '';
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(255,255,255,0.4);
+      }
+
+      .blue-spinner {
+        border: 3px solid hsla(185, 100%, 62%, 0.2);
+        border-top-color: #3cefff;
+        border-radius: 50%;
+        width: 2em;
+        height: 2em;
+        animation: spin 1s linear infinite;
+      }
+
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
     </style>
+  </head>
+  <body>
+    <div id="loading" class="loading blue-spinner"></div>
+    <div id="content">
+      <div class="title" id="title-content">
+        <h1 id="title">Tiny Land Online</h1>
+        <p id="sub-title">A Tiny Online RPG Game (v0.8!)</p>
+      </div>
+      <div class="login-flex-container">
+        <div id="login" class="login-flex-item">
+          <p>Draw yourself:</p>
+          <canvas id="draw" width="200" height="200"></canvas>
+          <br/>
+          <center>
+            <sub id="help-draw-desktop">left click: draw / right click: erase</sub>
+            <input type="button" value="reset" id="help-draw-mobile"></input>
+          </center>
+          <br/>
+          <p>Enter your name:</p>
+          <input id="player-name"></input>
+          <button id="confirm-btn">Create Hero</button>
+        </div>
+      </div>
+      <div id="game-container" class="game-flex-container">
+        <div id="game" class="game-flex-item">
+          <div id="layers">
+            <canvas id="background-layer" width="512" height="512" class="canvas-layer"></canvas>
+            <canvas id="solid-layer" width="512" height="512" class="canvas-layer"></canvas>
+            <canvas id="sprites-layer" width="512" height="512" class="canvas-layer"></canvas>
+          </div>
+          <div id="mobile-controls">
+            <center>
+              <br/>
+              <input type="button" value="▲" id="up"></input>
+              <br/>
+              <input type="button" value="◄" id="left"></input>
+              <input type="button" value="▼" id="down"></input>
+              <input type="button" value="►" id="right"></input>
+              <br/>
+              <br/>
+            </center>
+          </div>
+          <div id="chat">
+            <input id="chat-message"></input>
+            <input type="button" value="send" id="send-chat"></input>
+          </div>
+          <div id="game-messages">
+            <p id="message"></p>
+          </div>
+          <input type="button" value="show rank" id="show-rank"></input>
+          <input type="button" value="show players" id="show-players"></input>
+          <div id="game-rank">
+            <p>Top players:</p>
+            <ul>
+              <li id="top1"></li>
+              <li id="top2"></li>
+              <li id="top3"></li>
+            </ul>
+          </div>
+          <div id="game-info">
+            <p>Players Online:</p>
+            <ul id="player-list"></ul>
+          </div>
+        </div>
+        <div class="game-flex-item">
+          <h3 id="hp-text">HP: 10/10</h3>
+          <h3 id="xp-text">LVL 1</h3>
+          <div class="progress hp-progress">
+            <div id="hp-bar" class="bar" style="width:100%"></div>
+          </div>
+          <div class="progress xp-progress">
+            <div id="xp-bar" class="bar" style="width:0%"></div>
+          </div>
+          <h3 id="coins">Gold: 0</h3>
+          <div id="bag">
+            <div id="items"></div>
+          </div>
+          <div id="gear">
+            <canvas id="head" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <canvas id="weapon" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <canvas id="torso" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <canvas id="legs" width="32" height="32" class="item-btn gear-slot"></canvas>
+            <h3 id="atk-text">atk: 0</h3>
+            <h3 id="def-text">def: 0</h3>
+          </div>
+          <div id="exit">
+            <input type="button" value="exit" id="exit-btn"></input>
+          </div>
+        </div>
+      </div>
+      <footer>
+        <a href="https://github.com/tiny-devs/tiny-dungeon-online/wiki/How-to-Play" target="_blank">how to play</a></p>
+      </footer>
+    </div>
+    <script src="js/bundle.js"></script>
   </body>
 </html>

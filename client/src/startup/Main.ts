@@ -37,6 +37,7 @@ export class Main {
     public top1Element: HTMLElement
     public top2Element: HTMLElement
     public top3Element: HTMLElement
+    public loadingElement: HTMLElement
     public adminPassword: string = ''
 
     public drawingGrid: DrawingCanvas
@@ -83,6 +84,7 @@ export class Main {
         this.top1Element = document.getElementById('top1')!
         this.top2Element = document.getElementById('top2')!
         this.top3Element = document.getElementById('top3')!
+        this.loadingElement = document.getElementById('loading')!
 
         this.gameScreen.style.display = 'none'
         this.bagElement.style.display = 'none'
@@ -123,6 +125,8 @@ export class Main {
         this.resetCanvasBtn.onclick = () => {
             this.drawingGrid.reset()
         }
+
+        this.loadingElement.style.display = 'none'
     }
 
     setupMobile() {
@@ -165,17 +169,19 @@ export class Main {
 
                     if (this.isMobile()) {
                         const title = document.getElementById('title')!
-                        const subtitle = document.getElementById('sub-title')!
                         title.style.fontSize = '1em'
-                        subtitle.style.fontSize = '50%'
                     }
                     this.startGame()
+                } else {
+                    alert('Draw something!')
                 }
             }
         }
     }
 
     private startGame() {
+        (this.confirmBtn as any).disabled = true
+        this.loadingElement.style.display = 'block'
         this.game = new Game(this.gameConfig, this)
         this.client = new GameClient(this.game, this.playerConfig, this)
     }

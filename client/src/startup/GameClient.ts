@@ -46,6 +46,7 @@ export class GameClient {
     private top1Element: HTMLElement
     private top2Element: HTMLElement
     private top3Element: HTMLElement
+    public loadingElement: HTMLElement
     private isShowingMessage: boolean
     private messageTimeout: number
     private up: HTMLElement
@@ -95,6 +96,7 @@ export class GameClient {
         this.top1Element = mainElements.top1Element
         this.top2Element = mainElements.top2Element
         this.top3Element = mainElements.top3Element
+        this.loadingElement = mainElements.loadingElement
         this.isShowingMessage = false
         this.messageTimeout = 0
         this.adminPassword = mainElements.adminPassword
@@ -234,6 +236,7 @@ export class GameClient {
         this.xpTextElement.style.display = 'block'
         this.chatElement.style.display = 'block'
         this.loginScreen.style.display = 'none'
+        this.loadingElement.style.display = 'none'
 
         // remove this when we have seller npcs
         document.getElementById('coins')!.innerHTML = `${this.playerName}`
