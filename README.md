@@ -1,6 +1,6 @@
-# [Tiny Land Online](https://tinyland.herokuapp.com/)
+# [Tiny Land Online](https://diguifi.itch.io/tiny-land)
 A Tiny Minimalistic Online RPG Game 🎲  
-**[Play Now!](https://tinyland.herokuapp.com/)**  
+**[Play Now!](https://diguifi.itch.io/tiny-land)**  
 ![tiny land](https://user-images.githubusercontent.com/31022286/106227466-fc0c9000-61c7-11eb-875e-b1b16aa6425e.png)
 
 

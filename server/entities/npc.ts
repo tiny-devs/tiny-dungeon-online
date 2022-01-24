@@ -432,7 +432,7 @@ export class Npc {
     }
 
     if (playerInRange) {
-      if (playerInRange.clientWs.isClosed) {
+      if (playerInRange.clientWs.readyState === WebSocket.CLOSED) {
         this.anger = 0
         this.isChasing = false
         if (this.fightingPlayer) {

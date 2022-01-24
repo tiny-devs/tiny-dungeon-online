@@ -1,6 +1,6 @@
 {
   "name": "tiny-dungeon-online",
-  "version": "0.2.0",
+  "version": "1.0.1",
   "main": "src/index.ts",
   "repository": "https://github.com/tiny-devs/tiny-dungeon-online",
   "license": "MIT",
