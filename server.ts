@@ -1,6 +1,6 @@
-import * as flags from "https://deno.land/std@0.117.0/flags/mod.ts"
-import { serve } from "https://deno.land/std@0.117.0/http/server.ts"
-import { serveFile } from "https://deno.land/std@0.117.0/http/file_server.ts"
+import * as flags from "https://deno.land/std@0.122.0/flags/mod.ts"
+import { serve } from "https://deno.land/std@0.122.0/http/server.ts"
+import { serveFile } from "https://deno.land/std@0.122.0/http/file_server.ts"
 import { ClientHandler } from "./server/clientHandler.ts"
 
 export class Server {
@@ -26,8 +26,9 @@ export class Server {
   }
 
   public init(): void {
+    const portInt = Number(this.port)
     this.setPublicFilesList(this.publicFolder)
-    serve(this.reqHandler.bind(this), { addr: `:${this.port}` })
+    serve(this.reqHandler.bind(this), { port: portInt })
   }
 
   public async handleNonWsRequests(req: Request): Promise<Response> {
