@@ -1,19 +1,19 @@
 import { ItemsIds } from "../../models/Enums"
 import Gear from "./Gear"
-import GearCanvas from "./GearCanvas"
+import IconCanvas from "./IconCanvas"
 
 export default class GearItem {
     public itemId: number
     public item: any
     public gear: Gear
     public tileSize: number = 8
-    public layer: GearCanvas
+    public layer: IconCanvas
 
     constructor(gear: any, itemId: ItemsIds, item: any, itemCanvasId: string) {
         this.gear = gear
         this.itemId = itemId
         this.item = item
-        this.layer = new GearCanvas(itemCanvasId)
+        this.layer = new IconCanvas(itemCanvasId)
     }
 
     draw() {

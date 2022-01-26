@@ -24,7 +24,8 @@ export enum Command {
     UpdatePlayerId,
     Exit,
     EraseSave,
-    LoadBag
+    LoadBag,
+    EntityInfo,
 }
 
 export enum Direction {

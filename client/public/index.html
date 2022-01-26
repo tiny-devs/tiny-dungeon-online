@@ -63,7 +63,7 @@
         padding: 0;
       }
       
-      #game-info, #game-rank {
+      #game-info, #game-rank, #entity-info {
         display: none;
       }
 
@@ -83,6 +83,24 @@
         width: 128px;
         height: auto;
         text-align: center;
+      }
+
+      .bottom-info-area {
+        position: relative;
+        border: 1px solid #e5e5e5;
+        margin-top: 5px;
+        min-width: 256px;
+        max-width: 512px;
+      }
+
+      .bottom-info-area input{
+        position: absolute;
+        top: 0px;
+        right: 0px;
+      }
+
+      .bottom-info-area > * {
+        margin: 5px;
       }
 
       .item-btn {
@@ -246,7 +264,7 @@
     <div id="content">
       <div class="title" id="title-content">
         <h1 id="title">Tiny Land Online</h1>
-        <p id="sub-title">A Tiny Online RPG Game (v1.0.1!)</p>
+        <p id="sub-title">A Tiny Online RPG Game (v1.0.2!)</p>
       </div>
       <div class="login-flex-container">
         <div id="login" class="login-flex-item">
@@ -291,7 +309,15 @@
           </div>
           <input type="button" value="show rank" id="show-rank"></input>
           <input type="button" value="show players" id="show-players"></input>
-          <div id="game-rank">
+          <div id="entity-info" class="bottom-info-area">
+            <input type="button" value="x" id="show-info" style="display: none;"></input>
+            <canvas id="img-info" width="32" height="32" class="gear-slot"></canvas>
+            <p id="name-info" style="overflow-wrap: break-word;">Name:</p>
+            <p id="level-info">Level:</p>
+            <p id="maxhp-info">Total Hp:</p>
+            <p id="items-info" style="overflow-wrap: break-word;">Gear/Drops:</p>
+          </div>
+          <div id="game-rank" class="bottom-info-area">
             <p>Top players:</p>
             <ul>
               <li id="top1"></li>
@@ -299,7 +325,7 @@
               <li id="top3"></li>
             </ul>
           </div>
-          <div id="game-info">
+          <div id="game-info" class="bottom-info-area">
             <p>Players Online:</p>
             <ul id="player-list"></ul>
           </div>

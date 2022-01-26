@@ -4,6 +4,7 @@ import { Rooms } from '../models/Enums'
 
 export class Npc {
     public id: number
+    public npcId: number
     public roomId: Rooms
     public isFighting: boolean
     public x: number
@@ -17,12 +18,13 @@ export class Npc {
     private tileSize: number
     private pveData: any
 
-    constructor(game: Game, layer: any, npcData: Partial<Npc>, npcMatrix: any[]) {
+    constructor(game: Game, layer: any, npcData: Partial<Npc>, npcMatrix: any[], npcId: number) {
         this.game = game
         this.layer = layer
 
         this.id = npcData.id!
         this.roomId = npcData.roomId!
+        this.npcId = npcId
         this.x = npcData.x!
         this.y = npcData.y!
         this.tileSize = 8

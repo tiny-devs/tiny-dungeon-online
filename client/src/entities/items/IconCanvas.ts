@@ -1,4 +1,4 @@
-export default class GearCanvas {
+export default class IconCanvas {
     public c: HTMLCanvasElement
     public ctx: CanvasRenderingContext2D
     public width: number = 32

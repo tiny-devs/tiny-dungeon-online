@@ -23,6 +23,7 @@ import { ParseSave } from './ParseSave'
 import { ParseLoad } from './ParseLoad'
 import { ParsePlayerIdUpdate } from './ParsePlayerIdUpdate'
 import { ParseLoadBag } from './ParseLoadBag'
+import { ParseEntityInfo } from './ParseEntityInfo'
 
 export class Parser {
     private client: GameClient
@@ -101,6 +102,9 @@ export class Parser {
                     break
                 case Command.LoadBag:
                     this.parseLoadBag(data)
+                    break
+                case Command.EntityInfo:
+                    this.parseEntityInformation(data)
                     break
                 case Command.EraseSave:
                     this.client.resetPlayerData()
@@ -273,5 +277,11 @@ export class Parser {
         const updateIdData = new ParsePlayerIdUpdate(data)
 
         this.client.updatePlayerId(updateIdData)
+    }
+
+    private parseEntityInformation(data: string) {
+        const loadData = new ParseEntityInfo(data)
+
+        this.client.showEntityInfo(loadData)
     }
 }

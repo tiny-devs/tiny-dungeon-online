@@ -159,6 +159,44 @@ export default class Room {
     return greatestId
   }
 
+  getEntityInfo(x: number, y: number): string {
+    let entityInfo = ''
+
+    const npcClicked = this.npcs.filter(npc => npc.x === x && npc.y === y)[0]
+    if (npcClicked) {
+      const npcDrops = npcClicked.drops.map(x => x.itemId).join(',')
+      entityInfo = `${npcClicked.name},${npcClicked.level},${npcClicked.attack},${npcClicked.defense},${npcClicked.id},1`
+      
+      if (npcDrops.length) {
+        entityInfo = `${entityInfo},${npcDrops}`
+      }
+    } else {
+      const playerClicked = this.players.filter(player => player.x === x && player.y === y)[0]
+      if (playerClicked) {
+        entityInfo = `${playerClicked.name},${playerClicked.level},${playerClicked.attack},${playerClicked.defense},-,0`
+        let playerItems = ''
+        if (playerClicked.gear.weapon) {
+          playerItems = `${playerItems},${playerClicked.gear.weapon?.itemId}`
+        }
+        if (playerClicked.gear.head) {
+          playerItems = `${playerItems},${playerClicked.gear.head?.itemId}`
+        }
+        if (playerClicked.gear.torso) {
+          playerItems = `${playerItems},${playerClicked.gear.torso?.itemId}`
+        }
+        if (playerClicked.gear.legs) {
+          playerItems = `${playerItems},${playerClicked.gear.legs?.itemId}`
+        }
+
+        if (playerItems.length) {
+          entityInfo = `${entityInfo},${playerItems}`
+        }
+      }
+    }
+
+    return entityInfo
+  }
+
   startDespawnTimer(y: number, x: number, despawnTime: number) {
     setTimeout(() => { 
       this.removeItem(y,x,'')

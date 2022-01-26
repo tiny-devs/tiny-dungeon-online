@@ -2,7 +2,7 @@ import { Npcs } from '../../Enums.ts'
 import NpcBase from './npcBase.ts'
 import Coffee from '../items/consumable/coffee.ts'
 import WoodenDagger from '../items/woodenDagger.ts'
-import WoodenSword from '../items/woodenDagger.ts'
+import WoodenSword from '../items/woodenSword.ts'
 import WoodenHelm from '../items/woodenHelm.ts'
 import BronzeLegs from "../items/bronzeLegs.ts"
 

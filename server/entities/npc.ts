@@ -340,10 +340,11 @@ export class Npc {
 
   private getAttackDamage(): number {
     const luckFactor = Math.random()
+    const opBalancer = this.attack > 30 ? 0.85 : this.attack > 30 ? 0.9 : 1
     if (luckFactor > 0.9) {
-      return this.attack
+      return (this.attack * opBalancer)
     }
-    return Math.floor(luckFactor * (this.attack))
+    return Math.floor(luckFactor * (this.attack * opBalancer))
   }
 
   private getDefenseFromDamage(crit: boolean): number {

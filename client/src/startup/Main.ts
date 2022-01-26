@@ -32,8 +32,14 @@ export class Main {
     public messageElement: HTMLElement
     public showRankBtn: HTMLButtonElement
     public showPlayersBtn: HTMLButtonElement
+    public showEntityInfoBtn: HTMLButtonElement
     public rankElement: HTMLElement
     public playersElement: HTMLElement
+    public entityInfoElement: HTMLElement
+    public nameInfoElement: HTMLElement
+    public levelInfoElement: HTMLElement
+    public maxHpInfoElement: HTMLElement
+    public itemsInfoElement: HTMLElement
     public top1Element: HTMLElement
     public top2Element: HTMLElement
     public top3Element: HTMLElement
@@ -78,9 +84,15 @@ export class Main {
         this.chatBtn = document.getElementById('send-chat')! as HTMLButtonElement
         this.showRankBtn = document.getElementById('show-rank')! as HTMLButtonElement
         this.showPlayersBtn = document.getElementById('show-players')! as HTMLButtonElement
+        this.showEntityInfoBtn = document.getElementById('show-info')! as HTMLButtonElement
         this.exitBtn = document.getElementById('exit-btn')! as HTMLButtonElement
         this.rankElement = document.getElementById('game-rank')!
         this.playersElement = document.getElementById('game-info')!
+        this.entityInfoElement = document.getElementById('entity-info')!
+        this.nameInfoElement = document.getElementById('name-info')!
+        this.levelInfoElement = document.getElementById('level-info')!
+        this.maxHpInfoElement = document.getElementById('maxhp-info')!
+        this.itemsInfoElement = document.getElementById('items-info')!
         this.top1Element = document.getElementById('top1')!
         this.top2Element = document.getElementById('top2')!
         this.top3Element = document.getElementById('top3')!

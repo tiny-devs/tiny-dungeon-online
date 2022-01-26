@@ -377,6 +377,15 @@ export class ClientHandler {
     }
   }
 
+  private async unicastEntityInfo(player: Player, x: number, y: number) {
+    try{
+      const entityInfo = player.currentRoom.getEntityInfo(x, y)
+      this.send(player,`${Command.EntityInfo},${entityInfo}`)
+    } catch (e) {
+      this.handleExceptions(e, player, 'loadPlayerDataFromHash')
+    }
+  }
+
   private unicastRank(player: Player): void {
     try{
       this.send(player,`${Command.Rank},`+
@@ -884,6 +893,9 @@ export class ClientHandler {
               this.unicastRank(player)
             }
             player.savePlayer()
+            break
+          case Command.EntityInfo:
+            await this.unicastEntityInfo(player, Number(eventData[1]), Number(eventData[2]))
             break
           case Command.Exit:
             exit = true

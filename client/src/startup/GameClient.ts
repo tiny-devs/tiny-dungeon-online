@@ -12,6 +12,9 @@ import { ParseRank } from '../parser/ParseRank'
 import { ParseLoad } from '../parser/ParseLoad'
 import { ParsePlayerIdUpdate } from '../parser/ParsePlayerIdUpdate'
 import { ParseLoadBag } from '../parser/ParseLoadBag'
+import { ParseEntityInfo } from '../parser/ParseEntityInfo'
+import IconCanvas from '../entities/items/IconCanvas'
+import TinyIcon from '../models/configs/ClientConfig'
 
 export class GameClient {
     public loggedIn: boolean
@@ -41,8 +44,14 @@ export class GameClient {
     private chatBtn: HTMLButtonElement
     private showRankBtn: HTMLButtonElement
     private showPlayersBtn: HTMLButtonElement
+    private showEntityInfoBtn: HTMLButtonElement
     private rankElement: HTMLElement
     private playersElement: HTMLElement
+    private entityInfoElement: HTMLElement
+    public nameInfoElement: HTMLElement
+    public levelInfoElement: HTMLElement
+    public maxHpInfoElement: HTMLElement
+    public itemsInfoElement: HTMLElement
     private top1Element: HTMLElement
     private top2Element: HTMLElement
     private top3Element: HTMLElement
@@ -58,6 +67,7 @@ export class GameClient {
     private mobileMovementTimeout : number = 0
     private isShowingRank: boolean
     private isShowingPlayerList: boolean
+    private isShowingEntityInfo: boolean
     private ws: WebSocket | null
     private playerMatrix: number[][]
     private parser: Parser
@@ -93,6 +103,11 @@ export class GameClient {
         this.exit = mainElements.exitBtn as HTMLInputElement
         this.rankElement = mainElements.rankElement
         this.playersElement = mainElements.playersElement
+        this.entityInfoElement = mainElements.entityInfoElement
+        this.nameInfoElement = mainElements.nameInfoElement
+        this.levelInfoElement = mainElements.levelInfoElement
+        this.maxHpInfoElement = mainElements.maxHpInfoElement
+        this.itemsInfoElement = mainElements.itemsInfoElement
         this.top1Element = mainElements.top1Element
         this.top2Element = mainElements.top2Element
         this.top3Element = mainElements.top3Element
@@ -100,6 +115,8 @@ export class GameClient {
         this.isShowingMessage = false
         this.messageTimeout = 0
         this.adminPassword = mainElements.adminPassword
+
+        this.gameScreen.onclick = () => this.sendEntityInfo()
         
         this.up = mainElements.mobileUp
         this.up.onclick = () => {
@@ -155,6 +172,11 @@ export class GameClient {
         this.showPlayersBtn = mainElements.showPlayersBtn
         this.showPlayersBtn.onclick = () => {
             this.togglePlayers()
+        }
+        this.isShowingEntityInfo = false
+        this.showEntityInfoBtn = mainElements.showEntityInfoBtn
+        this.showEntityInfoBtn.onclick = () => {
+            this.toggleEntityInfo()
         }
 
         this.exit = mainElements.exitBtn as HTMLButtonElement
@@ -431,7 +453,7 @@ export class GameClient {
             }
             this.messageElement.innerHTML = message
 
-            this.messageTimeout = setTimeout(() => {
+            this.messageTimeout = window.setTimeout(() => {
                 this.messageElement.innerHTML = ''
             }, 5000)
         }
@@ -508,6 +530,18 @@ export class GameClient {
         }
     }
 
+    toggleEntityInfo() {
+        if(!this.isShowingEntityInfo) {
+            this.isShowingEntityInfo = true
+            this.entityInfoElement.style.display = 'block'
+            this.showEntityInfoBtn.style.display = 'block'
+        } else {
+            this.isShowingEntityInfo = false
+            this.entityInfoElement.style.display = 'none'
+            this.showEntityInfoBtn.style.display = 'none'
+        }
+    }
+
     updatePlayerId(data: ParsePlayerIdUpdate) {
         this.game.spritesLayer.updatePlayerId(data.oldId, data.newId)
     }
@@ -565,6 +599,46 @@ export class GameClient {
         }
     }
 
+    sendEntityInfo() {
+        if (this.game.spritesLayer.clickedEntityId) {
+            this.ws!.send(`${Command.EntityInfo},${this.game.spritesLayer.clickedX},${this.game.spritesLayer.clickedY}`)
+            this.game.spritesLayer.clickedEntityId = ''
+        }
+    }
+
+    hideEntityInfo() {
+        this.isShowingEntityInfo = true
+        this.toggleEntityInfo()
+    }
+
+    showEntityInfo(data: ParseEntityInfo) {
+        this.fillEntityInfo(data)
+        this.isShowingEntityInfo = false
+        this.toggleEntityInfo()
+    }
+
+    fillEntityInfo(data: ParseEntityInfo) {
+        const player = this.game.spritesLayer.getPlayerById(this.playerId)!
+        if (data.isNpc) {
+            const npcSelected = this.game.spritesLayer.getNpcByIdAndRoom(data.npcId, player.currentRoomId)
+            if (npcSelected) {
+                this.maxHpInfoElement.innerHTML = `HP: ${npcSelected.maxHp}`
+                this.itemsInfoElement.innerHTML = `Drops: ${data.items.join(', ')}`
+                new TinyIcon(npcSelected.tileMatrix, 'img-info', '')
+            }
+        } else {
+            const playerSelected = this.game.spritesLayer.getPlayerByName(data.name)
+            if (playerSelected) {
+                this.maxHpInfoElement.innerHTML = `HP: ${playerSelected.maxHp}`
+                this.itemsInfoElement.innerHTML = `Gear: ${data.items.join(', ')}`
+                new TinyIcon(playerSelected.matrix, 'img-info', playerSelected.color)
+            }
+        }
+        
+        this.nameInfoElement.innerHTML = `Name: ${data.name}`
+        this.levelInfoElement.innerHTML = `Level: ${data.level} (atk ${data.attack}/def ${data.defense})`
+    }
+
     sendExitRequest() {
         this.ws!.send(`${Command.Exit}`)
     }
@@ -578,7 +652,7 @@ export class GameClient {
     mobileMovement() {
         clearTimeout(this.mobileMovementTimeout)
 
-        this.mobileMovementTimeout = setTimeout(() => {
+        this.mobileMovementTimeout = window.setTimeout(() => {
             if (this.mobileCanMove) {
                 this.checkKey({ keyCode: this.mobileDirection })
             }
@@ -592,7 +666,7 @@ export class GameClient {
 
     restartAfkTimer(): void {
         clearTimeout(this.afkTimeout)
-        this.afkTimeout = setTimeout(async () => {
+        this.afkTimeout = window.setTimeout(async () => {
             this.displayMessage('after 10min afk you will be kicked')
             this.restartAfkTimer()
         }, this.afkInterval);

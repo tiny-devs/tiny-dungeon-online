@@ -98,7 +98,7 @@ export class Player {
         this.layer.ctx.fillStyle = Color.LightYellow
         this.layer.ctx.fillText(`${this.chatMessage}`, x, y)
 
-        this.chatMessageTimeout = setTimeout(() => {
+        this.chatMessageTimeout = window.setTimeout(() => {
             this.chatMessage = ''
         }, 5000)
     }

@@ -32,6 +32,7 @@ export enum Command {
     Exit,
     EraseSave,
     LoadBag,
+    EntityInfo,
 }
 
 export enum Rooms {
