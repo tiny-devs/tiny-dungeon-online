@@ -1,5 +1,3 @@
-import { WebSocket, isWebSocketCloseEvent } from 'https://deno.land/std@0.100.0/ws/mod.ts'
-import { v4 } from 'https://deno.land/std@0.100.0/uuid/mod.ts'
 import { Player } from './entities/player.ts'
 import { Command, Direction, Items, GearType, Rooms } from './Enums.ts'
 import Room from './map/rooms/room.ts'
@@ -379,6 +377,15 @@ export class ClientHandler {
     }
   }
 
+  private async unicastEntityInfo(player: Player, x: number, y: number) {
+    try{
+      const entityInfo = player.currentRoom.getEntityInfo(x, y)
+      this.send(player,`${Command.EntityInfo},${entityInfo}`)
+    } catch (e) {
+      this.handleExceptions(e, player, 'loadPlayerDataFromHash')
+    }
+  }
+
   private unicastRank(player: Player): void {
     try{
       this.send(player,`${Command.Rank},`+
@@ -582,7 +589,7 @@ export class ClientHandler {
       for (const player of room.players) {
         try {
           currentPlayer = player
-          if (player.clientWs.isClosed) {
+          if (player.clientWs.readyState === WebSocket.CLOSED) {
             this.logPlayerOut(player)
             success = true
           }
@@ -706,7 +713,7 @@ export class ClientHandler {
       player.x = -1
       player.y = -1
       this.playerNames = this.playerNames.filter(e => e !== player.name);
-      if (!player.clientWs.isClosed) {
+      if (player.clientWs.readyState !== WebSocket.CLOSED) {
         player.clientWs?.close()
       }
 
@@ -750,7 +757,7 @@ export class ClientHandler {
 
   private send(player: Player, message: string):boolean {
     try {
-      if (!player.clientWs.isClosed) {
+      if (player.clientWs.readyState !== WebSocket.CLOSED) {
         player.clientWs.send(message)
         return true
       } else {
@@ -766,143 +773,165 @@ export class ClientHandler {
 
   public async handleClient(ws: WebSocket): Promise<void> {
     try {
-      let exit = false
-      let duplicatedName = false
-      const initialRoom = this.map.rooms[0]
-      const playerId = v4.generate()
-      const player = new Player(playerId, '', '', 0, 0, initialRoom, this.boardRows, this.boardColumns, ws, this)
-
-      initialRoom.addPlayer(player)
-    
-      for await (const event of ws) {
-        const eventDataString = event as string
-
-        if (isWebSocketCloseEvent(event)) {
-          this.logPlayerOut(player)
-          this.broadcastPlayerConnection(playerId)
-          break
-        }
-
-        try {
-          let eventData = this.parseEventDataString(eventDataString);
-
-          switch (+eventData[0]) {
-            case Command.ItemDrop:
-              const droped = player.bag.dropItem(+eventData[1])
-              if (droped) {
-                this.unicastPlayerDroped(player, +eventData[1])
-              }
-              break
-            case Command.ItemUse:
-              const result = player.bag.useItem(+eventData[1])
-              if (result.used) {
-                this.unicastItemUse(player,+eventData[1])
-                this.unicastPlayerStats(player)
-              } else if (result.wore) {
-                this.unicastPlayerStats(player)
-              }
-              break
-            case Command.ItemRemove:
-              const removed = player.gear.remove(+eventData[1])
-              if (removed) {
-                this.unicastItemRemove(player, +eventData[1])
-                this.unicastPlayerStats(player)
-              }
-              break
-            case Command.Chat:
-              if (eventData[1][0] == '/' && this.admins.some(a => a.name == player.name)) {
-                this.executeAdminCommand(player, eventData[1])
-                eventData[1] = ' '
-              }
-
-              if (eventData[1].length <= 50 && player.canChat) {
-                this.roomcastChat(player.currentRoom, player, eventData[1])
-                player.startChatTimeout()
-              }
-              break
-            case Command.Move:
-              this.broadcastPlayerMove(player, +eventData[1])
-              break
-            case Command.Login:
-              const adminAccess = this.admins.find(a => a.name == eventData[1])
-              if (adminAccess) {
-                if (eventData[4] != '0') {
-                  const code = await this.playerDataManager.decryptUserData(eventData[4])
-                  if (code != adminAccess.code) {
-                    this.unicastError(player, "Wrong password")
-                    initialRoom.removePlayer(player)
-                    break
-                  }
-                } else {
-                  this.unicastError(player, "Thats an admins name")
-                  initialRoom.removePlayer(player)
-                  break
-                }
-              }
-
-              duplicatedName = this.checkNameDuplicate(eventData[1], player)
-              if (duplicatedName) {
-                this.unicastError(player, "Name already exists")
-                initialRoom.removePlayer(player)
-                break
-              }
-
-              this.playerNames.push(eventData[1])
-              player.name = eventData[1]
-              player.color = eventData[2]
-              player.matrix = JSON.parse(eventData[5])
-
-              this.broadcastPlayerConnection(playerId)
-              this.unicastNpcsInRoom(player)
-              this.unicastItemsInRoom(player)
-
-              const playerLoadData = eventData[3]
-              const hasPlayerData = playerLoadData != '0'
-              if (hasPlayerData) {
-                const oldId = player.id
-                await this.unicastPlayerDataLoaded(player,playerLoadData)
-                this.broadcastPlayerIdUpdate(player.id, oldId)
-                const isPlayerAlreadyLogged = this.checkPlayerAlreadyLogged(player, player.id)
-                if (isPlayerAlreadyLogged) {
-                  this.unicastError(player, "Player already logged")
-                  exit = true
-                }
-              } else {
-                this.unicastPlayerStats(player)
-              }
-              const updatedRank = this.updateRank()
-              if (!updatedRank) {
-                this.unicastRank(player)
-              }
-              player.savePlayer()
-              break
-            case Command.Exit:
-              exit = true
-              await this.unicastPlayerExit(player)
-              break
-            case Command.Ping:
-              this.pong(player)
-              break
-          }
-
-          if (duplicatedName) {
-            this.logPlayerOut(player)
-            break
-          }
-
-          if (exit) {
-            this.logPlayerOut(player)
-            this.broadcastPlayerConnection(playerId)
-            break
-          }
-
-        } catch(e) {
-          this.handleExceptions(e,player, 'main loop')
-        }
-      }
+      let player: Player | null = null;
+      ws.onopen = () => player = this.handleOpenClient(ws);
+      ws.onmessage = (m) => this.handleClientMessage(player, m);
+      ws.onclose = () => this.handleClientClose(player);
+      ws.onerror = (e) => this.handleClientError(e, player);
     } catch (e) {
       console.log('source: main loop')
       console.log(e)
     }
+  }
+
+  private handleOpenClient(ws: WebSocket) {
+    const initialRoom = this.map.rooms[0]
+    const playerId = globalThis.crypto.randomUUID()
+    const player = new Player(playerId, '', '', 0, 0, initialRoom, this.boardRows, this.boardColumns, ws, this)
+
+    initialRoom.addPlayer(player)
+    return player
+  }
+
+  public async handleClientMessage(player: Player | null, m: MessageEvent<any>)  {
+    if (player) {
+      let duplicatedName = false
+      let exit = false
+      const initialRoom = this.map.rooms[0]
+  
+      const eventDataString = m.data as string
+  
+      try {
+        let eventData = this.parseEventDataString(eventDataString);
+  
+        switch (+eventData[0]) {
+          case Command.ItemDrop:
+            const droped = player.bag.dropItem(+eventData[1])
+            if (droped) {
+              this.unicastPlayerDroped(player, +eventData[1])
+            }
+            break
+          case Command.ItemUse:
+            const result = player.bag.useItem(+eventData[1])
+            if (result.used) {
+              this.unicastItemUse(player,+eventData[1])
+              this.unicastPlayerStats(player)
+            } else if (result.wore) {
+              this.unicastPlayerStats(player)
+            }
+            break
+          case Command.ItemRemove:
+            const removed = player.gear.remove(+eventData[1])
+            if (removed) {
+              this.unicastItemRemove(player, +eventData[1])
+              this.unicastPlayerStats(player)
+            }
+            break
+          case Command.Chat:
+            if (eventData[1][0] == '/' && this.admins.some(a => a.name == player.name)) {
+              this.executeAdminCommand(player, eventData[1])
+              eventData[1] = ' '
+            }
+  
+            if (eventData[1].length <= 50 && player.canChat) {
+              this.roomcastChat(player.currentRoom, player, eventData[1])
+              player.startChatTimeout()
+            }
+            break
+          case Command.Move:
+            this.broadcastPlayerMove(player, +eventData[1])
+            break
+          case Command.Login:
+            const adminAccess = this.admins.find(a => a.name == eventData[1])
+            if (adminAccess) {
+              if (eventData[4] != '0') {
+                const code = await this.playerDataManager.decryptUserData(eventData[4])
+                if (code != adminAccess.code) {
+                  this.unicastError(player, "Wrong password")
+                  initialRoom.removePlayer(player)
+                  break
+                }
+              } else {
+                this.unicastError(player, "Thats an admins name")
+                initialRoom.removePlayer(player)
+                break
+              }
+            }
+  
+            duplicatedName = this.checkNameDuplicate(eventData[1], player)
+            if (duplicatedName) {
+              this.unicastError(player, "Name already exists")
+              initialRoom.removePlayer(player)
+              break
+            }
+  
+            this.playerNames.push(eventData[1])
+            player.name = eventData[1]
+            player.color = eventData[2]
+            player.matrix = JSON.parse(eventData[5])
+  
+            this.broadcastPlayerConnection(player.id)
+            this.unicastNpcsInRoom(player)
+            this.unicastItemsInRoom(player)
+  
+            const playerLoadData = eventData[3]
+            const hasPlayerData = playerLoadData != '0'
+            if (hasPlayerData) {
+              const oldId = player.id
+              await this.unicastPlayerDataLoaded(player,playerLoadData)
+              this.broadcastPlayerIdUpdate(player.id, oldId)
+              const isPlayerAlreadyLogged = this.checkPlayerAlreadyLogged(player, player.id)
+              if (isPlayerAlreadyLogged) {
+                this.unicastError(player, "Player already logged")
+                exit = true
+              }
+            } else {
+              this.unicastPlayerStats(player)
+            }
+            const updatedRank = this.updateRank()
+            if (!updatedRank) {
+              this.unicastRank(player)
+            }
+            player.savePlayer()
+            break
+          case Command.EntityInfo:
+            await this.unicastEntityInfo(player, Number(eventData[1]), Number(eventData[2]))
+            break
+          case Command.Exit:
+            exit = true
+            await this.unicastPlayerExit(player)
+            break
+          case Command.Ping:
+            this.pong(player)
+            break
+        }
+  
+        if (duplicatedName) {
+          this.logPlayerOut(player)
+          return
+        }
+  
+        if (exit) {
+          this.logPlayerOut(player)
+          this.broadcastPlayerConnection(player.id)
+          return
+        }
+  
+      } catch(e) {
+        this.handleExceptions(e,player, 'main loop')
+      }
+    }
+  }
+
+  private async handleClientClose(player: Player | null) {
+    if (player) {
+      this.logPlayerOut(player)
+      this.broadcastPlayerConnection(player.id)
+    }
+  }
+
+  private handleClientError(e: Event | ErrorEvent, player: Player | null) {
+    const errorMessage = e instanceof ErrorEvent ? e.message : e.type
+    this.handleExceptions(new Error(errorMessage), player, 'clientError')
   }
 }

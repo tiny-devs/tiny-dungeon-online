@@ -3,7 +3,6 @@ import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'
 import Gear from './items/gear.ts'
-import { WebSocket } from 'https://deno.land/std@0.100.0/ws/mod.ts'
 import Quest from './npcs/quests/quest.ts'
 import QuestBase from "./npcs/quests/questBase.ts"
 import ItemBase from "./items/itemBase.ts"
@@ -310,7 +309,7 @@ export class Player {
 
     public savePlayer(): void {
         clearTimeout(this.playerSaveTimeout)
-        if (!this.clientWs.isClosed) {
+        if (this.clientWs.readyState !== WebSocket.CLOSED) {
             this.playerSaveTimeout = setTimeout(async () => {
                 this.clientHandler.unicastPlayerDataHashSave(this).then(() => {
                     this.savePlayer()
@@ -534,7 +533,7 @@ export class Player {
     }
 
     private afkTimer(): void {
-        if (!this.clientWs.isClosed) {
+        if (this.clientWs.readyState !== WebSocket.CLOSED) {
             this.afkTimeout = setTimeout(async () => {
                 if (this.currentAfkSecondsLeft <= 0) {
                     this.clientHandler.kickPlayer(this.name, 'kicked for being afk')

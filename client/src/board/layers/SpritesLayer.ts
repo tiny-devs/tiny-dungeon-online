@@ -11,6 +11,9 @@ export class SpritesLayer {
     public ctx: CanvasRenderingContext2D
     public players: Player[]
     public playerHasBeenSaved: boolean = false
+    public clickedEntityId: string | undefined
+    public clickedX: number | undefined
+    public clickedY: number | undefined
 
     private game: Game
     private playerListElement: HTMLElement
@@ -23,6 +26,8 @@ export class SpritesLayer {
 
         this.playerListElement = document.getElementById('player-list')!
         const canvas = document.getElementById('sprites-layer') as HTMLCanvasElement
+        canvas.onclick = (e: MouseEvent) => this.setClickedEntity(e)
+        canvas.ontouchstart = (e: TouchEvent) => this.setClickedEntity(e)
         this.ctx = canvas.getContext('2d')!
         this.ctx.shadowOffsetX = 0
         this.ctx.shadowOffsetY = 0
@@ -60,7 +65,7 @@ export class SpritesLayer {
     addNpcs(npcs: any[]) {
         this.npcs.splice(0, this.npcs.length)
         for (const npc of npcs) {
-            this.npcs.push(new Npc(this.game, this, npc, this.getMatrixNpcById(npc.npcId)))
+            this.npcs.push(new Npc(this.game, this, npc, this.getMatrixNpcById(npc.npcId), npc.npcId))
         }
     }
 
@@ -133,7 +138,7 @@ export class SpritesLayer {
         this.ctx.textAlign = 'left'
         this.ctx.fillStyle = Color.LightGreen3
         this.ctx.fillText("Player saved", 5, 15);
-        this.playerSavedTimeout = setTimeout(() => {
+        this.playerSavedTimeout = window.setTimeout(() => {
             this.playerHasBeenSaved = false
         }, 5000)
     }
@@ -156,6 +161,10 @@ export class SpritesLayer {
         return this.players.find((x) => x.id === id)
     }
 
+    getPlayerByName(name: string) {
+        return this.players.find((x) => x.name === name)
+    }
+
     getNpcByIdAndRoom(id: number, roomId: Rooms) {
         return this.npcs.find((x) => x.id === +id && x.roomId === +roomId)
     }
@@ -173,5 +182,44 @@ export class SpritesLayer {
         let keyOfItemId = ItemsIds[itemId]
         let items = Items as any
         return items[keyOfItemId]
+    }
+
+    setClickedEntity(e: MouseEvent | TouchEvent) {
+        e = e || window.event
+        const pos = this.getOffset(e)
+        const x = Math.floor(pos.x / this.game.gridConfig.cellWidth)
+        const y = Math.floor(pos.y / this.game.gridConfig.cellHeight)
+        const repeatedClick = x === this.clickedX && y === this.clickedY
+        if (!repeatedClick) {
+            this.clickedX = x
+            this.clickedY = y
+            this.clickedEntityId = this.getEntityIdAtCoords(x, y)
+        }
+    }
+
+    private getEntityIdAtCoords(x: number, y: number): string | undefined {
+        const playerAtCoords = this.players.filter(player => player.x === x && player.y === y)
+        const npcAtCoords = this.npcs.filter(npc => npc.x === x && npc.y === y)
+        return playerAtCoords[0]? playerAtCoords[0].id : npcAtCoords[0]?.npcId.toString()
+    }
+
+    private getOffset(e: MouseEvent | TouchEvent) {
+        let clientX = 0
+        let clientY = 0
+        if (window.TouchEvent && e instanceof TouchEvent) {
+            if (e.touches.length > 0) {
+                clientX = e.touches[0].clientX
+                clientY = e.touches[0].clientY
+            }
+        } else {
+            clientX = (e as MouseEvent).clientX
+            clientY = (e as MouseEvent).clientY
+        }
+        const target = <HTMLElement>e.target || e.srcElement,
+            rect = target.getBoundingClientRect(),
+            offsetX = clientX - rect.left,
+            offsetY = clientY - rect.top
+
+        return { x: offsetX | 0, y: offsetY | 0 }
     }
 }
