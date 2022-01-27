@@ -13,6 +13,7 @@ export class ClientHandler {
   public boardColumns: number = 16
   public boardRows: number = 16
   public playerNames: string[] = []
+  public maxPlayers: number = 50
   public map: Map
   private topPlayers: {id:string,name:string,level:number}[]
   private db: ConnectionManager
@@ -380,7 +381,9 @@ export class ClientHandler {
   private async unicastEntityInfo(player: Player, x: number, y: number) {
     try{
       const entityInfo = player.currentRoom.getEntityInfo(x, y)
-      this.send(player,`${Command.EntityInfo},${entityInfo}`)
+      if (entityInfo.length) {
+        this.send(player,`${Command.EntityInfo},${entityInfo}`)
+      }
     } catch (e) {
       this.handleExceptions(e, player, 'loadPlayerDataFromHash')
     }
@@ -860,7 +863,12 @@ export class ClientHandler {
   
             duplicatedName = this.checkNameDuplicate(eventData[1], player)
             if (duplicatedName) {
-              this.unicastError(player, "Name already exists")
+              this.unicastError(player, "Name already exists - refresh the page and try again")
+              initialRoom.removePlayer(player)
+              break
+            }
+            if (this.playerNames.length >= this.maxPlayers) {
+              this.unicastError(player, `Too many players online (max: ${this.maxPlayers}) - consider donating so we can upgrade the server :'(`)
               initialRoom.removePlayer(player)
               break
             }
@@ -882,7 +890,7 @@ export class ClientHandler {
               this.broadcastPlayerIdUpdate(player.id, oldId)
               const isPlayerAlreadyLogged = this.checkPlayerAlreadyLogged(player, player.id)
               if (isPlayerAlreadyLogged) {
-                this.unicastError(player, "Player already logged")
+                this.unicastError(player, "Player already logged - check other tabs")
                 exit = true
               }
             } else {

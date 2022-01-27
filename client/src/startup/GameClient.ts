@@ -62,9 +62,10 @@ export class GameClient {
     private down: HTMLElement
     private left: HTMLElement
     private right: HTMLElement
+    private isMobile: boolean
     private mobileDirection: number = 0
     private mobileCanMove: boolean = false
-    private mobileMovementTimeout : number = 0
+    private movementTimeout : number = 0
     private isShowingRank: boolean
     private isShowingPlayerList: boolean
     private isShowingEntityInfo: boolean
@@ -73,6 +74,7 @@ export class GameClient {
     private parser: Parser
     private currentRoom: any
     private canMove: boolean
+    private keys: any = {}
     private chatTimeout: number = 5
     private canChat: boolean = true
     private isTyping: boolean = false
@@ -84,7 +86,8 @@ export class GameClient {
     private afkTabSecCountdown: number = 59
 
     constructor(game: Game, clientConfigs: PlayerConfig, mainElements: Main) {
-        document.onkeydown = this.checkKey.bind(this)
+        document.onkeydown = this.setKeyPressed.bind(this)
+        document.onkeyup = (e) => this.keys[`${e.keyCode}`] = false
         this.loginScreen = mainElements.loginScreen
         this.gameScreen = mainElements.gameScreen
         this.bagElement = mainElements.bagElement
@@ -207,11 +210,8 @@ export class GameClient {
         this.chatMessageElement.onfocus = () => {
             this.isTyping = true
         }
-
-        if (mainElements.isMobile()) {
-            this.mobileMovement()
-        }
-
+        
+        this.checkMovement()
         this.showStatusOnTab()
 
         this.game = game
@@ -226,6 +226,7 @@ export class GameClient {
         this.parser = new Parser(this)
         this.currentRoom = this.game.map.rooms[0]
         this.canMove = true
+        this.isMobile = mainElements.isMobile()
 
         this.setupWebSocket()
     }
@@ -313,14 +314,49 @@ export class GameClient {
         this.game.spritesLayer.draw(this.currentRoomId)
     }
 
-    checkKey(e: Partial<KeyboardEvent>) {
+    checkMovement() {
+        clearTimeout(this.movementTimeout)
+
+        this.movementTimeout = window.setTimeout(() => {
+            if (this.isMobile && this.mobileCanMove) {
+                this.checkKey({ keyCode: this.mobileDirection })
+            }
+
+            let canMoveDesktop = false
+            let desktopDirection = 0
+            for (let [key, value] of Object.entries(this.keys)) {
+                if (value === true) {
+                    canMoveDesktop = true
+                    desktopDirection = Number(key)
+                }
+            }
+            if (!this.isMobile && canMoveDesktop) {
+                this.checkKey({ keyCode: desktopDirection })
+            }
+
+            this.checkMovement()
+        }, 60)
+    }
+
+    setKeyPressed(e: Partial<KeyboardEvent>) {
         const arrowKeysCodes = [37,38,39,40]
+        const wasdKeysCodes = [87,83,65,68]
+        const isArrowPressed = arrowKeysCodes.some(code => code == e.keyCode)
+        const isWasdPressed = wasdKeysCodes.some(code => code == e.keyCode)
         if (e.preventDefault) {
-            if (arrowKeysCodes.some(code => code == e.keyCode)) {
+            if (isArrowPressed) {
                 e.preventDefault()
             }
         }
+        
+        if (e.keyCode && (isArrowPressed || isWasdPressed)) {
+            if (!this.keys[`${e.keyCode}`]) {
+                this.keys[`${e.keyCode}`] = true;
+            }
+        }
+    }
 
+    checkKey(e: Partial<KeyboardEvent>) {
         this.afkTabMinCountdown = 9
         this.afkTabSecCountdown = 59
         this.restartAfkTimer()
@@ -345,7 +381,7 @@ export class GameClient {
                 const player = this.game.spritesLayer.getPlayerById(this.playerId)!
                 const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape)
     
-                if (isValidMove && !this.isTyping) {
+                if (isValidMove && !this.isTyping && direction !== 0) {
                     this.ws!.send(`${Command.Move},${direction}`)
                 }
             }
@@ -356,7 +392,7 @@ export class GameClient {
         this.canMove = false
         setTimeout(() => {
             this.canMove = true
-        }, 100)
+        }, 120)
     }
 
     drawPve(pveData: any) {
@@ -612,31 +648,49 @@ export class GameClient {
     }
 
     showEntityInfo(data: ParseEntityInfo) {
-        this.fillEntityInfo(data)
-        this.isShowingEntityInfo = false
-        this.toggleEntityInfo()
+        const success = this.fillEntityInfo(data)
+        if (success) {
+            this.isShowingEntityInfo = false
+            this.toggleEntityInfo()
+        }
     }
 
-    fillEntityInfo(data: ParseEntityInfo) {
+    fillEntityInfo(data: ParseEntityInfo): boolean {
+        let success = true
         const player = this.game.spritesLayer.getPlayerById(this.playerId)!
         if (data.isNpc) {
             const npcSelected = this.game.spritesLayer.getNpcByIdAndRoom(data.npcId, player.currentRoomId)
             if (npcSelected) {
-                this.maxHpInfoElement.innerHTML = `HP: ${npcSelected.maxHp}`
-                this.itemsInfoElement.innerHTML = `Drops: ${data.items.join(', ')}`
+                if (data.level !== 0) {
+                    this.maxHpInfoElement.innerHTML = `Total HP: ${npcSelected.maxHp}`
+                    this.itemsInfoElement.innerHTML = `Drops: ${data.items.join(', ')}`
+                    this.nameInfoElement.innerHTML = `Name: ${data.name}`
+                    this.levelInfoElement.innerHTML = `Level: ${data.level} (atk ${data.attack}/def ${data.defense})`
+                } else {
+                    this.maxHpInfoElement.innerHTML = ``
+                    this.itemsInfoElement.innerHTML = ``
+                    this.nameInfoElement.innerHTML = `Name: ${data.name}`
+                    this.levelInfoElement.innerHTML = ``
+                }
+                
                 new TinyIcon(npcSelected.tileMatrix, 'img-info', '')
+            } else {
+                success = false
             }
         } else {
             const playerSelected = this.game.spritesLayer.getPlayerByName(data.name)
             if (playerSelected) {
-                this.maxHpInfoElement.innerHTML = `HP: ${playerSelected.maxHp}`
+                this.maxHpInfoElement.innerHTML = `Total HP: ${playerSelected.maxHp}`
                 this.itemsInfoElement.innerHTML = `Gear: ${data.items.join(', ')}`
+                this.nameInfoElement.innerHTML = `Name: ${data.name}`
+                this.levelInfoElement.innerHTML = `Level: ${data.level} (atk ${data.attack}/def ${data.defense})`
                 new TinyIcon(playerSelected.matrix, 'img-info', playerSelected.color)
+            } else {
+                success = false
             }
         }
-        
-        this.nameInfoElement.innerHTML = `Name: ${data.name}`
-        this.levelInfoElement.innerHTML = `Level: ${data.level} (atk ${data.attack}/def ${data.defense})`
+
+        return success
     }
 
     sendExitRequest() {
@@ -647,17 +701,6 @@ export class GameClient {
         this.savePlayerData(data)
         alert('Exit Successful!')
         window.location.reload()
-    }
-
-    mobileMovement() {
-        clearTimeout(this.mobileMovementTimeout)
-
-        this.mobileMovementTimeout = window.setTimeout(() => {
-            if (this.mobileCanMove) {
-                this.checkKey({ keyCode: this.mobileDirection })
-            }
-            this.mobileMovement()
-        }, 110)
     }
 
     getRandomPlayerColor() {

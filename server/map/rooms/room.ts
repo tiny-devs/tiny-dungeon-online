@@ -173,7 +173,7 @@ export default class Room {
     } else {
       const playerClicked = this.players.filter(player => player.x === x && player.y === y)[0]
       if (playerClicked) {
-        entityInfo = `${playerClicked.name},${playerClicked.level},${playerClicked.attack},${playerClicked.defense},-,0`
+        entityInfo = `${playerClicked.name},${playerClicked.level},${playerClicked.totalAttack()},${playerClicked.totalDefense()},-,0`
         let playerItems = ''
         if (playerClicked.gear.weapon) {
           playerItems = `${playerItems},${playerClicked.gear.weapon?.itemId}`
