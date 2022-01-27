@@ -335,7 +335,7 @@ export class GameClient {
             }
 
             this.checkMovement()
-        }, 50)
+        }, 60)
     }
 
     setKeyPressed(e: Partial<KeyboardEvent>) {
@@ -392,7 +392,7 @@ export class GameClient {
         this.canMove = false
         setTimeout(() => {
             this.canMove = true
-        }, 100)
+        }, 120)
     }
 
     drawPve(pveData: any) {
