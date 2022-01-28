@@ -144,6 +144,22 @@ export default class Room {
     return itensReturn
   }
 
+  getAllPlayersPositionsInRoomExceptSelf(playerId: string) {
+    let playersReturn = []
+
+    for (const player of this.players) {
+      if (player.id !== playerId) {
+        playersReturn.push({
+          id: player.id,
+          x: player.x,
+          y: player.y
+        })
+      }
+    }
+
+    return playersReturn
+  }
+
   resetItemsCount(): number {
     const currentItens = this.getAllItemsInRoom()
     let greatestId = 0
@@ -201,6 +217,11 @@ export default class Room {
     setTimeout(() => { 
       this.removeItem(y,x,'')
     }, despawnTime);
+  }
+
+  isNeighbourToRoom(roomId: number): boolean {
+    const exitsArray = [this.exits.n, this.exits.s, this.exits.e, this.exits.w]
+    return exitsArray.some(x => x === roomId)
   }
 
   private buildItemsLayer(): any {

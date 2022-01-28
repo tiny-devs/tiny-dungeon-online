@@ -6,6 +6,7 @@ import { Npcs } from '../../entities/Npcs'
 import { Item } from '../../entities/items/Item'
 import { Items } from '../../entities/items/Items'
 import { Color } from '../map/tiles/Color'
+import { ParsePlayersInRoom } from '../../parser/ParsePlayersInRoom'
 
 export class SpritesLayer {
     public ctx: CanvasRenderingContext2D
@@ -73,6 +74,17 @@ export class SpritesLayer {
         this.items.splice(0, this.items.length)
         for (const item of items) {
             this.items.push(new Item(this.game, this, item, this.getMatrixItemById(item.itemId)))
+        }
+    }
+
+    updatePlayersPositions(data: ParsePlayersInRoom) {
+        for (const player of this.players) {
+            const dataInRoom = data.playersInRoom.find(x => x.id === player.id)
+            if (dataInRoom) {
+                player.move(dataInRoom.x, dataInRoom.y, data.roomId)
+            } else {
+                player.move(-1, -1, -1)
+            }
         }
     }
 

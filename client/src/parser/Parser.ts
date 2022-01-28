@@ -24,6 +24,8 @@ import { ParseLoad } from './ParseLoad'
 import { ParsePlayerIdUpdate } from './ParsePlayerIdUpdate'
 import { ParseLoadBag } from './ParseLoadBag'
 import { ParseEntityInfo } from './ParseEntityInfo'
+import { ParseHidePlayer } from './ParseHidePlayer'
+import { ParsePlayersInRoom } from './ParsePlayersInRoom'
 
 export class Parser {
     private client: GameClient
@@ -42,6 +44,12 @@ export class Parser {
                     break
                 case Command.Move:
                     this.parseMove(data)
+                    break
+                case Command.HidePlayer:
+                    this.parseHide(data)
+                    break
+                case Command.PlayersInRoom:
+                    this.parsePlayersInRoom(data)
                     break
                 case Command.NpcsInRoom:
                     this.parseNpcsInRoom(data)
@@ -139,6 +147,19 @@ export class Parser {
         const moveData = new ParseMove(data)
 
         this.client.updatePlayer(moveData)
+    }
+
+    private parseHide(data: string) {
+        const hideData = new ParseHidePlayer(data)
+
+        this.client.hidePlayer(hideData)
+    }
+
+    private parsePlayersInRoom(data: string) {
+        const playersInRoomData = new ParsePlayersInRoom(data)
+
+        this.client.game.spritesLayer.updatePlayersPositions(playersInRoomData)
+        this.client.drawSprites()
     }
 
     private parseNpcMove(data: string) {
