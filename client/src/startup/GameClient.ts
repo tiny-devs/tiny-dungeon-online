@@ -15,6 +15,8 @@ import { ParseLoadBag } from '../parser/ParseLoadBag'
 import { ParseEntityInfo } from '../parser/ParseEntityInfo'
 import IconCanvas from '../entities/items/IconCanvas'
 import TinyIcon from '../models/configs/ClientConfig'
+import { ParseMove } from '../parser/ParseMove'
+import { ParseHidePlayer } from '../parser/ParseHidePlayer'
 
 export class GameClient {
     public loggedIn: boolean
@@ -281,19 +283,26 @@ export class GameClient {
         this.parser.parse(data)
     }
 
-    updatePlayer(moveData: any) {
+    updatePlayer(moveData: ParseMove) {
         for (const player of this.game.spritesLayer.players) {
-            if (player.id == moveData.playerId) {
-                if (this.playerId == moveData.playerId) {
-                    if (moveData.currentRoomId != this.currentRoomId) {
-                        this.drawRoom(moveData.currentRoomId)
-                        this.currentRoomId = moveData.currentRoomId
+            if (player.id == moveData.playerMovedId) {
+                if (this.playerId == moveData.playerMovedId) {
+                    if (moveData.currentMovedRoomId != this.currentRoomId) {
+                        this.drawRoom(moveData.currentMovedRoomId)
+                        this.currentRoomId = moveData.currentMovedRoomId
                     }
                 }
-                player.move(moveData.x, moveData.y, moveData.currentRoomId)
+                player.move(moveData.movedX, moveData.movedY, moveData.currentMovedRoomId)
             }
         }
         this.drawSprites()
+    }
+
+    hidePlayer(hideData: ParseHidePlayer) {
+        const playerToHide = this.game.spritesLayer.players.find(x => x.id === hideData.playerId)
+        if (playerToHide) {
+            playerToHide.move(-1, -1, hideData.roomId)
+        }
     }
 
     updateNpc(moveData: any) {

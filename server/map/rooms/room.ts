@@ -3,6 +3,7 @@ import Exits from "./exits.ts"
 import { Npc } from '../../entities/npc.ts'
 import { ClientHandler } from '../../clientHandler.ts'
 import ItemBase from '../../entities/items/itemBase.ts'
+import { Items } from "../../Enums.ts";
 
 export default class Room {
   public id: number
@@ -115,15 +116,17 @@ export default class Room {
   }
 
   getAllNpcsInRoom() {
-    let npcsReturn = []
+    let npcsReturn = ''
     for (const npc of this.npcs) {
-      npcsReturn.push(npc.getReturnData())
+      const data = npc.getReturnData()
+      npcsReturn = `${npcsReturn}${data.id}@${data.npcId}@${data.x}@${data.y}@${data.roomId}@${data.hp}@${data.maxHp},`
     }
     return npcsReturn
   }
 
-  getAllItemsInRoom() {
-    let itensReturn = []
+  getAllItemsInRoom(): [string, { id: number, itemId: Items, x: number, y: number }[]] {
+    let itensReturnString = ''
+    let itensReturnArray = []
 
     for (let i=0; i<this.itemsLayer.length; i++) {
       for (let j=0; j<this.itemsLayer[0].length; j++) {
@@ -131,7 +134,8 @@ export default class Room {
 
         if (position !== 0) {
           const item = position as ItemBase
-          itensReturn.push({
+          itensReturnString = `${itensReturnString}${item.id}@${item.itemId}@${i}@${j},`
+          itensReturnArray.push({
             id: item.id,
             itemId: item.itemId,
             x:i,
@@ -141,11 +145,23 @@ export default class Room {
       }
     }
 
-    return itensReturn
+    return [itensReturnString.slice(0, -1), itensReturnArray]
+  }
+
+  getAllPlayersPositionsInRoomExceptSelf(playerId: string) {
+    let playersReturn = ''
+
+    for (const player of this.players) {
+      if (player.id !== playerId) {
+        playersReturn = `${playersReturn}${player.id}@${player.x}@${player.y},`
+      }
+    }
+
+    return playersReturn.slice(0, -1)
   }
 
   resetItemsCount(): number {
-    const currentItens = this.getAllItemsInRoom()
+    const currentItens = this.getAllItemsInRoom()[1]
     let greatestId = 0
     for (const item of currentItens) {
       if (item.id > greatestId) {
@@ -201,6 +217,11 @@ export default class Room {
     setTimeout(() => { 
       this.removeItem(y,x,'')
     }, despawnTime);
+  }
+
+  isNeighbourToRoom(roomId: number): boolean {
+    const exitsArray = [this.exits.n, this.exits.s, this.exits.e, this.exits.w]
+    return exitsArray.some(x => x === roomId)
   }
 
   private buildItemsLayer(): any {
