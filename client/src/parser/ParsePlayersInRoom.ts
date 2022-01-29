@@ -5,19 +5,27 @@ export class ParsePlayersInRoom {
     constructor(data: string) {
         const playersData = this.parseString(data)
 
-        this.roomId = +playersData[1]
-        this.playersInRoom = JSON.parse(playersData[2])
+        this.roomId = +playersData[0]
+        this.playersInRoom = playersData[1]
     }
 
-    private parseString(eventDataString: string) {
-        let rawDataString = eventDataString
-        let matrix = ''
-        rawDataString = eventDataString.substr(0, eventDataString.indexOf(',['))
-        matrix = eventDataString.substr(eventDataString.indexOf('['), eventDataString.length)
-
-        let eventData = rawDataString.split(',')
-        eventData.push(matrix)
-
-        return eventData
+    private parseString(eventDataString: string): any[] {
+        const returnList = []
+        const splitted = eventDataString.split(',')
+        const playersInRoomRaw = splitted.slice(2).filter(x => x !== '')
+        const playersInRoomRawMatrix = playersInRoomRaw.map(x => x.split('@'))
+        let playersInRoomList: { id: string, x: number, y: number }[] = []
+        for (const u of playersInRoomRawMatrix) {
+            playersInRoomList.push({
+                id: u[0],
+                x: +u[1],
+                y: +u[2]
+            })
+        }
+        
+        returnList.push(splitted[1])
+        returnList.push(playersInRoomList)
+        
+        return returnList
     }
 }

@@ -1,21 +1,45 @@
 export class ParseNpcsInRoom {
-    public npcs: any
+    public npcs: NpcDto[]
 
     constructor(data: string) {
-        const npcsInRoom = this.parseString(data)
-
-        this.npcs = JSON.parse(npcsInRoom[1])
+        this.npcs = this.parseString(data)
     }
 
-    private parseString(eventDataString: string) {
-        let rawDataString = eventDataString
-        let matrix = ''
-        rawDataString = eventDataString.substr(0, eventDataString.indexOf(',['))
-        matrix = eventDataString.substr(eventDataString.indexOf('['), eventDataString.length)
+    private parseString(eventDataString: string): NpcDto[]
+    {
+        const splitted = eventDataString.split(',')
+        const npcsInRoomRaw = splitted.slice(1).filter(x => x !== '')
+        const npcsInRoomRawMatrix = npcsInRoomRaw.map(x => x.split('@'))
+        let npcsInRoomList: NpcDto[] = []
+        for (const u of npcsInRoomRawMatrix) {
+            npcsInRoomList.push(new NpcDto(
+                Number(u[0]),
+                Number(u[1]),
+                Number(u[2]),
+                Number(u[3]),
+                Number(u[4]),
+                Number(u[5]),
+                Number(u[6])))
+        }
+        
+        return npcsInRoomList
+    }
+}
 
-        let eventData = rawDataString.split(',')
-        eventData.push(matrix)
-
-        return eventData
+export class NpcDto {
+    constructor(public id: number,
+    public npcId: number,
+    public x: number,
+    public y: number,
+    public roomId: number,
+    public hp: number,
+    public maxHp: number) {
+        this.id = id
+        this.npcId = npcId
+        this.roomId = roomId
+        this.x = x
+        this.y = y
+        this.hp = hp
+        this.maxHp = maxHp
     }
 }

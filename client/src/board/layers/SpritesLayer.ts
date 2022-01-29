@@ -7,6 +7,9 @@ import { Item } from '../../entities/items/Item'
 import { Items } from '../../entities/items/Items'
 import { Color } from '../map/tiles/Color'
 import { ParsePlayersInRoom } from '../../parser/ParsePlayersInRoom'
+import { NpcDto } from '../../parser/ParseNpcsInRoom'
+import { ItemDto } from '../../parser/ParseItemsInRoom'
+import { ParseItemDrop } from '../../parser/ParseItemDrop'
 
 export class SpritesLayer {
     public ctx: CanvasRenderingContext2D
@@ -63,32 +66,32 @@ export class SpritesLayer {
         }
     }
 
-    addNpcs(npcs: any[]) {
+    addNpcs(npcs: NpcDto[]) {
         this.npcs.splice(0, this.npcs.length)
         for (const npc of npcs) {
             this.npcs.push(new Npc(this.game, this, npc, this.getMatrixNpcById(npc.npcId), npc.npcId))
         }
     }
 
-    addItems(items: any[]) {
+    addItems(items: ItemDto[]) {
         this.items.splice(0, this.items.length)
         for (const item of items) {
             this.items.push(new Item(this.game, this, item, this.getMatrixItemById(item.itemId)))
         }
     }
 
-    updatePlayersPositions(data: ParsePlayersInRoom) {
+    updatePlayersPositions(data: ParsePlayersInRoom, clientPlayerId: string) {
         for (const player of this.players) {
             const dataInRoom = data.playersInRoom.find(x => x.id === player.id)
             if (dataInRoom) {
                 player.move(dataInRoom.x, dataInRoom.y, data.roomId)
-            } else {
+            } else if (player.id !== clientPlayerId) {
                 player.move(-1, -1, -1)
             }
         }
     }
 
-    addItem(item: any) {
+    addItem(item: ParseItemDrop) {
         this.items.push(new Item(this.game, this, item, this.getMatrixItemById(item.itemId)))
     }
 

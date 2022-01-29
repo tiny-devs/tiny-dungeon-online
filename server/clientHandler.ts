@@ -88,15 +88,15 @@ export class ClientHandler {
   private broadcastPlayerConnection(playerId: string): void {
     let currentPlayer = null
     try{
-      const data = JSON.stringify(this.getAllPlayers())
+      const data = this.getAllPlayersString()
 
       for (const room of this.map.rooms) {
         for (const player of room.players) {
           currentPlayer = player
           this.send(player,`${Command.Login},`+
-            `${playerId},`+
-            `${this.boardRows},`+
-            `${this.boardColumns},`+
+            `${playerId}$`+
+            `${this.boardRows}$`+
+            `${this.boardColumns}$`+
             `${data}`)
         }
       }
@@ -300,11 +300,11 @@ export class ClientHandler {
   private roomcastItemsInRoom(room: Room): void {
     let currentPlayer = null
     try{
-      const data = JSON.stringify(room.getAllItemsInRoom())
+      const data = room.getAllItemsInRoom()[0]
 
       for (const player of room.players) {
         currentPlayer = player
-        this.send(player,`${Command.ItemsInRoom},${data}`)
+        this.send(player,`${Command.ItemsInRoom},${room.id},${data}`)
       }
     } catch (e) {
       this.handleExceptions(e, currentPlayer, 'roomcastItemsInRoom')
@@ -356,7 +356,7 @@ export class ClientHandler {
 
   private unicastItemsInRoom(player: Player): void {
     try{
-      const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
+      const data = player.currentRoom.getAllItemsInRoom()[0]
       this.send(player,`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastItemsInRoom')
@@ -365,7 +365,7 @@ export class ClientHandler {
 
   private unicastNpcsInRoom(player: Player): void {
     try{
-      const data = JSON.stringify(player.currentRoom.getAllNpcsInRoom())
+      const data = player.currentRoom.getAllNpcsInRoom()
       this.send(player,`${Command.NpcsInRoom},${data}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastNpcsInRoom')
@@ -374,7 +374,7 @@ export class ClientHandler {
 
   private unicastPlayersInRoom(player: Player): void {
     try{
-      const data = JSON.stringify(player.currentRoom.getAllPlayersPositionsInRoomExceptSelf(player.id))
+      const data = player.currentRoom.getAllPlayersPositionsInRoomExceptSelf(player.id)
       this.send(player,`${Command.PlayersInRoom},${player.currentRoom.id},${data}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastNpcsInRoom')
@@ -630,6 +630,19 @@ export class ClientHandler {
     for (const room of this.map.rooms) {
       for (const player of room.players) {
         playersReturn.push(player.getReturnData())
+      }
+    }
+    return playersReturn
+  }
+
+  private getAllPlayersString() {
+    let playersReturn = ''
+    for (const room of this.map.rooms) {
+      for (const player of room.players) {
+        const data = player.getReturnData()
+        playersReturn = `${playersReturn}${data.id}@${data.name}@${data.color}@${data.x}@${data.y}` +
+        `@${data.currentRoomId}@${data.hp}@${data.maxHp}@${data.atk}@${data.def}@${data.xpNeed}@` +
+        `${JSON.stringify(data.matrix)}$`
       }
     }
     return playersReturn
@@ -900,7 +913,6 @@ export class ClientHandler {
             this.broadcastPlayerConnection(player.id)
             this.unicastNpcsInRoom(player)
             this.unicastItemsInRoom(player)
-            this.unicastPlayersInRoom(player)
   
             const playerLoadData = eventData[3]
             const hasPlayerData = playerLoadData != '0'

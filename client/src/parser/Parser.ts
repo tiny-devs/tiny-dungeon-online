@@ -1,5 +1,5 @@
 import { Command } from '../models/Enums'
-import { ParseLogin } from './ParseLogin'
+import { ParseLogin, PlayerDto } from './ParseLogin'
 import { ParseMove } from './ParseMove'
 import { ParseNpcMove } from './ParseNpcMove'
 import { ParseNpcsInRoom } from './ParseNpcsInRoom'
@@ -137,8 +137,10 @@ export class Parser {
             this.client.gear.playerId = loginData.playerId
             this.client.game.applyServerRules(loginData.serverRules)
 
-            const player = loginData.players.find((p: Player) => p.id == loginData.playerId)
-            this.client.applyStats(player.hp, player.maxHp, player.atk, player.def, 1, 0, player.xpNeed)
+            const player = loginData.players.find((p: PlayerDto) => p.id == loginData.playerId)
+            if (player) {
+                this.client.applyStats(player.hp, player.maxHp, player.atk, player.def, 1, 0, player.xpNeed)
+            }
         }
         this.client.drawSprites()
     }
@@ -158,7 +160,7 @@ export class Parser {
     private parsePlayersInRoom(data: string) {
         const playersInRoomData = new ParsePlayersInRoom(data)
 
-        this.client.game.spritesLayer.updatePlayersPositions(playersInRoomData)
+        this.client.game.spritesLayer.updatePlayersPositions(playersInRoomData, this.client.playerId)
         this.client.drawSprites()
     }
 
