@@ -1,16 +1,16 @@
 export class ParseMove {
-    public playerId: string
-    public currentRoomId: number
-    public x: number
-    public y: number
+    public playerMovedId: string
+    public movedX: number
+    public movedY: number
+    public currentMovedRoomId: number
 
     constructor(data: string) {
         const moveData = this.parseString(data)
 
-        this.playerId = moveData[1]
-        this.currentRoomId = +moveData[4]
-        this.x = +moveData[2]
-        this.y = +moveData[3]
+        this.playerMovedId = moveData[1]
+        this.movedX = +moveData[2]
+        this.movedY = +moveData[3]
+        this.currentMovedRoomId = +moveData[4]
     }
 
     private parseString(eventDataString: string) {

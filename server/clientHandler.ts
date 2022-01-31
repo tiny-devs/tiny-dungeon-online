@@ -88,15 +88,15 @@ export class ClientHandler {
   private broadcastPlayerConnection(playerId: string): void {
     let currentPlayer = null
     try{
-      const data = JSON.stringify(this.getAllPlayers())
+      const data = this.getAllPlayersString()
 
       for (const room of this.map.rooms) {
         for (const player of room.players) {
           currentPlayer = player
           this.send(player,`${Command.Login},`+
-            `${playerId},`+
-            `${this.boardRows},`+
-            `${this.boardColumns},`+
+            `${playerId}$`+
+            `${this.boardRows}$`+
+            `${this.boardColumns}$`+
             `${data}`)
         }
       }
@@ -108,7 +108,7 @@ export class ClientHandler {
     }
   }
 
-  public broadcastPlayerMove(playerMoved: Player, direction: Direction): void {
+  public nearbycastPlayerMove(playerMoved: Player, direction: Direction): void {
     let currentPlayer = null
     try{
       let isValid = playerMoved.move(direction)
@@ -120,19 +120,28 @@ export class ClientHandler {
       if (isValid) {
         for (const room of this.map.rooms) {
           for (const player of room.players) {
-            currentPlayer = player
-            this.send(player,`${Command.Move},`+
-              `${playerMoved.id},`+
-              `${playerMoved.x},`+
-              `${playerMoved.y},`+
-              `${playerMoved.currentRoomId}`)
+            const isInSame = playerMoved.currentRoomId === player.currentRoomId
+            if (isInSame) {
+              currentPlayer = player
+              this.send(player,`${Command.Move},`+
+                `${playerMoved.id},`+
+                `${playerMoved.x},`+
+                `${playerMoved.y},`+
+                `${playerMoved.currentRoomId}`)
+            }
+
+            const isNearby = playerMoved.currentRoom.isNeighbourToRoom(player.currentRoomId)
+            if (isNearby) {
+              currentPlayer = player
+              this.send(player,`${Command.HidePlayer},${playerMoved.id},${playerMoved.currentRoomId}`)
+            }
           }
         }
       }
     } catch (e) {
       const success = this.handleExceptions(e, currentPlayer, 'broadcastPlayerMove')
       if (success) {
-        this.broadcastPlayerMove(playerMoved,direction)
+        this.nearbycastPlayerMove(playerMoved,direction)
       }
     }
   }
@@ -282,6 +291,7 @@ export class ClientHandler {
 
       this.unicastNpcsInRoom(player)
       this.unicastItemsInRoom(player)
+      this.unicastPlayersInRoom(player)
     } catch (e) {
       this.handleExceptions(e, player, 'switchRooms')
     }
@@ -290,11 +300,11 @@ export class ClientHandler {
   private roomcastItemsInRoom(room: Room): void {
     let currentPlayer = null
     try{
-      const data = JSON.stringify(room.getAllItemsInRoom())
+      const data = room.getAllItemsInRoom()[0]
 
       for (const player of room.players) {
         currentPlayer = player
-        this.send(player,`${Command.ItemsInRoom},${data}`)
+        this.send(player,`${Command.ItemsInRoom},${room.id},${data}`)
       }
     } catch (e) {
       this.handleExceptions(e, currentPlayer, 'roomcastItemsInRoom')
@@ -346,7 +356,7 @@ export class ClientHandler {
 
   private unicastItemsInRoom(player: Player): void {
     try{
-      const data = JSON.stringify(player.currentRoom.getAllItemsInRoom())
+      const data = player.currentRoom.getAllItemsInRoom()[0]
       this.send(player,`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastItemsInRoom')
@@ -355,8 +365,17 @@ export class ClientHandler {
 
   private unicastNpcsInRoom(player: Player): void {
     try{
-      const data = JSON.stringify(player.currentRoom.getAllNpcsInRoom())
+      const data = player.currentRoom.getAllNpcsInRoom()
       this.send(player,`${Command.NpcsInRoom},${data}`)
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastNpcsInRoom')
+    }
+  }
+
+  private unicastPlayersInRoom(player: Player): void {
+    try{
+      const data = player.currentRoom.getAllPlayersPositionsInRoomExceptSelf(player.id)
+      this.send(player,`${Command.PlayersInRoom},${player.currentRoom.id},${data}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastNpcsInRoom')
     }
@@ -616,6 +635,19 @@ export class ClientHandler {
     return playersReturn
   }
 
+  private getAllPlayersString() {
+    let playersReturn = ''
+    for (const room of this.map.rooms) {
+      for (const player of room.players) {
+        const data = player.getReturnData()
+        playersReturn = `${playersReturn}${data.id}@${data.name}@${data.color}@${data.x}@${data.y}` +
+        `@${data.currentRoomId}@${data.hp}@${data.maxHp}@${data.atk}@${data.def}@${data.xpNeed}@` +
+        `${JSON.stringify(data.matrix)}$`
+      }
+    }
+    return playersReturn
+  }
+
   private findPlayer(adm: Player, name: string) {
     for (const room of this.map.rooms) {
       for (const player of room.players) {
@@ -842,7 +874,7 @@ export class ClientHandler {
             }
             break
           case Command.Move:
-            this.broadcastPlayerMove(player, +eventData[1])
+            this.nearbycastPlayerMove(player, +eventData[1])
             break
           case Command.Login:
             const adminAccess = this.admins.find(a => a.name == eventData[1])

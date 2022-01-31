@@ -470,7 +470,7 @@ export class Player {
             this.currentRoomId = roomId
             this.x = 0
             this.y = 0
-            this.clientHandler.broadcastPlayerMove(this, Direction.Right)
+            this.clientHandler.nearbycastPlayerMove(this, Direction.Right)
         }
     }
 
@@ -497,7 +497,7 @@ export class Player {
         this.currentRoomId = Rooms.InitialRoom
         this.x = 0
         this.y = 0
-        this.clientHandler.broadcastPlayerMove(this, Direction.Right)
+        this.clientHandler.nearbycastPlayerMove(this, Direction.Right)
         this.clientHandler.unicastPlayerStats(this)
     }
 

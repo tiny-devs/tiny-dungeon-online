@@ -33,6 +33,8 @@ export enum Command {
     EraseSave,
     LoadBag,
     EntityInfo,
+    HidePlayer,
+    PlayersInRoom,
 }
 
 export enum Rooms {

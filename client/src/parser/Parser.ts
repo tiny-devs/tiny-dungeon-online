@@ -1,5 +1,5 @@
 import { Command } from '../models/Enums'
-import { ParseLogin } from './ParseLogin'
+import { ParseLogin, PlayerDto } from './ParseLogin'
 import { ParseMove } from './ParseMove'
 import { ParseNpcMove } from './ParseNpcMove'
 import { ParseNpcsInRoom } from './ParseNpcsInRoom'
@@ -24,6 +24,8 @@ import { ParseLoad } from './ParseLoad'
 import { ParsePlayerIdUpdate } from './ParsePlayerIdUpdate'
 import { ParseLoadBag } from './ParseLoadBag'
 import { ParseEntityInfo } from './ParseEntityInfo'
+import { ParseHidePlayer } from './ParseHidePlayer'
+import { ParsePlayersInRoom } from './ParsePlayersInRoom'
 
 export class Parser {
     private client: GameClient
@@ -42,6 +44,12 @@ export class Parser {
                     break
                 case Command.Move:
                     this.parseMove(data)
+                    break
+                case Command.HidePlayer:
+                    this.parseHide(data)
+                    break
+                case Command.PlayersInRoom:
+                    this.parsePlayersInRoom(data)
                     break
                 case Command.NpcsInRoom:
                     this.parseNpcsInRoom(data)
@@ -129,8 +137,10 @@ export class Parser {
             this.client.gear.playerId = loginData.playerId
             this.client.game.applyServerRules(loginData.serverRules)
 
-            const player = loginData.players.find((p: Player) => p.id == loginData.playerId)
-            this.client.applyStats(player.hp, player.maxHp, player.atk, player.def, 1, 0, player.xpNeed)
+            const player = loginData.players.find((p: PlayerDto) => p.id == loginData.playerId)
+            if (player) {
+                this.client.applyStats(player.hp, player.maxHp, player.atk, player.def, 1, 0, player.xpNeed)
+            }
         }
         this.client.drawSprites()
     }
@@ -139,6 +149,19 @@ export class Parser {
         const moveData = new ParseMove(data)
 
         this.client.updatePlayer(moveData)
+    }
+
+    private parseHide(data: string) {
+        const hideData = new ParseHidePlayer(data)
+
+        this.client.hidePlayer(hideData)
+    }
+
+    private parsePlayersInRoom(data: string) {
+        const playersInRoomData = new ParsePlayersInRoom(data)
+
+        this.client.game.spritesLayer.updatePlayersPositions(playersInRoomData, this.client.playerId)
+        this.client.drawSprites()
     }
 
     private parseNpcMove(data: string) {
