@@ -81,6 +81,7 @@ export class GameClient {
     private canChat: boolean = true
     private isTyping: boolean = false
     private localStorageLoadKey: string = 'tinydata'
+    private localStorageShowUpdatesKey: string = 'tinyupdates'
     private adminPassword: string = ''
     private afkTimeout: number = 0
     private afkInterval: number = 240000 // 4min
@@ -269,6 +270,30 @@ export class GameClient {
         this.pingPong()
     }
 
+    readUpdateComplete() {
+        localStorage.setItem(this.localStorageShowUpdatesKey, 'false')
+    }
+
+    getUpdateReadData() {
+        const updateLoadData = localStorage.getItem(this.localStorageShowUpdatesKey)
+        const showUpdateIcon = updateLoadData === 'true' || !updateLoadData
+        const dog = this.game.spritesLayer.getNpcByIdAndRoom(1, Rooms.InitialRoom)
+
+        if (showUpdateIcon) {
+            if (dog) {
+                dog.hasExclamation = true
+            }
+        } else {
+            if (dog) {
+                dog.hasExclamation = false
+            }
+        }
+
+        if (!updateLoadData) {
+            localStorage.setItem(this.localStorageShowUpdatesKey, 'true')
+        }
+    }
+
     getPlayerLoginData() {
         const playerLoadData = localStorage.getItem(this.localStorageLoadKey)
         const playerData = playerLoadData ? playerLoadData : '0'
@@ -321,6 +346,9 @@ export class GameClient {
 
     drawSprites() {
         this.game.spritesLayer.draw(this.currentRoomId)
+        if (this.currentRoomId === Rooms.InitialRoom) {
+            this.getUpdateReadData()
+        }
     }
 
     checkMovement() {
