@@ -261,9 +261,15 @@ export class Parser {
     private parseDialog(data: string) {
         const dialogData = new ParseDialog(data)
         const isQuestStart = dialogData.message.includes('-quest')
+        const isUpdateRead = dialogData.message === '-woofdate read-'
         const isWarning = dialogData.message[0] == '-'
 
-        this.client.displayDialog(dialogData.message, isQuestStart, isWarning)
+        if (isUpdateRead) {
+            this.client.readUpdateComplete()
+            this.client.displayDialog('', isQuestStart, isWarning)
+        } else {
+            this.client.displayDialog(dialogData.message, isQuestStart, isWarning)
+        }
     }
 
     private parseChat(data: string) {

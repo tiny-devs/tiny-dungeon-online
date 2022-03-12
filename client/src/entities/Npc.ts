@@ -1,6 +1,7 @@
 import { Game } from '../startup/Game'
 import { Color } from '../board/map/tiles/Color'
 import { Rooms } from '../models/Enums'
+import { Misc } from './Misc'
 
 export class Npc {
     public id: number
@@ -12,6 +13,7 @@ export class Npc {
     public tileMatrix: any[]
     public maxHp: number
     public hp: number
+    public hasExclamation: boolean
 
     private game: Game
     private layer: any
@@ -32,6 +34,7 @@ export class Npc {
         this.maxHp = npcData.maxHp!
         this.hp = npcData.hp!
         this.isFighting = false
+        this.hasExclamation = false
     }
 
     draw() {
@@ -40,6 +43,39 @@ export class Npc {
         for (let column = 0; column < this.tileSize; column++) {
             for (let line = 0; line < this.tileSize; line++) {
                 const tileColor = this.tileMatrix[line][column]
+                if (tileColor !== 0) {
+                    this.layer.ctx.fillStyle = tileColor
+                    const startX = ((column * this.game.gridConfig.cellWidth) / this.tileSize + this.x * this.game.gridConfig.cellWidth) | 0
+                    const startY = ((line * this.game.gridConfig.cellHeight) / this.tileSize + this.y * this.game.gridConfig.cellHeight) | 0
+                    const width = this.game.gridConfig.cellWidth / this.tileSize
+                    const height = this.game.gridConfig.cellHeight / this.tileSize
+                    this.layer.ctx.fillRect(startX, startY, width, height)
+                }
+
+                if (this.hasExclamation) {
+                    const tileColor = Misc.Exclamation[line][column]
+                    if (tileColor !== 0) {
+                        const exclamationX = this.x === (this.game.gridConfig.columns-1) ? this.x - 1 : this.x + 1
+                        this.layer.ctx.fillStyle = tileColor
+                        const startX = ((column * this.game.gridConfig.cellWidth) / this.tileSize + (exclamationX) * this.game.gridConfig.cellWidth) | 0
+                        const startY = ((line * this.game.gridConfig.cellHeight) / this.tileSize + (this.y - 0.5) * this.game.gridConfig.cellHeight) | 0
+                        const width = this.game.gridConfig.cellWidth / this.tileSize
+                        const height = this.game.gridConfig.cellHeight / this.tileSize
+                        this.layer.ctx.fillRect(startX, startY, width, height)
+                    }
+                }
+            }
+        }
+
+        this.layer.ctx.fill()
+    }
+
+    drawExclamation() {
+        this.layer.ctx.beginPath()
+
+        for (let column = 0; column < this.tileSize; column++) {
+            for (let line = 0; line < this.tileSize; line++) {
+                const tileColor = Misc.Exclamation[line][column]
                 if (tileColor !== 0) {
                     this.layer.ctx.fillStyle = tileColor
                     const startX = ((column * this.game.gridConfig.cellWidth) / this.tileSize + this.x * this.game.gridConfig.cellWidth) | 0
@@ -66,11 +102,12 @@ export class Npc {
     }
 
     drawHp() {
+        const hpY = this.y === 0 ? this.y + 1 : this.y
         this.layer.ctx.beginPath()
         this.layer.ctx.fillStyle = Color.DarkRed
-        this.layer.ctx.fillRect(this.x * this.game.gridConfig.cellWidth, this.y * this.game.gridConfig.cellHeight - 7, this.game.gridConfig.cellWidth, 5)
+        this.layer.ctx.fillRect(this.x * this.game.gridConfig.cellWidth, hpY * this.game.gridConfig.cellHeight - 7, this.game.gridConfig.cellWidth, 5)
         this.layer.ctx.fillStyle = Color.LightGreen4
-        this.layer.ctx.fillRect(this.x * this.game.gridConfig.cellWidth, this.y * this.game.gridConfig.cellHeight - 7, (this.game.gridConfig.cellWidth * this.hp) / this.maxHp, 5)
+        this.layer.ctx.fillRect(this.x * this.game.gridConfig.cellWidth, hpY * this.game.gridConfig.cellHeight - 7, (this.game.gridConfig.cellWidth * this.hp) / this.maxHp, 5)
         this.layer.ctx.fill()
 
         this.drawHit()
