@@ -287,6 +287,7 @@ export class Parser {
     private parseLoad(data: string) {
         const loadData = new ParseLoad(data)
 
+        this.client.gameVersion = loadData.gameVersion
         this.client.loadPlayerData(loadData)
     }
 

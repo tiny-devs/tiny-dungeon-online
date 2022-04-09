@@ -13,7 +13,6 @@ import { ParseLoad } from '../parser/ParseLoad'
 import { ParsePlayerIdUpdate } from '../parser/ParsePlayerIdUpdate'
 import { ParseLoadBag } from '../parser/ParseLoadBag'
 import { ParseEntityInfo } from '../parser/ParseEntityInfo'
-import IconCanvas from '../entities/items/IconCanvas'
 import TinyIcon from '../models/configs/ClientConfig'
 import { ParseMove } from '../parser/ParseMove'
 import { ParseHidePlayer } from '../parser/ParseHidePlayer'
@@ -26,6 +25,7 @@ export class GameClient {
     public gear: Gear
     public currentRoomId: Rooms
     public game: Game
+    public gameVersion: number = 0
     
     private loginScreen: HTMLElement
     private gameScreen: HTMLElement
@@ -271,12 +271,12 @@ export class GameClient {
     }
 
     readUpdateComplete() {
-        localStorage.setItem(this.localStorageShowUpdatesKey, 'false')
+        localStorage.setItem(this.localStorageShowUpdatesKey, `${this.gameVersion}`)
     }
 
     getUpdateReadData() {
         const updateLoadData = localStorage.getItem(this.localStorageShowUpdatesKey)
-        const showUpdateIcon = updateLoadData === 'true' || !updateLoadData
+        const showUpdateIcon = Number(updateLoadData) !== this.gameVersion || !updateLoadData
         const dog = this.game.spritesLayer.getNpcByIdAndRoom(1, Rooms.InitialRoom)
 
         if (showUpdateIcon) {
@@ -290,7 +290,7 @@ export class GameClient {
         }
 
         if (!updateLoadData) {
-            localStorage.setItem(this.localStorageShowUpdatesKey, 'true')
+            localStorage.setItem(this.localStorageShowUpdatesKey, '0')
         }
     }
 

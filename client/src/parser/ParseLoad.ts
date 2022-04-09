@@ -9,6 +9,7 @@ export class ParseLoad {
     public level: number
     public xp: number
     public xpNeeded: number
+    public gameVersion: number
     public itemsIds: ItemsIds[]
     public gearHead: ItemsIds | null
     public gearTorso: ItemsIds | null
@@ -26,6 +27,7 @@ export class ParseLoad {
         this.level = +parsedData[0][6]
         this.xp = +parsedData[0][7]
         this.xpNeeded = +parsedData[0][8]
+        this.gameVersion = +parsedData[0][9]
 
         this.itemsIds = parsedData[1]
 

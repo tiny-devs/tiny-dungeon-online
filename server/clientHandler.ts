@@ -10,6 +10,7 @@ import { Admins } from "./data/admins.ts"
 import { badWords } from "./data/badWords.ts"
 
 export class ClientHandler {
+  public serverVersion: number = 1
   public boardColumns: number = 16
   public boardRows: number = 16
   public playerNames: string[] = []
@@ -452,7 +453,7 @@ export class ClientHandler {
       } else {
         let data = `${Command.Load},${player.id},`+
         `${player.hp},${player.totalHp()},${player.totalAttack()},${player.totalDefense()},`+
-        `${player.level},${player.xp},${player.xpNeeded}@`
+        `${player.level},${player.xp},${player.xpNeeded},${this.serverVersion}@`
         for (const item of player.bag.items) {
           data += `${item.itemId},`
         }
