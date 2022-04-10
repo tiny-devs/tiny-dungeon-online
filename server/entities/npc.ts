@@ -36,6 +36,8 @@ export class Npc {
   public xpGiven: number
   public respawnTime: number
   public dead: boolean = false
+  public isMerchant: boolean = false
+  public sells: ItemBase[]
   public dialog: DialogBase | null
   public drops: ItemBase[]
   public name: string
@@ -75,6 +77,8 @@ export class Npc {
     this.drops = npcData.drops
     this.name = npcData.name
     this.quest = npcData.quest
+    this.isMerchant = npcData.isMerchant
+    this.sells = npcData.sells
 
     this.heartBeat()
   }
@@ -210,6 +214,10 @@ export class Npc {
         this.dialog.playerCurrentLine.push({playerId:player.id, line:0,totalLines:this.dialog.dialogs.length})
         this.room.clientHandler.unicastDialog(player, this.dialog.dialogs[0])
       }
+    }
+    
+    if (this.isMerchant) {
+      this.room.clientHandler.unicastOpenStore(player,this.npcId)
     }
   }
 

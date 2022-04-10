@@ -16,6 +16,8 @@ import { ParseEntityInfo } from '../parser/ParseEntityInfo'
 import TinyIcon from '../models/configs/ClientConfig'
 import { ParseMove } from '../parser/ParseMove'
 import { ParseHidePlayer } from '../parser/ParseHidePlayer'
+import Store from '../entities/items/Store'
+import { ParseBoughtItem } from '../parser/ParseBoughtItem'
 
 export class GameClient {
     public loggedIn: boolean
@@ -23,13 +25,17 @@ export class GameClient {
     public playerId: string
     public bag: Bag
     public gear: Gear
+    public currentNpcStore: Store
     public currentRoomId: Rooms
     public game: Game
     public gameVersion: number = 0
+    public canCheckUpdateData: boolean = false
     
     private loginScreen: HTMLElement
     private gameScreen: HTMLElement
     private bagElement: HTMLElement
+    private storeElement: HTMLElement
+    private storePromptElement: HTMLElement
     private gearElement: HTMLElement
     private exitElement: HTMLElement
     private exit: HTMLElement
@@ -40,6 +46,9 @@ export class GameClient {
     private xpBarElement: HTMLElement
     private atkTextElement: HTMLElement
     private defTextElement: HTMLElement
+    private storeBuyBtn: HTMLElement
+    private storeSellBtn: HTMLElement
+    private storeItemsElement: HTMLElement
     private messageElement: HTMLElement
     private chatElement: HTMLElement
     private chatMessageElement: HTMLInputElement
@@ -80,6 +89,7 @@ export class GameClient {
     private chatTimeout: number = 5
     private canChat: boolean = true
     private isTyping: boolean = false
+    private storeOpen: boolean = false
     private localStorageLoadKey: string = 'tinydata'
     private localStorageShowUpdatesKey: string = 'tinyupdates'
     private adminPassword: string = ''
@@ -94,6 +104,9 @@ export class GameClient {
         this.loginScreen = mainElements.loginScreen
         this.gameScreen = mainElements.gameScreen
         this.bagElement = mainElements.bagElement
+        this.storeElement = mainElements.storeElement
+        this.storePromptElement = mainElements.storePromptElement
+        this.storeItemsElement = mainElements.storeItemsElement
         this.coinsElement = mainElements.coinsElement
         this.gearElement = mainElements.gearElement
         this.exitElement = mainElements.exitElement
@@ -213,6 +226,15 @@ export class GameClient {
         this.chatMessageElement.onfocus = () => {
             this.isTyping = true
         }
+
+        this.storeBuyBtn = mainElements.storeBuyBtn as HTMLButtonElement
+        this.storeBuyBtn.onclick = () => {
+            this.sendGetStoreItems()
+        }
+        this.storeSellBtn = mainElements.storeSellBtn as HTMLButtonElement
+        this.storeSellBtn.onclick = () => {
+            //this.showSellItems()
+        }
         
         this.checkMovement()
         this.showStatusOnTab()
@@ -224,6 +246,7 @@ export class GameClient {
         this.playerId = ''
         this.bag = new Bag(this)
         this.gear = new Gear(this)
+        this.currentNpcStore = new Store(this)
         this.currentRoomId = Rooms.InitialRoom
         this.playerMatrix = clientConfigs.playerMatrix
         this.parser = new Parser(this)
@@ -263,9 +286,6 @@ export class GameClient {
         this.chatElement.style.display = 'block'
         this.loginScreen.style.display = 'none'
         this.loadingElement.style.display = 'none'
-
-        // remove this when we have seller npcs
-        document.getElementById('coins')!.innerHTML = `${this.playerName}`
         
         this.pingPong()
     }
@@ -275,6 +295,7 @@ export class GameClient {
     }
 
     getUpdateReadData() {
+        if (!this.canCheckUpdateData) { return }
         const updateLoadData = localStorage.getItem(this.localStorageShowUpdatesKey)
         const showUpdateIcon = Number(updateLoadData) !== this.gameVersion || !updateLoadData
         const dog = this.game.spritesLayer.getNpcByIdAndRoom(1, Rooms.InitialRoom)
@@ -420,6 +441,9 @@ export class GameClient {
     
                 if (isValidMove && !this.isTyping && direction !== 0) {
                     this.ws!.send(`${Command.Move},${direction}`)
+                    if (this.storeOpen) {
+                        this.closeStore()
+                    }
                 }
             }
         }
@@ -639,6 +663,7 @@ export class GameClient {
         this.bag.playerId = loadData.id
         this.gear.playerId = loadData.id
         
+        this.bag.setGold(loadData.totalCoins)
         this.applyStats(loadData.hp, loadData.maxHp, loadData.attack, loadData.defense, loadData.level, loadData.xp, loadData.xpNeeded)
         this.loadItems(loadData.itemsIds)
         this.loadGear(loadData.gearHead, loadData.gearTorso, loadData.gearLegs, loadData.gearWeapon)
@@ -728,6 +753,50 @@ export class GameClient {
         }
 
         return success
+    }
+
+    promptOpenStore(merchantId: number) {
+        this.bagElement.style.display = 'none'
+        this.storeElement.style.display = 'block'
+        this.storePromptElement.style.display = 'block'
+        this.storeOpen = true
+        this.currentNpcStore.merchantId = merchantId
+    }
+
+    closeStore() {
+        this.bagElement.style.display = 'block'
+        this.storeElement.style.display = 'none'
+        this.storePromptElement.style.display = 'none'
+        this.storeItemsElement.style.display = 'none'
+        this.storeOpen = false
+        this.currentNpcStore.merchantId = 0
+    }
+
+    sendGetStoreItems() {
+        this.storePromptElement.style.display = 'none'
+        this.ws!.send(`${Command.GetItemsStore},${this.currentNpcStore.merchantId}`)
+    }
+
+    showStoreItems(itemsIdsAndPrice: any[]) {
+        this.currentNpcStore.removeAllItems()
+        for (const itemIdAndPrice of itemsIdsAndPrice) {
+            this.currentNpcStore.addItem(itemIdAndPrice[0], itemIdAndPrice[1])
+        }
+        this.currentNpcStore.drawItems()
+        this.storeItemsElement.style.display = 'block'
+    }
+
+    tryBuyItem(itemId: number) {
+        this.ws!.send(`${Command.BuyItemStore},${itemId},${this.currentNpcStore.merchantId}`)
+    }
+
+    boughtStoreItem(boughtData: ParseBoughtItem) {
+        if (boughtData.success) {
+            this.bag.addItem(boughtData.itemId, 0, this.playerId)
+            this.bag.setGold(boughtData.currentCoins)
+        } else {
+            this.displayMessage(boughtData.message)
+        }
     }
 
     sendExitRequest() {

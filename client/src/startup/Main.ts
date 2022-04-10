@@ -15,6 +15,9 @@ export class Main {
     public mobileRight: HTMLElement
     public gameScreen: HTMLElement
     public bagElement: HTMLElement
+    public storeElement: HTMLElement
+    public storePromptElement: HTMLElement
+    public storeItemsElement: HTMLElement
     public gearElement: HTMLElement
     public exitElement: HTMLElement
     public coinsElement: HTMLElement
@@ -25,6 +28,8 @@ export class Main {
     public atkTextElement: HTMLElement
     public defTextElement: HTMLElement
     public layersParentElement: HTMLElement
+    public storeBuyBtn: HTMLElement
+    public storeSellBtn: HTMLElement
     public chatElement: HTMLElement
     public chatMessageElement: HTMLElement
     public chatBtn: HTMLElement
@@ -68,6 +73,9 @@ export class Main {
         this.mobileRight = document.getElementById('right')!
         this.gameScreen = document.getElementById('game')!
         this.bagElement = document.getElementById('bag')!
+        this.storeElement = document.getElementById('store')!
+        this.storePromptElement = document.getElementById('store-prompt')!
+        this.storeItemsElement = document.getElementById('store-items')!
         this.gearElement = document.getElementById('gear')!
         this.exitElement = document.getElementById('exit')!
         this.coinsElement = document.getElementById('coins')!
@@ -80,6 +88,8 @@ export class Main {
         this.layersParentElement = document.getElementById('layers')!
         this.messageElement = document.getElementById('message')!
         this.chatElement = document.getElementById('chat')!
+        this.storeBuyBtn = document.getElementById('buy-btn')! as HTMLButtonElement
+        this.storeSellBtn = document.getElementById('sell-btn')! as HTMLButtonElement
         this.chatMessageElement = document.getElementById('chat-message')! as HTMLInputElement
         this.chatBtn = document.getElementById('send-chat')! as HTMLButtonElement
         this.showRankBtn = document.getElementById('show-rank')! as HTMLButtonElement
@@ -100,6 +110,9 @@ export class Main {
 
         this.gameScreen.style.display = 'none'
         this.bagElement.style.display = 'none'
+        this.storeElement.style.display = 'none'
+        this.storePromptElement.style.display = 'none'
+        this.storeItemsElement.style.display = 'none'
         this.coinsElement.style.display = 'none'
         this.gearElement.style.display = 'none'
         this.exitElement.style.display = 'none'

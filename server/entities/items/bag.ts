@@ -43,7 +43,7 @@ import SacredFireSword from "./sacredFireSword.ts"
 
 export default class Bag {
     public items: ItemBase[] = []
-    public coins: number = 0
+    public coins: number = 6660
     public size: number = 24
     private player: Player
 

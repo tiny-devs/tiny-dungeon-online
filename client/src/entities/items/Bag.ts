@@ -27,7 +27,12 @@ export default class Bag {
 
     public addGold(amount: number) {
         this.coins += amount
-        this.coinsEl.innerHTML = `Gold: ${this.coins}`
+        this.coinsEl.innerHTML = `GP: ${this.coins}`
+    }
+
+    public setGold(currentGold: number) {
+        this.coins = currentGold
+        this.coinsEl.innerHTML = `GP: ${this.coins}`
     }
 
     public addItem(itemId: ItemsIds, coins: number, playerId: string) {
@@ -116,6 +121,5 @@ export default class Bag {
         inventoryList.sort((a, b) => +a.id.split('-')[0] - +b.id.split('-')[0]).forEach(item => {
             this.itemsHolderEl.appendChild(item);
         });
-
     }
 }

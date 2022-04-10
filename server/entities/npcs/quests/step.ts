@@ -39,7 +39,9 @@ export default class Step {
                     itemToGive.bonusAttack,
                     itemToGive.bonusDefense,
                     itemToGive.healthRefuel,
-                    itemToGive.dropChance))
+                    itemToGive.dropChance,
+                    itemToGive.storeSellPrice,
+                    itemToGive.playerSellPrice,))
             }
         }
         

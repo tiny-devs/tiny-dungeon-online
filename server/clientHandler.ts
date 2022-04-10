@@ -378,7 +378,7 @@ export class ClientHandler {
       const data = player.currentRoom.getAllPlayersPositionsInRoomExceptSelf(player.id)
       this.send(player,`${Command.PlayersInRoom},${player.currentRoom.id},${data}`)
     } catch (e) {
-      this.handleExceptions(e, player, 'unicastNpcsInRoom')
+      this.handleExceptions(e, player, 'unicastPlayersInRoom')
     }
   }
 
@@ -445,6 +445,71 @@ export class ClientHandler {
     }
   }
 
+  public unicastOpenStore(player: Player, merchantId: number) {
+    try{
+      this.send(player,`${Command.OpenStore},${merchantId}`)
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastOpenStore')
+    }
+  }
+
+  public unicastStoreItems(player: Player, merchantId: number) {
+    try{
+      const merchant = player.currentRoom.npcs.find(x => x.npcId == merchantId)
+      if (merchant) {
+        let dataItems = `${Command.GetItemsStore},@`
+        for (const item of merchant.sells) {
+          dataItems += `${item.itemId}^${item.storeSellPrice},`
+        }
+
+        this.send(player, dataItems)
+      }
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastStoreItems')
+    }
+  }
+
+  public tryBuyItem(player: Player, itemId: number, merchantId: number) {
+    try{
+      const merchant = player.currentRoom.npcs.find(x => x.npcId == merchantId)
+      if (merchant) {
+        const itemBought = merchant.sells.find(x => x.itemId === itemId)
+        if (itemBought) {
+          const hasMoney = player.bag.coins >= itemBought.storeSellPrice
+          const hasSpace = player.bag.items.length < player.bag.size
+          if (hasMoney && hasSpace) {
+            const itemBaseTaken = player.bag.getItemFromItemId(itemId)!
+            player.bag.coins -= itemBought.storeSellPrice
+            player.bag.addItem(itemBaseTaken)
+            this.unicastItemBought(player, true, '', itemId, player.bag.coins)
+          } else if (!hasMoney) {
+            this.unicastItemBought(player, false, 'No gold!', itemId, player.bag.coins)
+          } else {
+            this.unicastItemBought(player, false, 'No space!', itemId, player.bag.coins)
+          }
+        } else {
+          this.unicastItemBought(player, false, 'Item not found!', itemId, player.bag.coins)
+        }
+      } else {
+        this.unicastItemBought(player, false, 'Merchant not found!', itemId, player.bag.coins)
+      }
+    } catch (e) {
+      this.handleExceptions(e, player, 'tryBuyItem')
+    }
+  }
+
+  public unicastItemBought(player: Player, success: boolean, message: string, itemId: number, currentCoins: number) {
+    try{
+      if (!success) {
+        this.send(player, `${Command.BuyItemStore},${success},${message}`)
+      } else {
+        this.send(player, `${Command.BuyItemStore},${success},'',${itemId},${currentCoins}`)
+      }
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastItemBought')
+    }
+  }
+
   private async unicastPlayerDataLoaded(player: Player, dataHash: string) {
     try{
       const success = await this.loadPlayerDataFromHash(player, dataHash)
@@ -454,6 +519,7 @@ export class ClientHandler {
         let data = `${Command.Load},${player.id},`+
         `${player.hp},${player.totalHp()},${player.totalAttack()},${player.totalDefense()},`+
         `${player.level},${player.xp},${player.xpNeeded},${this.serverVersion}@`
+        data += `${player.bag.coins};`
         for (const item of player.bag.items) {
           data += `${item.itemId},`
         }
@@ -652,7 +718,7 @@ export class ClientHandler {
   private findPlayer(adm: Player, name: string) {
     for (const room of this.map.rooms) {
       for (const player of room.players) {
-        if (player.name == name) {
+        if (player.name.toLowerCase() == name.toLowerCase()) {
           this.unicastMessage(adm, `${Rooms[player.currentRoom.id]} (${player.currentRoom.id})`)
           return
         }
@@ -691,7 +757,7 @@ export class ClientHandler {
 
   private checkNameDuplicate(name: string, player: Player): boolean {
     try {
-      return this.playerNames.some(pName => pName == name)
+      return this.playerNames.some(pName => pName.toLowerCase() == name.toLowerCase())
     } catch (e) {
       this.handleExceptions(e, player, 'checkNameDuplicate')
     }
@@ -841,6 +907,14 @@ export class ClientHandler {
         let eventData = this.parseEventDataString(eventDataString);
   
         switch (+eventData[0]) {
+          case Command.GetItemsStore:
+            this.unicastStoreItems(player, +eventData[1])
+            break
+          case Command.BuyItemStore:
+            const itemId = +eventData[1]
+            const merchantId = +eventData[2]
+            this.tryBuyItem(player, itemId, merchantId)
+            break
           case Command.ItemDrop:
             const droped = player.bag.dropItem(+eventData[1])
             if (droped) {
