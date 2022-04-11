@@ -13,6 +13,8 @@ export default class ItemBase {
     public healthRefuel: number
     public dropChance: number
     public isDefensive: boolean
+    public storeSellPrice: number
+    public playerSellPrice: number
 
     constructor(id: number,
     itemId: Items,
@@ -25,7 +27,9 @@ export default class ItemBase {
     bonusAttack: number,
     bonusDefense: number,
     healthRefuel: number,
-    dropChance: number) {
+    dropChance: number,
+    storeSellPrice: number,
+    playerSellPrice: number) {
         this.id = id
         this.itemId = itemId
         this.type = type
@@ -38,5 +42,7 @@ export default class ItemBase {
         this.bonusDefense = isDefensive ? Math.floor(level/2) + 1 + bonusDefense : bonusDefense
         this.healthRefuel = healthRefuel
         this.dropChance = dropChance
+        this.storeSellPrice = storeSellPrice
+        this.playerSellPrice = playerSellPrice
     }
 }

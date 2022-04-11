@@ -17,6 +17,8 @@ export default class NpcBase {
     public moveChance: number
     public anger: number
     public fieldOfView: number
+    public isMerchant: boolean
+    public sells: ItemBase[]
     public dialog: DialogBase | null
     public drops: ItemBase[]
     public quest: QuestBase | null
@@ -34,7 +36,9 @@ export default class NpcBase {
     fieldOfView: number,
     dialog: DialogBase | null, 
     drops: ItemBase[],
-    quest: QuestBase | null) {
+    quest: QuestBase | null,
+    isMerchant: boolean = false,
+    sells: ItemBase[] = []) {
         this.id = id
         this.agressive = agressive
         this.name = name
@@ -51,5 +55,7 @@ export default class NpcBase {
         this.dialog = dialog
         this.drops = drops
         this.quest = quest
+        this.isMerchant = isMerchant
+        this.sells = sells
     }
 }

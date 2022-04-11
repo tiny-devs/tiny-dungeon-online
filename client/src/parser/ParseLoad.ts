@@ -9,6 +9,8 @@ export class ParseLoad {
     public level: number
     public xp: number
     public xpNeeded: number
+    public gameVersion: number
+    public totalCoins: number
     public itemsIds: ItemsIds[]
     public gearHead: ItemsIds | null
     public gearTorso: ItemsIds | null
@@ -26,7 +28,9 @@ export class ParseLoad {
         this.level = +parsedData[0][6]
         this.xp = +parsedData[0][7]
         this.xpNeeded = +parsedData[0][8]
+        this.gameVersion = +parsedData[0][9]
 
+        this.totalCoins = +parsedData[3][0]
         this.itemsIds = parsedData[1]
 
         if (parsedData[2][0] != -1) {
@@ -56,9 +60,11 @@ export class ParseLoad {
 
         const statsData = allData[0].split(',')
 
+        const coins = allData[1].split(';')[0]
+        const itemsDataString = allData[1].split(';')[1]
         let itemsData = []
-        if (allData[1]) {
-            const itemsDataStrings = allData[1].split(',')
+        if (itemsDataString) {
+            const itemsDataStrings = itemsDataString.split(',')
             for (const itemId of itemsDataStrings) {
                 if (itemId != '') {
                     itemsData.push(+itemId)
@@ -77,6 +83,6 @@ export class ParseLoad {
             }
         }
 
-        return [statsData,itemsData,gearData]
+        return [statsData,itemsData,gearData,[coins]]
     }
 }

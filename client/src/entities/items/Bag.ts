@@ -27,7 +27,12 @@ export default class Bag {
 
     public addGold(amount: number) {
         this.coins += amount
-        this.coinsEl.innerHTML = `Gold: ${this.coins}`
+        this.coinsEl.innerHTML = `GP: ${this.coins}`
+    }
+
+    public setGold(currentGold: number) {
+        this.coins = currentGold
+        this.coinsEl.innerHTML = `GP: ${this.coins}`
     }
 
     public addItem(itemId: ItemsIds, coins: number, playerId: string) {
@@ -67,12 +72,14 @@ export default class Bag {
     public removeItem(itemId: ItemsIds) {
         if (itemId != ItemsIds.Empty) {
             const index = this.items.map(item => { return item.itemId; }).indexOf(itemId);
-            const canvasId = this.items[index].layer.canvasId
+            const canvasId = this.items[index]?.layer.canvasId
             if (index > -1) {
                 this.items.splice(index, 1);
             }
-            const canvasBtn = document.getElementById(canvasId)!
-            this.itemsHolderEl.removeChild(canvasBtn)
+            if (canvasId) {
+                const canvasBtn = document.getElementById(canvasId)!
+                this.itemsHolderEl.removeChild(canvasBtn)
+            }
         }
     }
 
@@ -116,6 +123,5 @@ export default class Bag {
         inventoryList.sort((a, b) => +a.id.split('-')[0] - +b.id.split('-')[0]).forEach(item => {
             this.itemsHolderEl.appendChild(item);
         });
-
     }
 }

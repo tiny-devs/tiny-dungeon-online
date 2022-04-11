@@ -28,6 +28,11 @@ export enum Command {
     EntityInfo,
     HidePlayer,
     PlayersInRoom,
+    OpenStore,
+    GetItemsStore,
+    GetItemsPricesPlayer,
+    BuyItemStore,
+    SellItemStore,
 }
 
 export enum Direction {

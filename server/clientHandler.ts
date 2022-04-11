@@ -10,6 +10,7 @@ import { Admins } from "./data/admins.ts"
 import { badWords } from "./data/badWords.ts"
 
 export class ClientHandler {
+  public serverVersion: number = 1
   public boardColumns: number = 16
   public boardRows: number = 16
   public playerNames: string[] = []
@@ -377,7 +378,7 @@ export class ClientHandler {
       const data = player.currentRoom.getAllPlayersPositionsInRoomExceptSelf(player.id)
       this.send(player,`${Command.PlayersInRoom},${player.currentRoom.id},${data}`)
     } catch (e) {
-      this.handleExceptions(e, player, 'unicastNpcsInRoom')
+      this.handleExceptions(e, player, 'unicastPlayersInRoom')
     }
   }
 
@@ -444,6 +445,104 @@ export class ClientHandler {
     }
   }
 
+  public unicastOpenStore(player: Player, merchantId: number) {
+    try{
+      this.send(player,`${Command.OpenStore},${merchantId}`)
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastOpenStore')
+    }
+  }
+
+  public unicastStoreItems(player: Player, merchantId: number) {
+    try{
+      const merchant = player.currentRoom.npcs.find(x => x.npcId == merchantId)
+      if (merchant) {
+        let dataItems = `${Command.GetItemsStore},@`
+        for (const item of merchant.sells) {
+          dataItems += `${item.itemId}^${item.storeSellPrice},`
+        }
+
+        this.send(player, dataItems)
+      }
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastStoreItems')
+    }
+  }
+
+  public unicastPlayerItemsPrices(player: Player) {
+    try{
+      let dataItems = `${Command.GetItemsPricesPlayer},@`
+      for (const item of player.bag.items) {
+        dataItems += `${item.itemId}^${item.playerSellPrice},`
+      }
+
+      this.send(player, dataItems)
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastPlayerItemsPrices')
+    }
+  }
+
+  public tryBuyItem(player: Player, itemId: number, merchantId: number) {
+    try{
+      const merchant = player.currentRoom.npcs.find(x => x.npcId == merchantId)
+      if (merchant) {
+        const itemBought = merchant.sells.find(x => x.itemId === itemId)
+        if (itemBought) {
+          const hasMoney = player.bag.coins >= itemBought.storeSellPrice
+          const hasSpace = player.bag.items.length < player.bag.size
+          if (hasMoney && hasSpace) {
+            const itemBaseTaken = player.bag.getItemFromItemId(itemId)!
+            player.bag.coins -= itemBought.storeSellPrice
+            player.bag.addItem(itemBaseTaken)
+            this.unicastItemTraded(player, true, '', itemId, player.bag.coins, Command.BuyItemStore)
+          } else if (!hasMoney) {
+            this.unicastItemTraded(player, false, 'No gold!', itemId, player.bag.coins, Command.BuyItemStore)
+          } else {
+            this.unicastItemTraded(player, false, 'No space!', itemId, player.bag.coins, Command.BuyItemStore)
+          }
+        } else {
+          this.unicastItemTraded(player, false, 'Item not found!', itemId, player.bag.coins, Command.BuyItemStore)
+        }
+      } else {
+        this.unicastItemTraded(player, false, 'Merchant not found!', itemId, player.bag.coins, Command.BuyItemStore)
+      }
+    } catch (e) {
+      this.handleExceptions(e, player, 'tryBuyItem')
+    }
+  }
+
+  public trySellItem(player: Player, itemId: number, merchantId: number) {
+    try{
+      const merchant = player.currentRoom.npcs.find(x => x.npcId == merchantId)
+      if (merchant) {
+        const itemSold = player.bag.items.find(x => x.itemId === itemId)
+        if (itemSold) {
+          player.bag.coins += itemSold.playerSellPrice
+          player.bag.removeItem(itemSold)
+          this.unicastItemTraded(player, true, '', itemId, player.bag.coins, Command.SellItemStore)
+        } else {
+          this.unicastItemTraded(player, false, 'Item not found!', itemId, player.bag.coins, Command.SellItemStore)
+        }
+      } else {
+        this.unicastItemTraded(player, false, 'Trying to sell from far away', itemId, player.bag.coins, Command.SellItemStore)
+      }
+    } catch (e) {
+      this.handleExceptions(e, player, 'trySellItem')
+    }
+  }
+
+  public unicastItemTraded(player: Player, success: boolean, message: string, itemId: number, currentCoins: number, command: Command) {
+    try{
+      if (!success) {
+        this.send(player, `${command},${success},${message}`)
+      } else {
+        this.send(player, `${command},${success},'',${itemId},${currentCoins}`)
+      }
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastItemTraded')
+    }
+  }
+
   private async unicastPlayerDataLoaded(player: Player, dataHash: string) {
     try{
       const success = await this.loadPlayerDataFromHash(player, dataHash)
@@ -452,7 +551,8 @@ export class ClientHandler {
       } else {
         let data = `${Command.Load},${player.id},`+
         `${player.hp},${player.totalHp()},${player.totalAttack()},${player.totalDefense()},`+
-        `${player.level},${player.xp},${player.xpNeeded}@`
+        `${player.level},${player.xp},${player.xpNeeded},${this.serverVersion}@`
+        data += `${player.bag.coins};`
         for (const item of player.bag.items) {
           data += `${item.itemId},`
         }
@@ -651,7 +751,7 @@ export class ClientHandler {
   private findPlayer(adm: Player, name: string) {
     for (const room of this.map.rooms) {
       for (const player of room.players) {
-        if (player.name == name) {
+        if (player.name.toLowerCase() == name.toLowerCase()) {
           this.unicastMessage(adm, `${Rooms[player.currentRoom.id]} (${player.currentRoom.id})`)
           return
         }
@@ -690,7 +790,7 @@ export class ClientHandler {
 
   private checkNameDuplicate(name: string, player: Player): boolean {
     try {
-      return this.playerNames.some(pName => pName == name)
+      return this.playerNames.some(pName => pName.toLowerCase() == name.toLowerCase())
     } catch (e) {
       this.handleExceptions(e, player, 'checkNameDuplicate')
     }
@@ -840,6 +940,22 @@ export class ClientHandler {
         let eventData = this.parseEventDataString(eventDataString);
   
         switch (+eventData[0]) {
+          case Command.GetItemsStore:
+            this.unicastStoreItems(player, +eventData[1])
+            break
+          case Command.GetItemsPricesPlayer:
+            this.unicastPlayerItemsPrices(player)
+            break
+          case Command.BuyItemStore:
+            const playerBuyingItemId = +eventData[1]
+            const buyingFromMerchantId = +eventData[2]
+            this.tryBuyItem(player, playerBuyingItemId, buyingFromMerchantId)
+            break
+          case Command.SellItemStore:
+            const playerSellingItemId = +eventData[1]
+            const sellingToMerchantId = +eventData[2]
+            this.trySellItem(player, playerSellingItemId, sellingToMerchantId)
+            break
           case Command.ItemDrop:
             const droped = player.bag.dropItem(+eventData[1])
             if (droped) {

@@ -26,6 +26,11 @@ import { ParseLoadBag } from './ParseLoadBag'
 import { ParseEntityInfo } from './ParseEntityInfo'
 import { ParseHidePlayer } from './ParseHidePlayer'
 import { ParsePlayersInRoom } from './ParsePlayersInRoom'
+import { ParseOpenStore } from './ParseOpenStore'
+import { ParseStoreItems } from './ParseStoreItems'
+import { ParseBoughtItem } from './ParseBoughtItem'
+import { ParsePlayerSellItems } from './ParsePlayerSellItems'
+import { ParseSoldPlayerItem } from './ParseSoldPlayerItem'
 
 export class Parser {
     private client: GameClient
@@ -113,6 +118,21 @@ export class Parser {
                     break
                 case Command.EntityInfo:
                     this.parseEntityInformation(data)
+                    break
+                case Command.OpenStore:
+                    this.parseOpenStore(data)
+                    break
+                case Command.GetItemsStore:
+                    this.parseShowStoreItems(data)
+                    break
+                case Command.GetItemsPricesPlayer:
+                    this.parseShowPlayerSellItems(data)
+                    break
+                case Command.BuyItemStore:
+                    this.parseBuyStoreItem(data)
+                    break
+                case Command.SellItemStore:
+                    this.parseSellPlayerItem(data)
                     break
                 case Command.EraseSave:
                     this.client.resetPlayerData()
@@ -278,6 +298,36 @@ export class Parser {
         this.client.displayChat(chatData.message, chatData.playerId)
     }
 
+    private parseOpenStore(data: string) {
+        const openStoreData = new ParseOpenStore(data)
+
+        this.client.promptOpenStore(openStoreData.merchantId)
+    }
+
+    private parseShowStoreItems(data: string) {
+        const storeItemsData = new ParseStoreItems(data)
+
+        this.client.showStoreItems(storeItemsData.itemsIdsAndPrice)
+    }
+
+    private parseShowPlayerSellItems(data: string) {
+        const playerItemsData = new ParsePlayerSellItems(data)
+
+        this.client.showPlayerSellItems(playerItemsData.itemsIdsAndPrice)
+    }
+
+    private parseBuyStoreItem(data: string) {
+        const boughtItemData = new ParseBoughtItem(data)
+
+        this.client.boughtStoreItem(boughtItemData)
+    }
+
+    private parseSellPlayerItem(data: string) {
+        const soldItemData = new ParseSoldPlayerItem(data)
+
+        this.client.soldPlayerItem(soldItemData)
+    }
+
     private parseSave(data: string) {
         const saveData = new ParseSave(data)
 
@@ -287,6 +337,8 @@ export class Parser {
     private parseLoad(data: string) {
         const loadData = new ParseLoad(data)
 
+        this.client.gameVersion = loadData.gameVersion
+        this.client.canCheckUpdateData = true
         this.client.loadPlayerData(loadData)
     }
 
