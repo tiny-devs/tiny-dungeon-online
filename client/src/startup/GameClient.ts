@@ -18,6 +18,7 @@ import { ParseMove } from '../parser/ParseMove'
 import { ParseHidePlayer } from '../parser/ParseHidePlayer'
 import Store from '../entities/items/Store'
 import { ParseBoughtItem } from '../parser/ParseBoughtItem'
+import { ParseSoldPlayerItem } from '../parser/ParseSoldPlayerItem'
 
 export class GameClient {
     public loggedIn: boolean
@@ -233,7 +234,7 @@ export class GameClient {
         }
         this.storeSellBtn = mainElements.storeSellBtn as HTMLButtonElement
         this.storeSellBtn.onclick = () => {
-            //this.showSellItems()
+            this.sendGetPlayerItems()
         }
         
         this.checkMovement()
@@ -768,6 +769,7 @@ export class GameClient {
         this.storeElement.style.display = 'none'
         this.storePromptElement.style.display = 'none'
         this.storeItemsElement.style.display = 'none'
+        this.currentNpcStore.setStoreClosed()
         this.storeOpen = false
         this.currentNpcStore.merchantId = 0
     }
@@ -778,6 +780,7 @@ export class GameClient {
     }
 
     showStoreItems(itemsIdsAndPrice: any[]) {
+        this.currentNpcStore.setPlayerIsBuying()
         this.currentNpcStore.removeAllItems()
         for (const itemIdAndPrice of itemsIdsAndPrice) {
             this.currentNpcStore.addItem(itemIdAndPrice[0], itemIdAndPrice[1])
@@ -796,6 +799,35 @@ export class GameClient {
             this.bag.setGold(boughtData.currentCoins)
         } else {
             this.displayMessage(boughtData.message)
+        }
+    }
+
+    sendGetPlayerItems() {
+        this.storePromptElement.style.display = 'none'
+        this.ws!.send(`${Command.GetItemsPricesPlayer}`)
+    }
+
+    showPlayerSellItems(itemsIdsAndPrice: any[]) {
+        this.currentNpcStore.setPlayerIsSelling()
+        this.currentNpcStore.removeAllItems()
+        for (const itemIdAndPrice of itemsIdsAndPrice) {
+            this.currentNpcStore.addItem(itemIdAndPrice[0], itemIdAndPrice[1])
+        }
+        this.currentNpcStore.drawItems()
+        this.storeItemsElement.style.display = 'block'
+    }
+
+    trySellItem(itemId: number) {
+        this.ws!.send(`${Command.SellItemStore},${itemId},${this.currentNpcStore.merchantId}`)
+    }
+
+    soldPlayerItem(soldData: ParseSoldPlayerItem) {
+        if (soldData.success) {
+            this.currentNpcStore.removeItem(soldData.itemId)
+            this.bag.removeItem(soldData.itemId)
+            this.bag.setGold(soldData.currentCoins)
+        } else {
+            this.displayMessage(soldData.message)
         }
     }
 

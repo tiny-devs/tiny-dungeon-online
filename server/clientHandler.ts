@@ -469,6 +469,19 @@ export class ClientHandler {
     }
   }
 
+  public unicastPlayerItemsPrices(player: Player) {
+    try{
+      let dataItems = `${Command.GetItemsPricesPlayer},@`
+      for (const item of player.bag.items) {
+        dataItems += `${item.itemId}^${item.playerSellPrice},`
+      }
+
+      this.send(player, dataItems)
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastPlayerItemsPrices')
+    }
+  }
+
   public tryBuyItem(player: Player, itemId: number, merchantId: number) {
     try{
       const merchant = player.currentRoom.npcs.find(x => x.npcId == merchantId)
@@ -481,32 +494,52 @@ export class ClientHandler {
             const itemBaseTaken = player.bag.getItemFromItemId(itemId)!
             player.bag.coins -= itemBought.storeSellPrice
             player.bag.addItem(itemBaseTaken)
-            this.unicastItemBought(player, true, '', itemId, player.bag.coins)
+            this.unicastItemTraded(player, true, '', itemId, player.bag.coins, Command.BuyItemStore)
           } else if (!hasMoney) {
-            this.unicastItemBought(player, false, 'No gold!', itemId, player.bag.coins)
+            this.unicastItemTraded(player, false, 'No gold!', itemId, player.bag.coins, Command.BuyItemStore)
           } else {
-            this.unicastItemBought(player, false, 'No space!', itemId, player.bag.coins)
+            this.unicastItemTraded(player, false, 'No space!', itemId, player.bag.coins, Command.BuyItemStore)
           }
         } else {
-          this.unicastItemBought(player, false, 'Item not found!', itemId, player.bag.coins)
+          this.unicastItemTraded(player, false, 'Item not found!', itemId, player.bag.coins, Command.BuyItemStore)
         }
       } else {
-        this.unicastItemBought(player, false, 'Merchant not found!', itemId, player.bag.coins)
+        this.unicastItemTraded(player, false, 'Merchant not found!', itemId, player.bag.coins, Command.BuyItemStore)
       }
     } catch (e) {
       this.handleExceptions(e, player, 'tryBuyItem')
     }
   }
 
-  public unicastItemBought(player: Player, success: boolean, message: string, itemId: number, currentCoins: number) {
+  public trySellItem(player: Player, itemId: number, merchantId: number) {
     try{
-      if (!success) {
-        this.send(player, `${Command.BuyItemStore},${success},${message}`)
+      const merchant = player.currentRoom.npcs.find(x => x.npcId == merchantId)
+      if (merchant) {
+        const itemSold = player.bag.items.find(x => x.itemId === itemId)
+        if (itemSold) {
+          player.bag.coins += itemSold.playerSellPrice
+          player.bag.removeItem(itemSold)
+          this.unicastItemTraded(player, true, '', itemId, player.bag.coins, Command.SellItemStore)
+        } else {
+          this.unicastItemTraded(player, false, 'Item not found!', itemId, player.bag.coins, Command.SellItemStore)
+        }
       } else {
-        this.send(player, `${Command.BuyItemStore},${success},'',${itemId},${currentCoins}`)
+        this.unicastItemTraded(player, false, 'Trying to sell from far away', itemId, player.bag.coins, Command.SellItemStore)
       }
     } catch (e) {
-      this.handleExceptions(e, player, 'unicastItemBought')
+      this.handleExceptions(e, player, 'trySellItem')
+    }
+  }
+
+  public unicastItemTraded(player: Player, success: boolean, message: string, itemId: number, currentCoins: number, command: Command) {
+    try{
+      if (!success) {
+        this.send(player, `${command},${success},${message}`)
+      } else {
+        this.send(player, `${command},${success},'',${itemId},${currentCoins}`)
+      }
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastItemTraded')
     }
   }
 
@@ -910,10 +943,18 @@ export class ClientHandler {
           case Command.GetItemsStore:
             this.unicastStoreItems(player, +eventData[1])
             break
+          case Command.GetItemsPricesPlayer:
+            this.unicastPlayerItemsPrices(player)
+            break
           case Command.BuyItemStore:
-            const itemId = +eventData[1]
-            const merchantId = +eventData[2]
-            this.tryBuyItem(player, itemId, merchantId)
+            const playerBuyingItemId = +eventData[1]
+            const buyingFromMerchantId = +eventData[2]
+            this.tryBuyItem(player, playerBuyingItemId, buyingFromMerchantId)
+            break
+          case Command.SellItemStore:
+            const playerSellingItemId = +eventData[1]
+            const sellingToMerchantId = +eventData[2]
+            this.trySellItem(player, playerSellingItemId, sellingToMerchantId)
             break
           case Command.ItemDrop:
             const droped = player.bag.dropItem(+eventData[1])

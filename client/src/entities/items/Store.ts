@@ -10,15 +10,33 @@ export default class Store {
     public itemsHolderEl: HTMLElement
     private client: GameClient
     private itemsCount: number = 0
+    private isPlayerBuying: boolean = false
+    private isPlayerSelling: boolean = false
 
     constructor(client: GameClient) {
         this.itemsHolderEl = document.getElementById('store-items')!
         this.client = client
     }
 
+    public setPlayerIsBuying() {
+        this.isPlayerBuying = true
+        this.isPlayerSelling = false
+    }
+
+    public setPlayerIsSelling() {
+        this.isPlayerBuying = false
+        this.isPlayerSelling = true
+    }
+
+    public setStoreClosed() {
+        this.isPlayerBuying = false
+        this.isPlayerSelling = false
+        this.merchantId = 0
+    }
+
     public drawItems() {
         for (const item of this.items) {
-            item.draw()
+            item.draw(this.isPlayerBuying)
         }
     }
 
@@ -27,17 +45,39 @@ export default class Store {
             this.itemsCount++
             const itemSprite = this.getItemSprite(itemId)
             const canvasId = this.addCanvasNode(itemId, itemPrice)
-            this.items.push(new StoreItem(this,itemId,itemSprite,canvasId, itemPrice))
+            this.items.push(new StoreItem(this,itemId,itemSprite,canvasId,itemPrice))
+        }
+    }
+
+    public removeItem(itemId: ItemsIds) {
+        if (itemId != ItemsIds.Empty) {
+            const index = this.items.map(item => { return item.itemId; }).indexOf(itemId);
+            const canvasId = this.items[index]?.layer.canvasId
+            if (index > -1) {
+                this.items.splice(index, 1);
+            }
+            if (canvasId) {
+                const divBtn = document.getElementById(`div-${canvasId}`)!
+                this.itemsHolderEl.removeChild(divBtn)
+            }
         }
     }
 
     public clickItem(e: Partial<MouseEvent>, itemId: ItemsIds) {
         if (e.type === 'mouseup') {
             if (e.button == 0) {
-                this.client.tryBuyItem(itemId)
+                if (this.isPlayerBuying) {
+                    this.client.tryBuyItem(itemId)
+                } else if (this.isPlayerSelling) {
+                    this.client.trySellItem(itemId)
+                }
             }
         } else {
-            this.client.tryBuyItem(itemId)
+            if (this.isPlayerBuying) {
+                this.client.tryBuyItem(itemId)
+            } else if (this.isPlayerSelling) {
+                this.client.trySellItem(itemId)
+            }
         }
     }
 

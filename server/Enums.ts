@@ -30,9 +30,9 @@ export enum Command {
     PlayersInRoom,
     OpenStore,
     GetItemsStore,
+    GetItemsPricesPlayer,
     BuyItemStore,
     SellItemStore,
-    CloseStore,
 }
 
 export enum Direction {

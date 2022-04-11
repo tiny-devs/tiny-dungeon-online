@@ -72,12 +72,14 @@ export default class Bag {
     public removeItem(itemId: ItemsIds) {
         if (itemId != ItemsIds.Empty) {
             const index = this.items.map(item => { return item.itemId; }).indexOf(itemId);
-            const canvasId = this.items[index].layer.canvasId
+            const canvasId = this.items[index]?.layer.canvasId
             if (index > -1) {
                 this.items.splice(index, 1);
             }
-            const canvasBtn = document.getElementById(canvasId)!
-            this.itemsHolderEl.removeChild(canvasBtn)
+            if (canvasId) {
+                const canvasBtn = document.getElementById(canvasId)!
+                this.itemsHolderEl.removeChild(canvasBtn)
+            }
         }
     }
 

@@ -1,3 +1,4 @@
+import { Color } from "../../board/map/tiles/Color"
 import { ItemsIds } from "../../models/Enums"
 import ItemCanvas from "./ItemCanvas"
 import Store from "./Store"
@@ -18,7 +19,7 @@ export default class StoreItem {
         this.layer = new ItemCanvas(itemCanvasId)
     }
 
-    draw() {
+    draw(isPlayerBuying: boolean) {
         this.layer.ctx.beginPath();
 
         for (let column = 0; column < this.tileSize; column++) {
@@ -42,7 +43,12 @@ export default class StoreItem {
         priceTag.style.textAlign = 'center'
         priceTag.style.maxWidth = '32px'
         priceTag.style.marginBottom = '5px'
-        priceTag.style.color = 'red'
+        if (isPlayerBuying) {
+            priceTag.style.color = Color.Red
+        } else {
+            priceTag.style.color = Color.Green
+        }
+        
         this.layer.c.parentNode!.appendChild(priceTag)
     }
 
