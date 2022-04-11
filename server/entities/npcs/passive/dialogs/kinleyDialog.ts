@@ -6,8 +6,6 @@ export default class KinleyDialog extends DialogBase {
         'My name is Kinley',
         'my friend there is Peter',
         'We have some of the best items',
-        'to sell around here',
-        'but we are not yet open',
-        'come back another time',''])
+        'to sell around here',''])
     }
 }
