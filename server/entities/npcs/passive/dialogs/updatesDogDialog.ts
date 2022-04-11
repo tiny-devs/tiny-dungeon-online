@@ -5,9 +5,11 @@ export default class UpdatesDogDialog extends DialogBase {
         super(['Hi, Im the woofdates dog',
         'The most recent woofdate is...',
         'STORES!!!1!!!1!!',
-        'The first store has finally opened',
-        'head south to Subitnof',
+        'The stores have finally opened',
+        'The closest one is south',
+        'in Subitnof, go there',
         'and talk to Oswald!',
+        '(theres no way to drop gp yet...)',
         'woof woof!',
         '-woofdate read-'])
     }
