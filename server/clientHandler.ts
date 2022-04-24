@@ -10,7 +10,7 @@ import { Admins } from "./data/admins.ts"
 import { badWords } from "./data/badWords.ts"
 
 export class ClientHandler {
-  public serverVersion: number = 1
+  public serverVersion: number
   public boardColumns: number = 16
   public boardRows: number = 16
   public playerNames: string[] = []
@@ -25,6 +25,7 @@ export class ClientHandler {
   constructor(serverConfigs: any) {
     this.boardRows = serverConfigs.boardRows
     this.boardColumns = serverConfigs.boardColumns
+    this.serverVersion = serverConfigs.version
 
     this.map = new Map(this)
 
@@ -32,9 +33,11 @@ export class ClientHandler {
 
     this.db = new ConnectionManager()
     this.topPlayers = []
-     this.db.getRank().then(result => {
-      this.topPlayers = result
-    })
+    if (this.db.isConnected) {
+      this.db.getRank().then(result => {
+        this.topPlayers = result
+      })
+    }
     
     this.regexBadWords = new RegExp(badWords.map((word) => {
       let improvedWord = `(${word.split("").join("+(\\W|_)*")})`
@@ -588,7 +591,9 @@ export class ClientHandler {
   private async loadPlayerDataFromHash(player: Player, dataHash: string): Promise<boolean> {
     try{
       const data = await this.playerDataManager.decryptUserData(dataHash)
-      return player.loadPlayerDataFromSave(data)
+      const playerLoaded = player.loadPlayerDataFromSave(data)
+      this.db.saveAccount({id: player.id, data: data})
+      return playerLoaded
     } catch (e) {
       this.handleExceptions(e, player, 'loadPlayerDataFromHash')
       return false

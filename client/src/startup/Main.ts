@@ -194,7 +194,9 @@ export class Main {
 
                     if (this.isMobile()) {
                         const title = document.getElementById('title')!
-                        title.style.fontSize = '1em'
+                        if (title) {
+                            title.style.fontSize = '1em'
+                        }
                     }
                     this.startGame()
                 } else {
