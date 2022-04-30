@@ -70,6 +70,13 @@
       #coins {
         border: 1px solid #e5e5e5;
         margin: 0px;
+        cursor: pointer;
+      }
+
+      #coins-drop {
+        border: 1px solid #e5e5e5;
+        margin: 0px;
+        display: none;
       }
 
       #bag {
@@ -369,6 +376,12 @@
             <div id="xp-bar" class="bar" style="width:0%"></div>
           </div>
           <h3 id="coins">GP: 0</h3>
+          <div id="coins-drop">
+            <div id="coins-to-drop">0</div><br/>
+            <input type="range" value="0" step="1" min="0" id="amount-coins-drop" style="width: 120px;"></input><br/>
+            <input type="button" value="cancel" id="cancel-coins-drop"></input>
+            <input type="button" value="drop" id="confirm-coins-drop"></input>
+          </div>
           <div id="bag">
             <div id="items"></div>
           </div>

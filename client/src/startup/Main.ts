@@ -21,6 +21,11 @@ export class Main {
     public gearElement: HTMLElement
     public exitElement: HTMLElement
     public coinsElement: HTMLElement
+    public coinsDropElement: HTMLElement
+    public coinsToDropElement: HTMLElement
+    public amountCoinsDropElement: HTMLElement
+    public cancelCoinsDropElement: HTMLElement
+    public confirmCoinsDropElement: HTMLElement
     public hpTextElement: HTMLElement
     public xpTextElement: HTMLElement
     public hpBarElement: HTMLElement
@@ -79,6 +84,11 @@ export class Main {
         this.gearElement = document.getElementById('gear')!
         this.exitElement = document.getElementById('exit')!
         this.coinsElement = document.getElementById('coins')!
+        this.coinsDropElement = document.getElementById('coins-drop')!
+        this.amountCoinsDropElement = document.getElementById('amount-coins-drop')!
+        this.coinsToDropElement = document.getElementById('coins-to-drop')!
+        this.cancelCoinsDropElement = document.getElementById('cancel-coins-drop')!
+        this.confirmCoinsDropElement = document.getElementById('confirm-coins-drop')!
         this.hpTextElement = document.getElementById('hp-text')!
         this.xpTextElement = document.getElementById('xp-text')!
         this.hpBarElement = document.getElementById('hp-bar')!
@@ -194,7 +204,9 @@ export class Main {
 
                     if (this.isMobile()) {
                         const title = document.getElementById('title')!
-                        title.style.fontSize = '1em'
+                        if (title) {
+                            title.style.fontSize = '1em'
+                        }
                     }
                     this.startGame()
                 } else {

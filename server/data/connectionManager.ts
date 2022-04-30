@@ -3,7 +3,8 @@ import { Client } from "https://deno.land/x/mysql@v2.10.2/mod.ts";
 enum LastActionEnum {
     None,
     GetRank,
-    UpdateRank
+    UpdateRank,
+    SaveAccount
 }
 
 export default class ConnectionManager {
@@ -11,6 +12,7 @@ export default class ConnectionManager {
     public isConnected: boolean = false
     private lastAction: LastActionEnum = LastActionEnum.None
     private currentRankData: {id:string,name:string,level:number}[] = []
+    private currentAccount: {id:string,data:string} = {id:'',data:''}
     private reconnectAttempts: number = 0
     private hostname: string = ''
     private username: string = ''
@@ -21,6 +23,37 @@ export default class ConnectionManager {
         this.client = new Client()
         this.parseConnectionString()
         this.connect()
+    }
+
+    public async saveAccount(account: {id:string,data:string}) {
+        try {
+            this.currentAccount = account
+
+            const exists = await this.client.query(`select * from tinyaccount where PlayerId = ${account.id}`);
+            if (exists) {
+                await this.client.execute(
+                    `update tinyaccount set ?? = ? where PlayerId = ${account.id}`,
+                    ["PlayerData", account.data]);
+            } else {
+                await this.client.execute(
+                    `insert into tinyaccount (PlayerId,PlayerData) VALUES (?,?)`,
+                    [account.id, account.data]);
+            }
+            
+        } catch (e) {
+            if (!e.message.includes('Unconnected')) {
+                this.client.close()
+                this.isConnected = false
+                console.log(`DB error:`)
+                console.log(e)
+    
+                const dbAvailable = !e.name.includes('AddrNotAvailable')
+                if (dbAvailable) {
+                    this.lastAction = LastActionEnum.SaveAccount
+                    this.reconnect()
+                }
+            }
+        }
     }
 
     public async getRank(): Promise<{id:string,name:string,level:number}[]> {
@@ -89,6 +122,7 @@ export default class ConnectionManager {
 
     public async connect() {
         try {
+            console.log(`trying to connect: ${this.hostname}...`)
             await this.client.connect({
                 hostname: this.hostname,
                 username: this.username,
@@ -98,9 +132,11 @@ export default class ConnectionManager {
 
             if (this.client.pool?.available) {
                 this.isConnected = true
+                console.log(`connected!`)
             }
         } catch (e) {
             this.isConnected = false
+            console.log(`not connected`)
             console.log(e)
         }
     }
@@ -136,6 +172,9 @@ export default class ConnectionManager {
                 console.log('reconnected to db!')
                 if (this.lastAction == LastActionEnum.UpdateRank) {
                     this.updateRank(this.currentRankData)
+                }
+                if (this.lastAction == LastActionEnum.SaveAccount) {
+                    this.saveAccount(this.currentAccount)
                 }
             }
         },5000)
