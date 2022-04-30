@@ -31,6 +31,7 @@ import { ParseStoreItems } from './ParseStoreItems'
 import { ParseBoughtItem } from './ParseBoughtItem'
 import { ParsePlayerSellItems } from './ParsePlayerSellItems'
 import { ParseSoldPlayerItem } from './ParseSoldPlayerItem'
+import { ParseGoldDroped } from './ParseGoldDroped'
 
 export class Parser {
     private client: GameClient
@@ -85,6 +86,9 @@ export class Parser {
                     break
                 case Command.ItemDroped:
                     this.parseItemDroped(data)
+                    break
+                case Command.GoldDroped:
+                    this.parseGoldDroped(data)
                     break
                 case Command.Stats:
                     this.parseStats(data)
@@ -226,6 +230,12 @@ export class Parser {
         const dropData = new ParseItemDroped(data)
 
         this.client.bag.removeItem(dropData.itemId)
+    }
+
+    private parseGoldDroped(data: string) {
+        const dropData = new ParseGoldDroped(data)
+
+        this.client.bag.addGold(-dropData.amount)
     }
 
     private parseItemPick(data: string) {

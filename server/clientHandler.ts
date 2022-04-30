@@ -401,6 +401,14 @@ export class ClientHandler {
     }
   }
 
+  private unicastPlayerDropedGold(player: Player, amount: number): void {
+    try{
+      this.send(player,`${Command.GoldDroped},${amount}`)
+    } catch (e) {
+      this.handleExceptions(e, player, 'unicastPlayerDropedGold')
+    }
+  }
+
   private async unicastEntityInfo(player: Player, x: number, y: number) {
     try{
       const entityInfo = player.currentRoom.getEntityInfo(x, y)
@@ -965,6 +973,12 @@ export class ClientHandler {
             const droped = player.bag.dropItem(+eventData[1])
             if (droped) {
               this.unicastPlayerDroped(player, +eventData[1])
+            }
+            break
+          case Command.GoldDroped:
+            const dropedGold = player.bag.dropGold(+eventData[1])
+            if (dropedGold) {
+              this.unicastPlayerDropedGold(player, +eventData[1])
             }
             break
           case Command.ItemUse:

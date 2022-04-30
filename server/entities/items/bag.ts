@@ -2,6 +2,7 @@ import { Items, ItemType } from "../../Enums.ts"
 import ItemBase from "./itemBase.ts"
 import { Player } from "../player.ts"
 import WoodenHelm from "./woodenHelm.ts"
+import Coins from "./coins.ts"
 import WoodenArmour from "./woodenArmour.ts"
 import WoodenLegs from "./woodenLegs.ts"
 import WoodenDagger from "./woodenDagger.ts"
@@ -77,6 +78,17 @@ export default class Bag {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
                 this.player.currentRoom.addItem(this.player.y,this.player.x,item)
                 this.removeItem(item)
+                return true
+            }
+        }
+        return false
+    }
+
+    public dropGold(amount: number): boolean {
+        if (amount <= this.coins) {
+            if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
+                this.player.currentRoom.addItem(this.player.y,this.player.x,new Coins(1,amount))
+                this.coins -= amount
                 return true
             }
         }

@@ -41,6 +41,11 @@ export class GameClient {
     private exitElement: HTMLElement
     private exit: HTMLElement
     private coinsElement: HTMLElement
+    private coinsDropElement: HTMLElement
+    private coinsToDropElement: HTMLElement
+    private amountCoinsDropElement: HTMLInputElement
+    private cancelCoinsDropElement: HTMLElement
+    private confirmCoinsDropElement: HTMLElement
     private hpTextElement: HTMLElement
     private xpTextElement: HTMLElement
     private hpBarElement: HTMLElement
@@ -109,6 +114,8 @@ export class GameClient {
         this.storePromptElement = mainElements.storePromptElement
         this.storeItemsElement = mainElements.storeItemsElement
         this.coinsElement = mainElements.coinsElement
+        this.coinsDropElement = mainElements.coinsDropElement
+        this.coinsToDropElement = mainElements.coinsToDropElement
         this.gearElement = mainElements.gearElement
         this.exitElement = mainElements.exitElement
         this.hpTextElement = mainElements.hpTextElement
@@ -236,6 +243,23 @@ export class GameClient {
         this.storeSellBtn.onclick = () => {
             this.sendGetPlayerItems()
         }
+
+        this.amountCoinsDropElement = mainElements.amountCoinsDropElement as HTMLInputElement
+        this.amountCoinsDropElement.onchange = () => {
+            this.coinsToDropElement.innerHTML = this.amountCoinsDropElement.value
+        }
+        this.coinsElement.onclick = () => {
+            this.showCoinsDropElement()
+        }
+        this.cancelCoinsDropElement = mainElements.cancelCoinsDropElement as HTMLButtonElement
+        this.cancelCoinsDropElement.onclick = () => {
+            this.hideCoinsDropElement()
+        }
+        this.confirmCoinsDropElement = mainElements.confirmCoinsDropElement as HTMLButtonElement
+        this.confirmCoinsDropElement.onclick = () => {
+            this.dropCoins()
+        }
+        
         
         this.checkMovement()
         this.showStatusOnTab()
@@ -442,6 +466,7 @@ export class GameClient {
     
                 if (isValidMove && !this.isTyping && direction !== 0) {
                     this.ws!.send(`${Command.Move},${direction}`)
+                    this.hideCoinsDropElement()
                     if (this.storeOpen) {
                         this.closeStore()
                     }
@@ -829,6 +854,25 @@ export class GameClient {
         } else {
             this.displayMessage(soldData.message)
         }
+    }
+
+    showCoinsDropElement() {
+        this.coinsElement.style.display = 'none'
+        this.coinsDropElement.style.display = 'block'
+        this.amountCoinsDropElement.max = String(this.bag.coins)
+    }
+
+    hideCoinsDropElement() {
+        this.coinsElement.style.display = 'block'
+        this.coinsDropElement.style.display = 'none'
+        this.amountCoinsDropElement.value = '0'
+        this.coinsToDropElement.innerHTML = '0'
+    }
+
+    dropCoins() {
+        const amount = this.amountCoinsDropElement.value
+        this.ws!.send(`${Command.GoldDroped},${amount}`)
+        this.hideCoinsDropElement()
     }
 
     sendExitRequest() {

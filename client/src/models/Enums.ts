@@ -40,6 +40,7 @@ export enum Command {
     GetItemsPricesPlayer,
     BuyItemStore,
     SellItemStore,
+    GoldDroped,
 }
 
 export enum Rooms {
