@@ -871,7 +871,12 @@ export class GameClient {
 
     dropCoins() {
         const amount = this.amountCoinsDropElement.value
-        this.ws!.send(`${Command.GoldDroped},${amount}`)
+        const isANumber = !isNaN(Number(amount))
+        if (isANumber) {
+            if (Number(amount) > 0) {
+                this.ws!.send(`${Command.GoldDroped},${amount}`)
+            }
+        }
         this.hideCoinsDropElement()
     }
 

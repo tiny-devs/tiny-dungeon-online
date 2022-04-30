@@ -85,7 +85,7 @@ export default class Bag {
     }
 
     public dropGold(amount: number): boolean {
-        if (amount <= this.coins) {
+        if (amount > 0 && amount <= this.coins) {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
                 this.player.currentRoom.addItem(this.player.y,this.player.x,new Coins(1,amount))
                 this.coins -= amount
