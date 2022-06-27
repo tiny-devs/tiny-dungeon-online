@@ -1,6 +1,6 @@
-import * as flags from "https://deno.land/std@0.136.0/flags/mod.ts"
-import { serve } from "https://deno.land/std@0.136.0/http/server.ts"
-import { serveFile } from "https://deno.land/std@0.136.0/http/file_server.ts"
+import * as flags from "https://deno.land/std@0.145.0/flags/mod.ts"
+import { serve } from "https://deno.land/std@0.145.0/http/server.ts"
+import { serveFile } from "https://deno.land/std@0.145.0/http/file_server.ts"
 import { ClientHandler } from "./server/clientHandler.ts"
 
 export class Server {

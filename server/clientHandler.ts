@@ -33,11 +33,9 @@ export class ClientHandler {
 
     this.db = new ConnectionManager()
     this.topPlayers = []
-    if (this.db.isConnected) {
-      this.db.getRank().then(result => {
-        this.topPlayers = result
-      })
-    }
+    this.db.getRank().then(result => {
+      this.topPlayers = result
+    })
     
     this.regexBadWords = new RegExp(badWords.map((word) => {
       let improvedWord = `(${word.split("").join("+(\\W|_)*")})`
