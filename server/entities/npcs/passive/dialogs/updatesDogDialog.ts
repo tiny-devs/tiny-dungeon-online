@@ -4,10 +4,11 @@ export default class UpdatesDogDialog extends DialogBase {
     constructor() {
         super(['Hi, Im the woofdates dog',
         'The most recent woofdate is...',
-        'you can drop money now!',
-        'this update will allow player transactions',
-        'and stores wont be the only way to buy or sell',
-        'enjoy!',
+        'DONT DIE!!!',
+        'death has always been soft here, but...',
+        'now death will remove 10% of XP!',
+        'in higher levels this can mean HOURS of grind',
+        'so BECAREFUL!',
         'woof woof!',
         '-woofdate read-'])
     }

@@ -401,7 +401,7 @@ export class Player {
             this.xp = isLevelUp ? 0 : (amount + this.xp)
             this.level = isLevelUp ? this.level+1 : this.level
             this.hp = isLevelUp ? this.hp+1 : this.hp
-            this.xpNeeded = +((this.level**2)+10).toFixed(2)
+            this.xpNeeded = this.getXpNeededForLevel(this.level)
         }
 
         this.clientHandler.unicastPlayerStats(this)
@@ -420,6 +420,7 @@ export class Player {
     
         this.hp -= actualDamage < 0 ? 0 : actualDamage
         if (this.hp <= 0) {
+            this.applyXpPenaltyForDeath()
             this.hp = this.totalHp()
             this.respawn()
         }
@@ -549,5 +550,18 @@ export class Player {
     private delayMove(): void {
         this.canMove = false;
         setTimeout(() => { this.canMove = true; }, 100);
+    }
+
+    private getXpNeededForLevel(level: number) {
+        return +((level**2)+10).toFixed(2)
+    }
+
+    private applyXpPenaltyForDeath(percent: number = 0.1) {
+        const percentXpToRemove = Math.ceil(percent * this.xp)
+        if (this.xp - percentXpToRemove > 0) {
+            this.xp = this.xp - percentXpToRemove
+        } else {
+            this.xp = 0
+        }
     }
 }

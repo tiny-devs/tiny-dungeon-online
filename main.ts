@@ -5,7 +5,7 @@ const serverConfigs = {
     defaultPort: 3000,
     boardRows: 16,
     boardColumns: 16,
-    version: 2,
+    version: 3,
 }
 let server = new Server(serverConfigs);
 
