@@ -72,7 +72,7 @@ export default class Store {
                     this.client.trySellItem(itemId)
                 }
             }
-        } else {
+        } else if (e.type === 'touchend') {
             if (this.isPlayerBuying) {
                 this.client.tryBuyItem(itemId)
             } else if (this.isPlayerSelling) {
