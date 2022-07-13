@@ -1,13 +1,13 @@
-import * as flags from "https://deno.land/std@0.145.0/flags/mod.ts"
-import { serve } from "https://deno.land/std@0.145.0/http/server.ts"
-import { serveFile } from "https://deno.land/std@0.145.0/http/file_server.ts"
+import * as flags from "https://deno.land/std@0.148.0/flags/mod.ts"
+import { serve } from "https://deno.land/std@0.148.0/http/server.ts"
+import { serveFile } from "https://deno.land/std@0.148.0/http/file_server.ts"
 import { ClientHandler } from "./server/clientHandler.ts"
 
 export class Server {
   private argPort: number = flags.parse(Deno.args).port
   private port: string
   private clientHandler: ClientHandler
-  private publicFolder: string = "./client/public"
+  private publicFolder = "./client/public"
   private publicFiles: string[] = []
 
   constructor(serverConfigs: any) {

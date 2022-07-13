@@ -11,10 +11,10 @@ import { badWords } from "./data/badWords.ts"
 
 export class ClientHandler {
   public serverVersion: number
-  public boardColumns: number = 16
-  public boardRows: number = 16
+  public boardColumns = 16
+  public boardRows = 16
   public playerNames: string[] = []
-  public maxPlayers: number = 50
+  public maxPlayers = 50
   public map: Map
   private topPlayers: {id:string,name:string,level:number}[]
   private db: ConnectionManager
@@ -113,7 +113,7 @@ export class ClientHandler {
   public nearbycastPlayerMove(playerMoved: Player, direction: Direction): void {
     let currentPlayer = null
     try{
-      let isValid = playerMoved.move(direction)
+      const isValid = playerMoved.move(direction)
       if (playerMoved.changedRoom()) {
         const newRoom = this.map.getRoomById(playerMoved.currentRoomId)
         this.switchRooms(playerMoved, newRoom)
@@ -407,7 +407,7 @@ export class ClientHandler {
     }
   }
 
-  private async unicastEntityInfo(player: Player, x: number, y: number) {
+  private unicastEntityInfo(player: Player, x: number, y: number) {
     try{
       const entityInfo = player.currentRoom.getEntityInfo(x, y)
       if (entityInfo.length) {
@@ -617,7 +617,7 @@ export class ClientHandler {
 
   public updateRank() {
     let updated = false
-    let players = [] as any[]
+    const players = [] as any[]
     for (const room of this.map.rooms) {
       for (const player of room.players) {
         players.push(player)
@@ -660,14 +660,14 @@ export class ClientHandler {
   private executeAdminCommand(adm: Player, cmd: string) {
     try {
       const command = cmd.split(' ')[0]
-      let args = cmd.split(' ')!
+      const args = cmd.split(' ')!
+      const message = args.join(' ')
       args.shift()
       switch (command) {
         case '/kick':
           this.kickPlayer(args[0], 'you were kicked by admin')
           break
         case '/global':
-          const message = args.join(' ')
           this.broadcastMessage(message)
           break
         case '/find':
@@ -727,7 +727,7 @@ export class ClientHandler {
             success = true
           }
         } catch (e) {
-          console.log('source: removeAllClosedSockets')
+          console.log('source: removeAllClosedSockets', currentPlayer?.name)
           console.log(e)
         }
       }
@@ -737,7 +737,7 @@ export class ClientHandler {
   }
 
   private getAllPlayers() {
-    let playersReturn = []
+    const playersReturn = []
     for (const room of this.map.rooms) {
       for (const player of room.players) {
         playersReturn.push(player.getReturnData())
@@ -775,7 +775,7 @@ export class ClientHandler {
     try {
       const roomsAny = Rooms as any
       const placeUpperCase = place.charAt(0).toUpperCase() + place.slice(1)
-      let roomId = roomsAny[placeUpperCase]
+      const roomId = roomsAny[placeUpperCase]
       if (roomId) {
         adm.teleport(roomId)
       }
@@ -789,7 +789,7 @@ export class ClientHandler {
     try {
       const itemsAny = Items as any
       const itemNameUpperCase = itemName.charAt(0).toUpperCase() + itemName.slice(1)
-      let item = itemsAny[itemNameUpperCase]
+      const item = itemsAny[itemNameUpperCase]
       if (item) {
         adm.spawnItem(item)
       }
@@ -848,7 +848,7 @@ export class ClientHandler {
     }
   }
 
-  private async delay(ms: number): Promise<unknown> {
+  private delay(ms: number): Promise<unknown> {
     return new Promise( resolve => setTimeout(resolve, ms) );
   }
 
@@ -887,7 +887,7 @@ export class ClientHandler {
       matrix = eventDataString.substr(eventDataString.indexOf('['), eventDataString.length)
     }
 
-    let eventData = rawDataString.split(',')
+    const eventData = rawDataString.split(',')
     if (matrix !== '') {
       eventData.push(matrix)
     }
@@ -917,7 +917,7 @@ export class ClientHandler {
     return false
   }
 
-  public async handleClient(ws: WebSocket): Promise<void> {
+  public handleClient(ws: WebSocket): void {
     try {
       let player: Player | null = null;
       ws.onopen = () => player = this.handleOpenClient(ws);
@@ -948,7 +948,7 @@ export class ClientHandler {
       const eventDataString = m.data as string
   
       try {
-        let eventData = this.parseEventDataString(eventDataString);
+        const eventData = this.parseEventDataString(eventDataString);
   
         switch (+eventData[0]) {
           case Command.GetItemsStore:
@@ -957,29 +957,33 @@ export class ClientHandler {
           case Command.GetItemsPricesPlayer:
             this.unicastPlayerItemsPrices(player)
             break
-          case Command.BuyItemStore:
+          case Command.BuyItemStore: {
             const playerBuyingItemId = +eventData[1]
             const buyingFromMerchantId = +eventData[2]
             this.tryBuyItem(player, playerBuyingItemId, buyingFromMerchantId)
             break
-          case Command.SellItemStore:
+          }
+          case Command.SellItemStore: {
             const playerSellingItemId = +eventData[1]
             const sellingToMerchantId = +eventData[2]
             this.trySellItem(player, playerSellingItemId, sellingToMerchantId)
             break
-          case Command.ItemDrop:
+          }
+          case Command.ItemDrop: {
             const droped = player.bag.dropItem(+eventData[1])
             if (droped) {
               this.unicastPlayerDroped(player, +eventData[1])
             }
             break
-          case Command.GoldDroped:
+          }
+          case Command.GoldDroped: {
             const dropedGold = player.bag.dropGold(+eventData[1])
             if (dropedGold) {
               this.unicastPlayerDropedGold(player, +eventData[1])
             }
             break
-          case Command.ItemUse:
+          }
+          case Command.ItemUse: {
             const result = player.bag.useItem(+eventData[1])
             if (result.used) {
               this.unicastItemUse(player,+eventData[1])
@@ -988,13 +992,15 @@ export class ClientHandler {
               this.unicastPlayerStats(player)
             }
             break
-          case Command.ItemRemove:
+          }
+          case Command.ItemRemove: {
             const removed = player.gear.remove(+eventData[1])
             if (removed) {
               this.unicastItemRemove(player, +eventData[1])
               this.unicastPlayerStats(player)
             }
             break
+          }
           case Command.Chat:
             if (eventData[1][0] == '/' && this.admins.some(a => a.name == player.name)) {
               this.executeAdminCommand(player, eventData[1])
@@ -1009,7 +1015,7 @@ export class ClientHandler {
           case Command.Move:
             this.nearbycastPlayerMove(player, +eventData[1])
             break
-          case Command.Login:
+          case Command.Login: {
             const adminAccess = this.admins.find(a => a.name == eventData[1])
             if (adminAccess) {
               if (eventData[4] != '0') {
@@ -1067,8 +1073,9 @@ export class ClientHandler {
             }
             player.savePlayer()
             break
+          }
           case Command.EntityInfo:
-            await this.unicastEntityInfo(player, Number(eventData[1]), Number(eventData[2]))
+            this.unicastEntityInfo(player, Number(eventData[1]), Number(eventData[2]))
             break
           case Command.Exit:
             exit = true
@@ -1096,7 +1103,7 @@ export class ClientHandler {
     }
   }
 
-  private async handleClientClose(player: Player | null) {
+  private handleClientClose(player: Player | null) {
     if (player) {
       this.logPlayerOut(player)
       this.broadcastPlayerConnection(player.id)
