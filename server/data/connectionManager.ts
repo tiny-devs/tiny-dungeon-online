@@ -9,15 +9,15 @@ enum LastActionEnum {
 
 export default class ConnectionManager {
     public client: Client
-    public isConnected: boolean = false
+    public isConnected = false
     private lastAction: LastActionEnum = LastActionEnum.None
     private currentRankData: {id:string,name:string,level:number}[] = []
     private currentAccount: {id:string,data:string} = {id:'',data:''}
-    private reconnectAttempts: number = 0
-    private hostname: string = ''
-    private username: string = ''
-    private dbname: string = ''
-    private password: string = ''
+    private reconnectAttempts = 0
+    private hostname = ''
+    private username = ''
+    private dbname = ''
+    private password = ''
 
     constructor() {
         this.client = new Client()
@@ -59,7 +59,7 @@ export default class ConnectionManager {
     public async getRank(): Promise<{id:string,name:string,level:number}[]> {
         try {
             const players = await this.client.query(`select * from tinyrank`);
-            let result = []
+            const result = []
             for(const player of players) {
                 result.push({id:player.PlayerId,name:player.PlayerName,level:player.PlayerLevel})
             }
@@ -68,7 +68,7 @@ export default class ConnectionManager {
         } catch (e) {
             this.client.close()
             this.isConnected = false
-            let result = []
+            const result = []
             result.push({id:'',name:'',level:0})
             result.push({id:'',name:'',level:0})
             result.push({id:'',name:'',level:0})
@@ -156,7 +156,7 @@ export default class ConnectionManager {
         }
     }
 
-    private async reconnect() {
+    private reconnect() {
         console.log(`retrying connection: ${this.reconnectAttempts + 1}`)
         setTimeout(async ()=>{
             await this.connect()
