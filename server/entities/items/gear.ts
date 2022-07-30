@@ -1,6 +1,6 @@
 import ItemBase from "./itemBase.ts"
 import { Player } from "../player.ts"
-import { GearType, Items } from "../../Enums.ts"
+import { GearType, Items } from "../../../shared/Enums.ts"
 import { ClientHandler } from "../../clientHandler.ts"
 
 export default class Gear {

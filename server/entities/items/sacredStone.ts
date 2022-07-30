@@ -1,4 +1,4 @@
-import { Items, ItemType, GearType } from "../../Enums.ts"
+import { Items, ItemType, GearType } from "../../../shared/Enums.ts"
 import ItemBase from "./itemBase.ts"
 
 export default class SacredStone extends ItemBase {

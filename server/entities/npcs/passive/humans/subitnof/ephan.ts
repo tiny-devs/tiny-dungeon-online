@@ -1,4 +1,4 @@
-import { Npcs } from '../../../../../Enums.ts'
+import { Npcs } from '../../../../../../shared/Enums.ts'
 import NpcBase from '../../../npcBase.ts'
 import WarriorSomeday from "../../../quests/humans/subitnof/warriorSomeday.ts"
 import EphanDialog from "../../dialogs/ephanDialog.ts"

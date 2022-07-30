@@ -1,4 +1,4 @@
-import { Direction, Rooms, Items, Npcs, Quests, StepType } from '../Enums.ts'
+import { Direction, Rooms, Items, Npcs, Quests, StepType } from '../../shared/Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'

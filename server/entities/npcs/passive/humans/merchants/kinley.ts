@@ -1,4 +1,4 @@
-import { Npcs } from '../../../../../Enums.ts'
+import { Npcs } from '../../../../../../shared/Enums.ts'
 import IronArmour from "../../../../items/ironArmour.ts";
 import IronHelm from "../../../../items/ironHelm.ts";
 import IronLegs from "../../../../items/ironLegs.ts";

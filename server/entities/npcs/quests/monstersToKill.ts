@@ -1,4 +1,4 @@
-import { Npcs } from "../../../Enums.ts"
+import { Npcs } from "../../../../shared/Enums.ts"
 import { MonstersToKillBase } from "./monstersToKillBase.ts"
 
 export class MonstersToKill {

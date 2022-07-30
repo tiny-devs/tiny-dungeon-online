@@ -1,4 +1,4 @@
-import { Npcs } from '../../../../../Enums.ts'
+import { Npcs } from '../../../../../../shared/Enums.ts'
 import AdamantDagger from "../../../../items/adamantDagger.ts";
 import AdamantSword from "../../../../items/adamantSword.ts";
 import BluriteArmour from "../../../../items/bluriteArmour.ts";

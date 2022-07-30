@@ -1,4 +1,4 @@
-import { Items } from "../../../Enums.ts"
+import { Items } from "../../../../shared/Enums.ts"
 import { ItemsToHaveBase } from "./itemsToHaveBase.ts"
 
 export class ItemsToHave {
