@@ -1,4 +1,4 @@
-import { Items, Npcs, StepType } from "../../../Enums.ts"
+import { Items, Npcs, StepType } from "../../../../shared/Enums.ts"
 import { MonstersToKill } from "./monstersToKill.ts"
 import { ItemsToHave } from "./itemsToHave.ts"
 import StepBase from "./stepBase.ts"

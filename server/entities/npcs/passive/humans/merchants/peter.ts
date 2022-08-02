@@ -1,4 +1,4 @@
-import { Npcs } from '../../../../../Enums.ts'
+import { Npcs } from '../../../../../../shared/Enums.ts'
 import LargeHp from "../../../../items/consumable/largeHp.ts";
 import SmallHp from "../../../../items/consumable/smallHp.ts";
 import NpcBase from '../../../npcBase.ts'

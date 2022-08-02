@@ -1,4 +1,4 @@
-import { Npcs } from '../../../../../Enums.ts'
+import { Npcs } from '../../../../../../shared/Enums.ts'
 import BronzeSword from "../../../../items/bronzeSword.ts";
 import Bread from "../../../../items/consumable/bread.ts";
 import Coffee from "../../../../items/consumable/coffee.ts";

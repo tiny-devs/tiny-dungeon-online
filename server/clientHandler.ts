@@ -1,5 +1,5 @@
 import { Player } from './entities/player.ts'
-import { Command, Direction, Items, GearType, Rooms } from './Enums.ts'
+import { Command, Direction, Items, GearType, Rooms } from '../shared/Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'

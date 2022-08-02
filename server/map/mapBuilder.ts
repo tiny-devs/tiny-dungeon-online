@@ -1,6 +1,6 @@
 import { SolidLayers } from "../../shared/solidLayers.ts"
 import { ClientHandler } from "../clientHandler.ts"
-import { Rooms } from "../Enums.ts"
+import { Rooms } from "../../shared/Enums.ts"
 import { MapDimensionsHeightWidth, NpcSpawns } from "./npcSpawns.ts"
 import Exits from "./rooms/exits.ts"
 import Room from "./rooms/room.ts"

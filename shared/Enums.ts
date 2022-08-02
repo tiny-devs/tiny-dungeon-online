@@ -1,8 +1,8 @@
 export enum Direction {
     Up = 1,
-    Down = 2,
-    Left = 3,
-    Right = 4,
+    Down,
+    Left,
+    Right,
 }
 
 export enum Command {
@@ -147,11 +147,11 @@ export enum Rooms {
 }
 
 export enum PveAttacker {
-    Player = 0,
-    Npc = 1,
+	Player = 0,
+    Npc,
 }
 
-export enum ItemsIds {
+export enum Items {
     Empty = 0,
     Coffee,
     Coin,
@@ -201,4 +201,110 @@ export enum GearType {
     Torso,
     Legs,
     Weapon
+}
+
+export enum Npcs {
+    Dog = 1,
+    Chicken,
+    Cow,
+    Horse,
+    Horse2,
+    Camel,
+    Spider,
+    ImpMeelee,
+    ImpArcher,
+    ImpMage,
+    Slime,
+    Bee,
+    Witch,
+    Goblin,
+    Goblin2,
+    Goblin3,
+    Ligneus,
+    Skeleton,
+    SkeletonKnight,
+    Rat,
+    ButterFlew,
+    GrassSnake,
+    Document,
+    EvilEye,
+    WaterBlob,
+    Ogre,
+    AdamantGhost,
+    FireBlob,
+    SandCat,
+    SandSnake,
+    Zombie,
+    CursedCactus,
+    SandSpirit,
+    SandTotem,
+    Demon,
+    Demon2,
+    Zero,
+    FemaleGnome,
+    MaleGnome,
+    AncientGnome,
+    WhiteMaleFarmer,
+    BlackMaleFarmer,
+    WhiteFemaleFarmer,
+    BlackFemaleFarmer,
+    OldMan,
+    MytklashsFlower,
+    Wizard1,
+    Wizard2,
+    Wizard3,
+    Merchant1,
+    Merchant2,
+    CityMale1,
+    CityMale2,
+    CityMale3,
+    CityMale4,
+    CityMale5,
+    CityMale6,
+    CityMale7,
+    CityMale8,
+    CityMale9,
+    CityOldMale1,
+    CityOldMale2,
+    CityFemale1,
+    CityFemale2,
+    CityFemale3,
+    CityGuard,
+    DesertMale1,
+    DesertMale2,
+    DesertMale3,
+    DesertMale4
+}
+
+export enum ItemType {
+    Money = 0,
+    Consumable,
+    Weareable,
+    Temporary,
+    Quest,
+    QuestConsumable,
+}
+
+export enum Quests {
+    FlowerForMytklash,
+    HelpTheVillage,
+    DamnRats,
+    JamulsMachete,
+    TheSacredStone,
+    WarriorSomeday,
+    ZombieKiller
+}
+
+export enum StepType {
+    MonstersToKill,
+    NpcToTalk,
+    LevelToReach,
+    ItemsToHave,
+    ItemsToReceive
+}
+
+export enum RewardType {
+    Xp,
+    Item,
+    Both
 }

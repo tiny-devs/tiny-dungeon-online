@@ -1,4 +1,4 @@
-import { Items, Npcs, Quests, RewardType, StepType } from "../../../Enums.ts"
+import { Items, Npcs, Quests, RewardType, StepType } from "../../../../shared/Enums.ts"
 import ItemBase from "../../items/itemBase.ts"
 import { Player } from "../../player.ts"
 import FlowerForMytklash from "./gnomes/flowerForMytklash.ts"
