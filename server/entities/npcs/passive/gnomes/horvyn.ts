@@ -1,4 +1,4 @@
-import { Npcs } from '../../../../Enums.ts'
+import { Npcs } from '../../../../../shared/Enums.ts'
 import NpcBase from '../../npcBase.ts'
 import FlowerForMytklash from "../../quests/gnomes/flowerForMytklash.ts"
 import HorvynDialog from "../dialogs/horvynDialog.ts"

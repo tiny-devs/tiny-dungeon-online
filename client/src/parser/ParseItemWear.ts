@@ -1,4 +1,4 @@
-import { ItemsIds, GearType } from "../models/Enums"
+import { ItemsIds, GearType } from '../../../shared/Enums'
 
 export class ParseItemWear {
     public itemId: ItemsIds

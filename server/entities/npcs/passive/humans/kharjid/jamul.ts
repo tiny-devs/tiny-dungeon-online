@@ -1,4 +1,4 @@
-import { Npcs } from '../../../../../Enums.ts'
+import { Npcs } from '../../../../../../shared/Enums.ts'
 import NpcBase from '../../../npcBase.ts'
 import JamulsMachete from "../../../quests/humans/kharjid/jamulsMachete.ts"
 import JamulDialog from "../../dialogs/jamulDialog.ts"

@@ -1,4 +1,4 @@
-import { Npcs } from '../../Enums.ts'
+import { Npcs } from '../../../shared/Enums.ts'
 import NpcBase from './npcBase.ts'
 import Coffee from '../items/consumable/coffee.ts'
 import IronSword from '../items/ironSword.ts'

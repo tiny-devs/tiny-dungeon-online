@@ -1,4 +1,4 @@
-import { Items, ItemType } from "../../Enums.ts"
+import { Items, ItemType } from "../../../shared/Enums.ts"
 import ItemBase from "./itemBase.ts"
 import { Player } from "../player.ts"
 import WoodenHelm from "./woodenHelm.ts"

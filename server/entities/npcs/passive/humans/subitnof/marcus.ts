@@ -1,4 +1,4 @@
-import { Npcs } from '../../../../../Enums.ts'
+import { Npcs } from '../../../../../../shared/Enums.ts'
 import NpcBase from '../../../npcBase.ts'
 import MarcusDialog from "../../dialogs/marcusDialog.ts"
 

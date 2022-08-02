@@ -1,7 +1,7 @@
 import { Game } from '../../startup/Game'
 import { Player } from '../../entities/Player'
 import { Npc } from '../../entities/Npc'
-import { Rooms, ItemsIds } from '../../models/Enums'
+import { Rooms, ItemsIds } from '../../../../shared/Enums'
 import { Npcs } from '../../entities/Npcs'
 import { Item } from '../../entities/items/Item'
 import { Items } from '../../entities/items/Items'

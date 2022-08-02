@@ -1,6 +1,6 @@
 import { Game } from '../startup/Game'
 import { Color } from '../board/map/tiles/Color'
-import { Rooms } from '../models/Enums'
+import { Rooms } from '../../../shared/Enums'
 import { Misc } from './Misc'
 
 export class Npc {

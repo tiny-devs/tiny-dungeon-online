@@ -1,4 +1,4 @@
-import { Npcs } from "../../Enums.ts"
+import { Npcs } from "../../../shared/Enums.ts"
 import ItemBase from "../items/itemBase.ts"
 import DialogBase from "./passive/dialogs/dialogBase.ts"
 import QuestBase from "./quests/questBase.ts"

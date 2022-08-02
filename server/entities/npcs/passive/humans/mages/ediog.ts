@@ -1,4 +1,4 @@
-import { Npcs } from '../../../../../Enums.ts'
+import { Npcs } from '../../../../../../shared/Enums.ts'
 import NpcBase from '../../../npcBase.ts'
 import TheSacredStone from "../../../quests/humans/mages/theSacredStone.ts"
 import EdiogDialog from "../../dialogs/ediogDialog.ts"

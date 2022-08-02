@@ -1,7 +1,7 @@
 import { Player } from "../entities/player.ts";
 import { Npc } from "../entities/npc.ts";
 import Room from "../map/rooms/room.ts";
-import { PveAttacker } from "../Enums.ts";
+import { PveAttacker } from "../../shared/Enums.ts";
 
 export class PveData {
 	public room: Room

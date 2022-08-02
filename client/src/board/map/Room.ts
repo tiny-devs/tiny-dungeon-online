@@ -1,5 +1,5 @@
 import { Game } from '../../startup/Game'
-import { Rooms } from '../../models/Enums'
+import { Rooms } from '../../../../shared/Enums'
 import { SolidTiles } from './tiles/Tiles'
 import { Tile } from './tiles/Tile'
 import { Color } from './tiles/Color'
