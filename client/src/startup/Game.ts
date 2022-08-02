@@ -5,7 +5,7 @@ import { SolidLayer } from '../board/layers/SolidLayer'
 import { SpritesLayer } from '../board/layers/SpritesLayer'
 import { Map } from '../board/map/Map'
 import { Board } from '../board/Board'
-import { Rooms } from '../models/Enums'
+import { Rooms } from '../../../shared/Enums'
 
 export class Game {
     public solidLayer: SolidLayer

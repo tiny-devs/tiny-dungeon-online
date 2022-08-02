@@ -1,4 +1,4 @@
-import { ItemsIds } from "../models/Enums"
+import { ItemsIds } from '../../../shared/Enums'
 
 export class ParseLoadBag {
     public id: string

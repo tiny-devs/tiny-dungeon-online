@@ -1,4 +1,4 @@
-import { ItemsIds } from "../../models/Enums"
+import { ItemsIds } from '../../../../shared/Enums'
 import Gear from "./Gear"
 import IconCanvas from "./IconCanvas"
 

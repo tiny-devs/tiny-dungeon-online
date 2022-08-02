@@ -1,4 +1,4 @@
-import { ItemsIds } from "../../models/Enums"
+import { ItemsIds } from '../../../../shared/Enums'
 import BagItem from "./BagItem"
 import { Items } from "./Items"
 import { GameClient } from "../../startup/GameClient"
