@@ -1,5 +1,5 @@
 import { Color } from "../../board/map/tiles/Color"
-import { ItemsIds } from "../../models/Enums"
+import { ItemsIds } from '../../../../shared/Enums'
 import ItemCanvas from "./ItemCanvas"
 import Store from "./Store"
 

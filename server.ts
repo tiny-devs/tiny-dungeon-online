@@ -1,17 +1,18 @@
-import * as flags from "https://deno.land/std@0.148.0/flags/mod.ts"
-import { serve } from "https://deno.land/std@0.148.0/http/server.ts"
-import { serveFile } from "https://deno.land/std@0.148.0/http/file_server.ts"
+import { flags } from "./deps.ts"
+import { serve } from "./deps.ts"
+import { serveFile } from "./deps.ts"
 import { ClientHandler } from "./server/clientHandler.ts"
 
 export class Server {
-  private argPort: number = flags.parse(Deno.args).port
   private port: string
   private clientHandler: ClientHandler
   private publicFolder = "./client/public"
   private publicFiles: string[] = []
 
   constructor(serverConfigs: any) {
-    this.port = this.argPort ? Number(this.argPort) : serverConfigs.defaultPort
+    const argPort: number = flags.parse(Deno.args).port
+    const herokuPort = Deno.env.get("PORT")
+    this.port = herokuPort ? Number(herokuPort) : argPort ? Number(argPort) : serverConfigs.defaultPort
     this.clientHandler = new ClientHandler(serverConfigs)
   }
 

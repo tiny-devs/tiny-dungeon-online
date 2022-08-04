@@ -1,4 +1,4 @@
-import { ItemsIds } from "../models/Enums"
+import { ItemsIds } from '../../../shared/Enums'
 
 export class ParseItemDrop {
     public id: number

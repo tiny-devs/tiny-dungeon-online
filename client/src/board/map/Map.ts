@@ -1,5 +1,5 @@
 import { Game } from '../../startup/Game'
-import { Rooms } from '../../models/Enums'
+import { Rooms } from '../../../../shared/Enums'
 import { MapBuilder } from './MapBuilder'
 
 export class Map {

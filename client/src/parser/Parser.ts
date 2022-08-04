@@ -1,4 +1,4 @@
-import { Command } from '../models/Enums'
+import { Command } from '../../../shared/Enums'
 import { ParseLogin, PlayerDto } from './ParseLogin'
 import { ParseMove } from './ParseMove'
 import { ParseNpcMove } from './ParseNpcMove'

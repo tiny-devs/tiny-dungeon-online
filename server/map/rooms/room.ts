@@ -3,7 +3,7 @@ import Exits from "./exits.ts"
 import { Npc } from '../../entities/npc.ts'
 import { ClientHandler } from '../../clientHandler.ts'
 import ItemBase from '../../entities/items/itemBase.ts'
-import { Items } from "../../Enums.ts";
+import { Items } from "../../../shared/Enums.ts";
 
 export default class Room {
   public id: number

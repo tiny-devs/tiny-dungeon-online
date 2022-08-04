@@ -1,6 +1,6 @@
 import { Game } from '../../startup/Game'
-import { Rooms } from '../../models/Enums'
-import { ItemsIds } from '../../models/Enums'
+import { Rooms } from '../../../../shared/Enums'
+import { ItemsIds } from '../../../../shared/Enums'
 
 export class Item {
     public id: number

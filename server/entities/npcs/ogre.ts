@@ -1,4 +1,4 @@
-import { Npcs } from '../../Enums.ts'
+import { Npcs } from '../../../shared/Enums.ts'
 import NpcBase from './npcBase.ts'
 import BluriteDagger from '../items/bluriteDagger.ts'
 import BluriteSword from '../items/bluriteSword.ts'

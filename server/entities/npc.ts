@@ -1,4 +1,4 @@
-import { Direction, PveAttacker, ItemType, StepType } from '../Enums.ts'
+import { Direction, PveAttacker, ItemType, StepType } from '../../shared/Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { Player } from './player.ts'
 import { PveData } from '../pve/pveData.ts'
