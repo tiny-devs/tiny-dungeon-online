@@ -13,3 +13,8 @@ Enjoy!
 
 ---
 ⚙️ [Test branch](https://tiny-dungeon-online-dev.herokuapp.com/)
+
+Deploy commands:  
+`docker build -t app .`  
+`heroku container:push web -a=tinyland-dev`  
+`heroku container:release web -a=tinyland-dev`
