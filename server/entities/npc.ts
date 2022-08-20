@@ -15,7 +15,7 @@ export class Npc {
   public fieldOfView: number
   public anger: number
   public maxAnger: number
-  public isChasing: boolean = false
+  public isChasing = false
   public fightingPlayer: null | Player = null
   public spawnX: number
   public spawnY: number
@@ -27,7 +27,7 @@ export class Npc {
   public room: Room
   public frequency: number
   public moveChance: number
-  public moveCounter: number = 0
+  public moveCounter = 0
   public hp: number
   public maxHp: number
   public attack: number
@@ -35,8 +35,8 @@ export class Npc {
   public level: number
   public xpGiven: number
   public respawnTime: number
-  public dead: boolean = false
-  public isMerchant: boolean = false
+  public dead = false
+  public isMerchant = false
   public sells: ItemBase[]
   public dialog: DialogBase | null
   public drops: ItemBase[]
@@ -84,7 +84,7 @@ export class Npc {
   }
 
   public move(key: Direction): any {
-    let result = {valid:false,playerHit:null as unknown as Player | undefined}
+    const result = {valid:false,playerHit:null as unknown as Player | undefined}
 
     switch (key) {
       case Direction.Right:
@@ -144,6 +144,23 @@ export class Npc {
     }
   }
 
+  public interactWith(player: Player) {
+    if (this.isAgressive) {
+      const isFightingPlayerOrNotFighting = this.fightingPlayer?.id == player.id || this.fightingPlayer == null
+      const isFightingAnotherPlayerThatIsNotFightingThisNpc = this.fightingPlayer?.id != player.id && this.fightingPlayer?.fightingNpcId != this.id
+      
+      if (isFightingPlayerOrNotFighting) {
+        player.fightingNpcId = this.id
+        this.fightingPlayer = player
+      } else if (isFightingAnotherPlayerThatIsNotFightingThisNpc) {
+        player.fightingNpcId = this.id
+        this.fightingPlayer = player
+      }
+    } else if (this.dialog != null || this.isMerchant) {
+      this.talkTo(player)
+    }
+  }
+
   // all dialog logic was done in quite a rush to finish
   // please dont mind this messy code
   public talkTo(player: Player) {
@@ -168,7 +185,7 @@ export class Npc {
               this.room.clientHandler.unicastDialog(player, '-you give the quest items-')
               return
             } else {
-              let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
+              const newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
               if (newLine != '') {
                 this.room.clientHandler.unicastDialog(player, newLine)
                 return
@@ -190,7 +207,7 @@ export class Npc {
           }
         }
         if (npcFromQuestStep && !tradedItems) {
-          let newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
+          const newLine = npcFromQuestStep.checkNpcDialog(this.name, player)
           if (newLine != '') {
             this.room.clientHandler.unicastDialog(player, newLine)
             return
@@ -199,7 +216,7 @@ export class Npc {
           }
         } else if (!npcFromQuestStep){
           if (npcFromAnyQuestStep) {
-            let newLine = npcFromAnyQuestStep.checkNpcDialog(this.name, player)
+            const newLine = npcFromAnyQuestStep.checkNpcDialog(this.name, player)
             if (newLine != '') {
               this.room.clientHandler.unicastDialog(player, newLine)
               return
@@ -223,7 +240,7 @@ export class Npc {
 
   private unicastDefaultDialogNoQuestCheck(player: Player) {
     if (this.dialog) {
-      var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+      const index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
       if (index != -1) {
         if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines) {
           this.dialog.playerCurrentLine[index].line = 0
@@ -240,7 +257,7 @@ export class Npc {
 
   private unicastDefaultDialog(player: Player, playerQuest: Quest | undefined) {
     if (this.dialog) {
-      var index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
+      const index = this.dialog.playerCurrentLine.map(d => d.playerId).indexOf(player.id)
       if (index != -1) {
         if (this.dialog.playerCurrentLine[index].line+1 >= this.dialog.playerCurrentLine[index].totalLines-1) {
           if (this.quest != null && !playerQuest){
@@ -292,7 +309,7 @@ export class Npc {
       this.isChasing = true
       this.anger = this.maxAnger
 
-      let moveResult = this.move(result.direction)
+      const moveResult = this.move(result.direction)
       if (moveResult.playerHit) {
         this.fightingPlayer = moveResult.playerHit
         if (moveResult.playerHit.fightingNpcId == null) {
@@ -308,14 +325,14 @@ export class Npc {
   }
 
   private async delay(ms: number): Promise<unknown> {
-    return new Promise( resolve => setTimeout(resolve, ms) );
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   private async engage(player: Player) {
-    let enemyAttackData = new PveData(this.room, player, this, PveAttacker.Npc)
+    const enemyAttackData = new PveData(this.room, player, this, PveAttacker.Npc)
 
     const damageCaused = this.getAttackDamage()
-    let playerDefended = player.takeDamage(damageCaused, this.checkCriticalHit(damageCaused))
+    const playerDefended = player.takeDamage(damageCaused, this.checkCriticalHit(damageCaused))
 
     enemyAttackData.damageCaused =  damageCaused - playerDefended
     enemyAttackData.damageDefended = playerDefended
@@ -324,10 +341,10 @@ export class Npc {
     await this.delay(1000)
 
     if (player.fightingNpcId == this.id) {
-      let playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
+      const playerAttackData = new PveData(this.room, player, this, PveAttacker.Player)
 
       const damageTaken = player.getAttackDamage()
-      let enemyDefended = this.takeDamage(damageTaken, player.checkCriticalHit(damageTaken), player)
+      const enemyDefended = this.takeDamage(damageTaken, player.checkCriticalHit(damageTaken), player)
   
       playerAttackData.damageCaused = damageTaken - enemyDefended
       playerAttackData.damageDefended = enemyDefended
@@ -404,7 +421,7 @@ export class Npc {
             drop.coins = Math.floor(Math.random() * drop.coins) + 1 
           }
           if (drop.type == ItemType.Quest || drop.type == ItemType.QuestConsumable) {
-            var isOnQuestStepThatNeedsItem = player.quests.some(
+            const isOnQuestStepThatNeedsItem = player.quests.some(
               q => q.steps[q.currentStep].itemsToHave.some(s => s.item == drop.itemId))
             if (isOnQuestStepThatNeedsItem) {
               this.room.addItem(this.y,this.x,drop)
@@ -419,10 +436,10 @@ export class Npc {
 
   private checkSurroundings() {
     let playerInRange = null as null | Player
-    let result = {found: false, direction: 0}
+    const result = {found: false, direction: 0}
 
     if (this.fightingPlayer == null) {
-      let playersInRange = this.room.players.filter(player => 
+      const playersInRange = this.room.players.filter(player => 
         ((Math.pow(player.x - this.x,2) + Math.pow(player.y - this.y,2)) <= this.fieldOfView)
       )
   

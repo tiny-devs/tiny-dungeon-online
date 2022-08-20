@@ -14,9 +14,9 @@ export default class Room {
   public exits: Exits
   public clientHandler: ClientHandler
   public itemsLayer: any
-  public itemsCount: number = 0
-  public boardRows: number = 16
-  public boardColumns: number = 16
+  public itemsCount = 0
+  public boardRows = 16
+  public boardColumns = 16
 
   constructor(id: number, exits: Exits, clientHandler: ClientHandler, solidLayer: any, npcSpawns: any) {
     this.id = id
@@ -93,7 +93,7 @@ export default class Room {
     this.itemsCount++
     const nextId = this.itemsCount
 
-    let clonedItem = { ...item }
+    const clonedItem = { ...item }
     clonedItem.id = nextId
     this.itemsLayer[y][x] = clonedItem
 
@@ -126,7 +126,7 @@ export default class Room {
 
   getAllItemsInRoom(): [string, { id: number, itemId: Items, x: number, y: number }[]] {
     let itensReturnString = ''
-    let itensReturnArray = []
+    const itensReturnArray = []
 
     for (let i=0; i<this.itemsLayer.length; i++) {
       for (let j=0; j<this.itemsLayer[0].length; j++) {
@@ -224,7 +224,7 @@ export default class Room {
     return exitsArray.some(x => x === roomId)
   }
 
-  private buildItemsLayer(): any {
+  private buildItemsLayer() {
     return [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
