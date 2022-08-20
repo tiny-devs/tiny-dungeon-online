@@ -12,7 +12,7 @@ A Tiny Minimalistic Online RPG Game 🎲
 Enjoy!
 
 ---
-⚙️ [Test branch](https://tiny-dungeon-online-dev.herokuapp.com/)
+⚙️ [Test branch](https://tinyland-dev.herokuapp.com/)
 
 Deploy commands:  
 `docker build -t app .`  

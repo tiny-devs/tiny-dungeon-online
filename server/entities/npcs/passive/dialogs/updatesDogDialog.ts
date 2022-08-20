@@ -4,11 +4,14 @@ export default class UpdatesDogDialog extends DialogBase {
     constructor() {
         super(['Hi, Im the woofdates dog',
         'The most recent woofdate is...',
-        'DONT DIE!!!',
-        'death has always been soft here, but...',
-        'now death will remove 10% of XP!',
-        'in higher levels this can mean HOURS of grind',
-        'so BECAREFUL!',
+        'You can target different enemies!!',
+        'before this update you were forced to',
+        'only hit the first enemy you touched',
+        'but now you can walk towards any enemy',
+        'arround you to switch your target!',
+        'but you still cant fight enemies that',
+        'are already fighting someone else',
+        'thanks Douglas!',
         'woof woof!',
         '-woofdate read-'])
     }

@@ -21,26 +21,26 @@ export class Player {
     public currentRoomId: number
     public currentRoom: Room
     public fightingNpcId: null | number = null
-    public hp: number = 10
-    public maxHp: number = 10
-    public attack: number = 4
-    public defense: number = 4
-    public level: number = 1
-    public xp: number = 0
-    public xpNeeded: number = 10
+    public hp = 10
+    public maxHp = 10
+    public attack = 4
+    public defense = 4
+    public level = 1
+    public xp = 0
+    public xpNeeded = 10
     public bag: Bag = new Bag(this)
     public gear: Gear
     public quests: Quest[] = []
-    public chatTimeout: number = 5000
-    public badBehaviour: number = 0
-    public canChat: boolean = true
+    public chatTimeout = 5000
+    public badBehaviour = 0
+    public canChat = true
     public clientWs: WebSocket
-    private afkTimeout: number = 0
-    private afkTotalSeconds: number = 601 // 10:01 min
-    private currentAfkSecondsLeft: number = 601
-    private canMove: boolean = true
-    private savePlayerInterval: number = 300000 // 5 min
-    private playerSaveTimeout: number = 0
+    private afkTimeout = 0
+    private afkTotalSeconds = 601 // 10:01 min
+    private currentAfkSecondsLeft = 601
+    private canMove = true
+    private savePlayerInterval = 300000 // 5 min
+    private playerSaveTimeout = 0
     private clientHandler: ClientHandler
 
     constructor(id: string,
@@ -50,7 +50,7 @@ export class Player {
         currentRoom: Room,
         boardRows: number,
         boardColumns: number,
-        clientWs: any,
+        clientWs: WebSocket,
         clientHandler: ClientHandler) {
         this.id = id
         this.name = name
@@ -80,7 +80,7 @@ export class Player {
                             validMove = true
                         } else if (this.hasNpc(this.y,this.x + 1)) {
                             const npc = this.getNpc(this.y,this.x + 1)
-                            npc!.talkTo(this)
+                            npc!.interactWith(this)
                         }
                     } else {
                         const result = this.currentRoom.goEast()
@@ -98,7 +98,7 @@ export class Player {
                             validMove = true
                         } else if (this.hasNpc(this.y + 1,this.x)) {
                             const npc = this.getNpc(this.y + 1,this.x)
-                            npc!.talkTo(this)
+                            npc!.interactWith(this)
                         }
                     } else {
                         const result = this.currentRoom.goSouth()
@@ -116,7 +116,7 @@ export class Player {
                             validMove = true
                         } else if (this.hasNpc(this.y,this.x - 1)) {
                             const npc = this.getNpc(this.y,this.x - 1)
-                            npc!.talkTo(this)
+                            npc!.interactWith(this)
                         }
                     } else {
                         const result = this.currentRoom.goWest()
@@ -134,7 +134,7 @@ export class Player {
                             validMove = true
                         } else if (this.hasNpc(this.y - 1,this.x)) {
                             const npc = this.getNpc(this.y - 1,this.x)
-                            npc!.talkTo(this)
+                            npc!.interactWith(this)
                         }
                     } else {
                         const result = this.currentRoom.goNorth()
@@ -194,7 +194,7 @@ export class Player {
 
     public getPlayerDataForSave(): string {
         const hashVersion = 1
-        let simpleData = `${hashVersion}@${this.id};${this.name};${this.level};${+this.xp.toFixed(2)};${this.xpNeeded};` +
+        const simpleData = `${hashVersion}@${this.id};${this.name};${this.level};${+this.xp.toFixed(2)};${this.xpNeeded};` +
                     `${this.hp};${this.maxHp};${this.attack};${this.defense}@`
         
         let bagData = `${this.bag.coins}`
@@ -310,7 +310,7 @@ export class Player {
     public savePlayer(): void {
         clearTimeout(this.playerSaveTimeout)
         if (this.clientWs.readyState !== WebSocket.CLOSED) {
-            this.playerSaveTimeout = setTimeout(async () => {
+            this.playerSaveTimeout = setTimeout(() => {
                 this.clientHandler.unicastPlayerDataHashSave(this).then(() => {
                     this.savePlayer()
                 })
@@ -327,7 +327,7 @@ export class Player {
             for(const monsterToKill of monstersKillData) {
                 const monsterId = monsterToKill.split(':')[0]
                 const amount = monsterToKill.split(':')[1]
-                let monsterStep = quest.steps[quest.currentStep].monstersToKill.find(m => m.monster == +monsterId)
+                const monsterStep = quest.steps[quest.currentStep].monstersToKill.find(m => m.monster == +monsterId)
                 if (monsterStep) {
                     monsterStep.amount = +amount
                 }
@@ -338,7 +338,7 @@ export class Player {
 
     public startChatTimeout() {
         this.canChat = false
-        setTimeout(async () => {
+        setTimeout(() => {
             this.canChat = true
         }, this.chatTimeout);
     }
@@ -535,7 +535,7 @@ export class Player {
 
     private afkTimer(): void {
         if (this.clientWs.readyState !== WebSocket.CLOSED) {
-            this.afkTimeout = setTimeout(async () => {
+            this.afkTimeout = setTimeout(() => {
                 if (this.currentAfkSecondsLeft <= 0) {
                     this.clientHandler.kickPlayer(this.name, 'kicked for being afk')
                     clearTimeout(this.afkTimeout)
@@ -556,7 +556,7 @@ export class Player {
         return +((level**2)+10).toFixed(2)
     }
 
-    private applyXpPenaltyForDeath(percent: number = 0.1) {
+    private applyXpPenaltyForDeath(percent = 0.1) {
         const percentXpToRemove = Math.ceil(percent * this.xp)
         if (this.xp - percentXpToRemove > 0) {
             this.xp = this.xp - percentXpToRemove
