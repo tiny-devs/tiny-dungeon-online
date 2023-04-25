@@ -167,12 +167,14 @@ export class ClientHandler {
     try{
       for (const player of npcMoved.room.players) {
         currentPlayer = player
-        this.send(player,`${Command.NpcMove},`+
-          `${npcMoved.id},` +
-          `${npcMoved.npcId},`+
-          `${npcMoved.x},`+
-          `${npcMoved.y},` +
-          `${npcMoved.roomId}`)
+        if (player.currentRoomId == npcMoved.roomId) {
+          this.send(player,`${Command.NpcMove},`+
+            `${npcMoved.id},` +
+            `${npcMoved.npcId},`+
+            `${npcMoved.x},`+
+            `${npcMoved.y},` +
+            `${npcMoved.roomId}`)
+        }
       }
     } catch (e) {
       const success = this.handleExceptions(e, currentPlayer, 'roomcastNpcMove')

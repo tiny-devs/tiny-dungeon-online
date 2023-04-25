@@ -44,10 +44,10 @@ export default class ConnectionManager {
             if (!e.message.includes('Unconnected')) {
                 this.client.close()
                 this.isConnected = false
-                console.log(`DB error:`)
+                console.log(`(saveAccount) DB error:`)
                 console.log(e)
-    
-                const dbAvailable = !e.name.includes('AddrNotAvailable')
+                
+                const dbAvailable = !e.name.includes('AddrNotAvailable') && !e.message.includes('Unknown')
                 if (dbAvailable) {
                     this.lastAction = LastActionEnum.SaveAccount
                     this.reconnect()
@@ -73,10 +73,10 @@ export default class ConnectionManager {
             result.push({id:'',name:'',level:0})
             result.push({id:'',name:'',level:0})
 
-            console.log(`DB error:`)
+            console.log(`(getRank) DB error:`)
             console.log(e)
 
-            const dbAvailable = !e.name.includes('AddrNotAvailable')
+            const dbAvailable = !e.name.includes('AddrNotAvailable') && !e.message.includes('Unknown')
             if (dbAvailable) {
                 this.lastAction = LastActionEnum.GetRank
                 this.reconnect()
@@ -108,10 +108,10 @@ export default class ConnectionManager {
             if (!e.message.includes('Unconnected')) {
                 this.client.close()
                 this.isConnected = false
-                console.log(`DB error:`)
+                console.log(`(updateRank) DB error:`)
                 console.log(e)
     
-                const dbAvailable = !e.name.includes('AddrNotAvailable')
+                const dbAvailable = !e.name.includes('AddrNotAvailable') && !e.message.includes('Unknown')
                 if (dbAvailable) {
                     this.lastAction = LastActionEnum.UpdateRank
                     this.reconnect()
