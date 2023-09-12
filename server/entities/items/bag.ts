@@ -44,15 +44,15 @@ import SacredFireSword from "./sacredFireSword.ts"
 
 export default class Bag {
     public items: ItemBase[] = []
-    public coins: number = 0
-    public size: number = 24
+    public coins = 0
+    public size = 24
     private player: Player
 
     constructor(player: Player) { 
         this.player = player
     }
 
-    public useItem(itemId: Items): any {
+    public useItem(itemId: Items) {
         const item = this.items.find(i => i.itemId == itemId)
         if (item) {
             if (item.type == ItemType.Consumable || item.type == ItemType.QuestConsumable) {
@@ -106,6 +106,23 @@ export default class Bag {
             }
         }
         return false
+    }
+
+    public removeItem(item: ItemBase) {
+        const index = this.items.indexOf(item)
+        if (index > -1) {
+            this.items.splice(index, 1)
+        }
+    }
+
+    public removeItemFromQuest(itemId: Items) {
+        const item = this.items.find(i => i.itemId == itemId)
+        if (item) {
+            const index = this.items.indexOf(item)
+            if (index > -1) {
+                this.items.splice(index, 1)
+            }
+        }
     }
 
     public getItemFromItemId(item: Items): ItemBase | null {
@@ -228,22 +245,5 @@ export default class Bag {
         }
         
         return null
-    }
-
-    removeItem(item: ItemBase) {
-        const index = this.items.indexOf(item)
-        if (index > -1) {
-            this.items.splice(index, 1)
-        }
-    }
-
-    removeItemFromQuest(itemId: Items) {
-        const item = this.items.find(i => i.itemId == itemId)
-        if (item) {
-            const index = this.items.indexOf(item)
-            if (index > -1) {
-                this.items.splice(index, 1)
-            }
-        }
     }
 }
