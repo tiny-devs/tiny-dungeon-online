@@ -1079,6 +1079,18 @@ export class ClientHandler {
           case Command.EntityInfo:
             this.unicastEntityInfo(player, Number(eventData[1]), Number(eventData[2]))
             break
+          case Command.OpenBank:
+            console.log(player, Number(eventData[1]), Number(eventData[2]))
+            break
+          case Command.StoreItem:
+            console.log(player, Number(eventData[1]), Number(eventData[2]))
+            break
+          case Command.RetrieveItem:
+            console.log(player, Number(eventData[1]), Number(eventData[2]))
+            break
+          case Command.CloseBank:
+            console.log(player, Number(eventData[1]), Number(eventData[2]))
+            break
           case Command.Exit:
             exit = true
             await this.unicastPlayerExit(player)

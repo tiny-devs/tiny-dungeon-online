@@ -31,6 +31,7 @@ export class GameClient {
     public game: Game
     public gameVersion: number = 0
     public canCheckUpdateData: boolean = false
+    public sentWalk: boolean = false
     
     private loginScreen: HTMLElement
     private gameScreen: HTMLElement
@@ -91,6 +92,7 @@ export class GameClient {
     private parser: Parser
     private currentRoom: any
     private canMove: boolean
+    private canMoveAfterRoomSwitch: boolean = true
     private keys: any = {}
     private chatTimeout: number = 5
     private canChat: boolean = true
@@ -354,13 +356,17 @@ export class GameClient {
         this.parser.parse(data)
     }
 
-    updatePlayer(moveData: ParseMove) {
+    async updatePlayer(moveData: ParseMove) {
         for (const player of this.game.spritesLayer.players) {
             if (player.id == moveData.playerMovedId) {
                 if (this.playerId == moveData.playerMovedId) {
+                    this.sentWalk = false
                     if (moveData.currentMovedRoomId != this.currentRoomId) {
-                        this.drawRoom(moveData.currentMovedRoomId)
+                        this.game.spritesLayer.clear()
+                        player.move(-1, -1, moveData.currentMovedRoomId)
+                        await this.drawRoom(moveData.currentMovedRoomId)
                         this.currentRoomId = moveData.currentMovedRoomId
+                        this.canMoveAfterRoomSwitch = true
                     }
                 }
                 player.move(moveData.movedX, moveData.movedY, moveData.currentMovedRoomId)
@@ -384,10 +390,12 @@ export class GameClient {
         }
     }
 
-    drawRoom(roomId: Rooms) {
-        this.currentRoom.clear()
-        this.currentRoom = this.game.map.getRoomById(roomId)
-        this.currentRoom.draw()
+    async drawRoom(roomId: Rooms) {
+        const lastRoom = this.currentRoom
+        const nextRoom = this.game.map.getRoomById(roomId)
+        const direction = this.game.map.getDirectionMovedByRoomIds(lastRoom.id, nextRoom.id)
+        await nextRoom.draw(lastRoom, direction)
+        this.currentRoom = nextRoom
     }
 
     drawSprites() {
@@ -443,7 +451,7 @@ export class GameClient {
         this.afkTabMinCountdown = 9
         this.afkTabSecCountdown = 59
         this.restartAfkTimer()
-        if (this.canMove) {
+        if (this.canMove && this.canMoveAfterRoomSwitch && !this.sentWalk) {
             this.delayMove()
 
             let direction = 0
@@ -463,8 +471,16 @@ export class GameClient {
             if (this.loggedIn) {
                 const player = this.game.spritesLayer.getPlayerById(this.playerId)!
                 const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape)
+                const changedRoom = (direction == Direction.Up && player.y == 0) ||
+                    (direction == Direction.Down && player.y == 15) ||
+                    (direction == Direction.Right && player.x == 15) ||
+                    (direction == Direction.Left && player.x == 0)
+                if (changedRoom) {
+                    this.canMoveAfterRoomSwitch = false
+                }
     
                 if (isValidMove && !this.isTyping && direction !== 0) {
+                    this.sentWalk = true
                     this.ws!.send(`${Command.Move},${direction}`)
                     this.hideCoinsDropElement()
                     if (this.storeOpen) {
@@ -479,18 +495,25 @@ export class GameClient {
         this.canMove = false
         setTimeout(() => {
             this.canMove = true
-        }, 120)
+        }, 70)
     }
 
     drawPve(pveData: any) {
+        const player = this.game.spritesLayer.getPlayerById(pveData.playerId)!
         if (pveData.attacker == PveAttacker.Npc) {
-            const player = this.game.spritesLayer.getPlayerById(pveData.playerId)!
             player.takeDamage(pveData)
             this.updateHpElements(player.hp, player.maxHp, pveData.playerId)
         } else {
             const npc = this.game.spritesLayer.getNpcByIdAndRoom(pveData.npcId, pveData.roomId)
             npc!.takeDamage(pveData)
         }
+
+        if (player) {
+            if (player.id == this.playerId) {
+                this.sentWalk = false
+            }
+        }
+        
         this.drawSprites()
     }
 
@@ -564,6 +587,7 @@ export class GameClient {
     }
 
     displayDialog(message: string, isQuestStart: boolean, isWarning: boolean) {
+        this.sentWalk = false
         if (!this.isShowingMessage) {
             clearTimeout(this.messageTimeout)
             

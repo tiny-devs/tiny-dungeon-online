@@ -8,6 +8,7 @@ import QuestBase from "./npcs/quests/questBase.ts"
 import ItemBase from "./items/itemBase.ts"
 import { Admins } from "../data/admins.ts"
 import { ItemsToHave } from "./npcs/quests/itemsToHave.ts"
+import Bank from "./items/bank/bank.ts";
 
 export class Player {
     public id: string
@@ -29,6 +30,7 @@ export class Player {
     public xp = 0
     public xpNeeded = 10
     public bag: Bag = new Bag(this)
+    public bank: Bank = new Bank(this)
     public gear: Gear
     public quests: Quest[] = []
     public chatTimeout = 5000
@@ -549,7 +551,7 @@ export class Player {
 
     private delayMove(): void {
         this.canMove = false;
-        setTimeout(() => { this.canMove = true; }, 100);
+        setTimeout(() => { this.canMove = true; }, 50);
     }
 
     private getXpNeededForLevel(level: number) {

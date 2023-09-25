@@ -1,5 +1,6 @@
 export enum Direction {
-    Up = 1,
+    None = 0,
+    Up,
     Down,
     Left,
     Right,
@@ -41,9 +42,14 @@ export enum Command {
     BuyItemStore,
     SellItemStore,
     GoldDroped,
+    OpenBank,
+    StoreItem,
+    RetrieveItem,
+    CloseBank
 }
 
 export enum Rooms {
+    None = -1,
     InitialRoom = 0,
     Woods,
     Woods2,
