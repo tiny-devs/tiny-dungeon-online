@@ -185,7 +185,7 @@ export class Parser {
         const playersInRoomData = new ParsePlayersInRoom(data)
 
         this.client.game.spritesLayer.updatePlayersPositions(playersInRoomData, this.client.playerId)
-        this.client.sentWalk = false
+        this.client.serverReturned()
         this.client.drawSprites()
     }
 

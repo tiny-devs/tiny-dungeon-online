@@ -1,4 +1,4 @@
-import { Client } from "../../deps.ts";
+//import { Client } from "../../deps.ts";
 
 enum LastActionEnum {
     None,
@@ -8,7 +8,7 @@ enum LastActionEnum {
 }
 
 export default class ConnectionManager {
-    public client: Client
+    public client: any
     public isConnected = false
     private lastAction: LastActionEnum = LastActionEnum.None
     private currentRankData: {id:string,name:string,level:number}[] = []
@@ -20,9 +20,9 @@ export default class ConnectionManager {
     private password = ''
 
     constructor() {
-        this.client = new Client()
-        this.parseConnectionString()
-        this.connect()
+        // this.client = new Client()
+        // this.parseConnectionString()
+        // this.connect()
     }
 
     public async saveAccount(account: {id:string,data:string}) {
@@ -42,7 +42,7 @@ export default class ConnectionManager {
             
         } catch (e) {
             if (!e.message.includes('Unconnected')) {
-                this.client.close()
+                //this.client.close()
                 this.isConnected = false
                 console.log(`(saveAccount) DB error:`)
                 console.log(e)
@@ -50,7 +50,7 @@ export default class ConnectionManager {
                 const dbAvailable = !e.name.includes('AddrNotAvailable') && !e.message.includes('Unknown')
                 if (dbAvailable) {
                     this.lastAction = LastActionEnum.SaveAccount
-                    this.reconnect()
+                    //this.reconnect()
                 }
             }
         }
@@ -66,7 +66,7 @@ export default class ConnectionManager {
     
             return result
         } catch (e) {
-            this.client.close()
+            //this.client.close()
             this.isConnected = false
             const result = []
             result.push({id:'',name:'',level:0})
@@ -89,24 +89,24 @@ export default class ConnectionManager {
         try {
             this.currentRankData = topPlayers
 
-            await this.client.execute(
-                `update tinyrank set ?? = ?, ?? = ?, ?? = ? where Id = 0`,
-                ["PlayerId", topPlayers[0].id,
-                "PlayerName", topPlayers[0].name,
-                "PlayerLevel", topPlayers[0].level]);
-            await this.client.execute(
-                `update tinyrank set ?? = ?, ?? = ?, ?? = ? where Id = 1`,
-                ["PlayerId", topPlayers[1].id,
-                "PlayerName", topPlayers[1].name,
-                "PlayerLevel", topPlayers[1].level]);
-            await this.client.execute(
-                `update tinyrank set ?? = ?, ?? = ?, ?? = ? where Id = 2`,
-                ["PlayerId", topPlayers[2].id,
-                "PlayerName", topPlayers[2].name,
-                "PlayerLevel", topPlayers[2].level]);
+            // await this.client.execute(
+            //     `update tinyrank set ?? = ?, ?? = ?, ?? = ? where Id = 0`,
+            //     ["PlayerId", topPlayers[0].id,
+            //     "PlayerName", topPlayers[0].name,
+            //     "PlayerLevel", topPlayers[0].level]);
+            // await this.client.execute(
+            //     `update tinyrank set ?? = ?, ?? = ?, ?? = ? where Id = 1`,
+            //     ["PlayerId", topPlayers[1].id,
+            //     "PlayerName", topPlayers[1].name,
+            //     "PlayerLevel", topPlayers[1].level]);
+            // await this.client.execute(
+            //     `update tinyrank set ?? = ?, ?? = ?, ?? = ? where Id = 2`,
+            //     ["PlayerId", topPlayers[2].id,
+            //     "PlayerName", topPlayers[2].name,
+            //     "PlayerLevel", topPlayers[2].level]);
         } catch (e) {
             if (!e.message.includes('Unconnected')) {
-                this.client.close()
+                //this.client.close()
                 this.isConnected = false
                 console.log(`(updateRank) DB error:`)
                 console.log(e)
@@ -114,7 +114,7 @@ export default class ConnectionManager {
                 const dbAvailable = !e.name.includes('AddrNotAvailable') && !e.message.includes('Unknown')
                 if (dbAvailable) {
                     this.lastAction = LastActionEnum.UpdateRank
-                    this.reconnect()
+                    //this.reconnect()
                 }
             }
         }

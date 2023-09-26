@@ -146,49 +146,66 @@ export class Player {
 
     isValidMove(direction: Direction, collisionShape: any[][]) {
         let valid = true
-        switch (direction) {
-            case Direction.Up:
-                if (!this.isOnBorder(collisionShape, +this.x, +this.y - 1)) {
-                    if (collisionShape[+this.y - 1][+this.x] !== 0 && collisionShape[+this.y - 1][+this.x] !== -1) {
-                        valid = false
-                    }
-                }
-                break
-            case Direction.Down:
-                if (!this.isOnBorder(collisionShape, +this.x, +this.y + 1)) {
-                    if (collisionShape[+this.y + 1][+this.x] !== 0 && collisionShape[+this.y + 1][+this.x] !== -1) {
-                        valid = false
-                    }
-                }
-                break
-            case Direction.Left:
-                if (!this.isOnBorder(collisionShape, +this.x - 1, +this.y)) {
-                    if (collisionShape[+this.y][+this.x - 1] !== 0 && collisionShape[+this.y][+this.x - 1] !== -1) {
-                        valid = false
-                    }
-                }
-                break
-            case Direction.Right:
-                if (!this.isOnBorder(collisionShape, +this.x + 1, +this.y)) {
-                    if (collisionShape[+this.y][+this.x + 1] !== 0 && collisionShape[+this.y][+this.x + 1] !== -1) {
-                        valid = false
-                    }
-                }
-                break
+        const nextPosition = this.getNextPositionFromDirection(direction)
+        if (!this.isOnBorder(collisionShape, direction)) {
+            if (collisionShape[nextPosition.y][nextPosition.x] !== 0 && collisionShape[nextPosition.y][nextPosition.x] !== -1) {
+                valid = false
+            }
         }
 
         return valid
     }
 
-    isOnBorder(collisionShape: any[][], x: number, y: number) {
+    isOnBorder(collisionShape: any[][], direction: Direction, step: number = 1) {
         let onBorder = false
-        if (collisionShape[y] !== undefined) {
-            if (collisionShape[y][x] === undefined) {
+        const nextPosition = this.getNextPositionFromDirection(direction, step)
+        if (collisionShape[nextPosition.y] !== undefined) {
+            if (collisionShape[nextPosition.y][nextPosition.x] === undefined) {
                 onBorder = true
             }
         } else {
             onBorder = true
         }
         return onBorder
+    }
+
+    isOnMapLimit(direction: Direction, step: number = 1): boolean {
+        const nextPosition = this.getNextPositionFromDirection(direction, step)
+        const roomsWithNoNorth = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+        const roomsWithNoSouth = [90, 91, 92, 93, 94, 95, 96, 97, 98, 99]
+        const roomsWithNoWest = [0, 10, 20, 30, 40, 50, 60, 70, 80, 90]
+        const roomsWithNoEast = [9, 19, 29, 39, 49, 59, 69, 79, 89, 99]
+        if (nextPosition.x < 0 && roomsWithNoWest.includes(this.currentRoomId)) {
+            return true
+        }
+        if (nextPosition.x > 15 && roomsWithNoEast.includes(this.currentRoomId)) {
+            return true
+        }
+        if (nextPosition.y < 0 && roomsWithNoNorth.includes(this.currentRoomId)) {
+            return true
+        }
+        if (nextPosition.y > 15 && roomsWithNoSouth.includes(this.currentRoomId)) {
+            return true
+        }
+        return false
+    }
+
+    private getNextPositionFromDirection(direction: Direction, step: number = 1): {x:number, y:number} {
+        let position = {x: this.x, y: this.y}
+        switch (direction) {
+            case Direction.Up:
+                position = {x: +this.x, y: +this.y - step}
+                break
+            case Direction.Down:
+                position = {x: +this.x, y: +this.y + step}
+                break
+            case Direction.Left:
+                position = {x: +this.x - step, y: +this.y}
+                break
+            case Direction.Right:
+                position = {x: +this.x + step, y: +this.y}
+                break
+        }
+        return position
     }
 }

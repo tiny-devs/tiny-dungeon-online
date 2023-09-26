@@ -33,9 +33,9 @@ export class ClientHandler {
 
     this.db = new ConnectionManager()
     this.topPlayers = []
-    this.db.getRank().then(result => {
-      this.topPlayers = result
-    })
+    // this.db.getRank().then(result => {
+    //   this.topPlayers = result
+    // })
     
     this.regexBadWords = new RegExp(badWords.map((word) => {
       let improvedWord = `(${word.split("").join("+(\\W|_)*")})`
@@ -50,18 +50,18 @@ export class ClientHandler {
   private broadcastRank(): void {
     let currentPlayer = null
     try{
-      for (const room of this.map.rooms) {
-        for (const player of room.players) {
-          currentPlayer = player
-          this.send(player,`${Command.Rank},`+
-            `${this.topPlayers[0].name},`+
-            `${this.topPlayers[0].level},`+
-            `${this.topPlayers[1].name},`+
-            `${this.topPlayers[1].level},`+
-            `${this.topPlayers[2].name},`+
-            `${this.topPlayers[2].level}`)
-        }
-      }
+      // for (const room of this.map.rooms) {
+      //   for (const player of room.players) {
+      //     currentPlayer = player
+      //     this.send(player,`${Command.Rank},`+
+      //       `${this.topPlayers[0].name},`+
+      //       `${this.topPlayers[0].level},`+
+      //       `${this.topPlayers[1].name},`+
+      //       `${this.topPlayers[1].level},`+
+      //       `${this.topPlayers[2].name},`+
+      //       `${this.topPlayers[2].level}`)
+      //   }
+      // }
     } catch (e) {
       const success = this.handleExceptions(e, currentPlayer, 'broadcastRank')
       if (success) {
@@ -422,13 +422,13 @@ export class ClientHandler {
 
   private unicastRank(player: Player): void {
     try{
-      this.send(player,`${Command.Rank},`+
-        `${this.topPlayers[0].name},`+
-        `${this.topPlayers[0].level},`+
-        `${this.topPlayers[1].name},`+
-        `${this.topPlayers[1].level},`+
-        `${this.topPlayers[2].name},`+
-        `${this.topPlayers[2].level}`)
+      // this.send(player,`${Command.Rank},`+
+      //   `${this.topPlayers[0].name},`+
+      //   `${this.topPlayers[0].level},`+
+      //   `${this.topPlayers[1].name},`+
+      //   `${this.topPlayers[1].level},`+
+      //   `${this.topPlayers[2].name},`+
+      //   `${this.topPlayers[2].level}`)
     } catch (e) {
       this.handleExceptions(e, player, 'unicastRank')
     }
@@ -600,7 +600,7 @@ export class ClientHandler {
     try{
       const data = await this.playerDataManager.decryptUserData(dataHash)
       const playerLoaded = player.loadPlayerDataFromSave(data)
-      this.db.saveAccount({id: player.id, data: data})
+      //this.db.saveAccount({id: player.id, data: data})
       return playerLoaded
     } catch (e) {
       this.handleExceptions(e, player, 'loadPlayerDataFromHash')

@@ -31,8 +31,9 @@ export class GameClient {
     public game: Game
     public gameVersion: number = 0
     public canCheckUpdateData: boolean = false
-    public sentWalk: boolean = false
-    
+
+    private sentWalk: boolean = false
+    private walkTimeout: number = 0
     private loginScreen: HTMLElement
     private gameScreen: HTMLElement
     private bagElement: HTMLElement
@@ -360,7 +361,7 @@ export class GameClient {
         for (const player of this.game.spritesLayer.players) {
             if (player.id == moveData.playerMovedId) {
                 if (this.playerId == moveData.playerMovedId) {
-                    this.sentWalk = false
+                    this.serverReturned()
                     if (moveData.currentMovedRoomId != this.currentRoomId) {
                         this.game.spritesLayer.clear()
                         player.move(-1, -1, moveData.currentMovedRoomId)
@@ -394,7 +395,7 @@ export class GameClient {
         const lastRoom = this.currentRoom
         const nextRoom = this.game.map.getRoomById(roomId)
         const direction = this.game.map.getDirectionMovedByRoomIds(lastRoom.id, nextRoom.id)
-        await nextRoom.draw(lastRoom, direction)
+        await nextRoom.draw(lastRoom, direction, this.isMobile)
         this.currentRoom = nextRoom
     }
 
@@ -471,17 +472,20 @@ export class GameClient {
             if (this.loggedIn) {
                 const player = this.game.spritesLayer.getPlayerById(this.playerId)!
                 const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape)
+                const isOnMapLimit = player.isOnMapLimit(direction)
                 const changedRoom = (direction == Direction.Up && player.y == 0) ||
                     (direction == Direction.Down && player.y == 15) ||
                     (direction == Direction.Right && player.x == 15) ||
                     (direction == Direction.Left && player.x == 0)
-                if (changedRoom) {
+                if (changedRoom && !isOnMapLimit) {
                     this.canMoveAfterRoomSwitch = false
                 }
     
                 if (isValidMove && !this.isTyping && direction !== 0) {
-                    this.sentWalk = true
-                    this.ws!.send(`${Command.Move},${direction}`)
+                    if (!isOnMapLimit) {
+                        this.ws!.send(`${Command.Move},${direction}`)
+                        this.waitServer()
+                    }
                     this.hideCoinsDropElement()
                     if (this.storeOpen) {
                         this.closeStore()
@@ -498,6 +502,18 @@ export class GameClient {
         }, 70)
     }
 
+    waitServer() {
+        this.sentWalk = true
+        this.walkTimeout = window.setTimeout(() => {
+            this.sentWalk = false
+        }, 150)
+    }
+
+    serverReturned() {
+        clearTimeout(this.walkTimeout)
+        this.sentWalk = false
+    }
+
     drawPve(pveData: any) {
         const player = this.game.spritesLayer.getPlayerById(pveData.playerId)!
         if (pveData.attacker == PveAttacker.Npc) {
@@ -510,7 +526,7 @@ export class GameClient {
 
         if (player) {
             if (player.id == this.playerId) {
-                this.sentWalk = false
+                this.serverReturned()
             }
         }
         
@@ -587,7 +603,7 @@ export class GameClient {
     }
 
     displayDialog(message: string, isQuestStart: boolean, isWarning: boolean) {
-        this.sentWalk = false
+        this.serverReturned()
         if (!this.isShowingMessage) {
             clearTimeout(this.messageTimeout)
             

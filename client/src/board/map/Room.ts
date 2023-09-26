@@ -57,10 +57,11 @@ export class Room {
         }
     }
 
-    async draw(lastRoom: Room | undefined = undefined, direction: Direction = 0) {
+    async draw(lastRoom: Room | undefined = undefined, direction: Direction = 0, isMobile = false) {
         if (lastRoom) {
             let xModifier = -1
             let yModifier = 0
+            let animationSize = 2.0
             if (direction == Direction.Left) {
                 yModifier = 0
                 xModifier = 1
@@ -73,9 +74,14 @@ export class Room {
                 yModifier = 1
                 xModifier = 0
             }
+            if (isMobile) {
+                animationSize = 1.0
+            }
             let lastRoomAxisPosition = 0
             let currentRoomAxisPosition = this.game.gridConfig.columns
-            for (let axisPosition = this.game.gridConfig.columns * 2; axisPosition >= 0; axisPosition--) {
+            const sleepTime = 32/animationSize
+            const axisStep = 1.0/animationSize
+            for (let axisPosition = this.game.gridConfig.columns * animationSize; axisPosition >= 0; axisPosition--) {
 
                 for (let i = 0; i < this.tiles.length; i++) {
                     this.tiles[i].draw(xModifier * currentRoomAxisPosition, yModifier * currentRoomAxisPosition)
@@ -85,12 +91,12 @@ export class Room {
                     }
                 }
 
-                await this.sleep(16)
+                await this.sleep(sleepTime)
                 if (axisPosition != 0) {
                     this.game.solidLayer.clear()
                 }
-                lastRoomAxisPosition = lastRoomAxisPosition - 0.5
-                currentRoomAxisPosition = currentRoomAxisPosition - 0.5
+                lastRoomAxisPosition = lastRoomAxisPosition - axisStep
+                currentRoomAxisPosition = currentRoomAxisPosition - axisStep
             }
         }
         else {

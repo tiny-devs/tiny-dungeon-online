@@ -42,6 +42,9 @@ export class Npc {
   public drops: ItemBase[]
   public name: string
   public quest: QuestBase | null
+  private interacting = false
+  private skipsWhileInteracting = 5
+  private skipedWhileInteracting = 0
 
   constructor(id: number,
       npcData: NpcBase,
@@ -164,6 +167,7 @@ export class Npc {
   // all dialog logic was done in quite a rush to finish
   // please dont mind this messy code
   public talkTo(player: Player) {
+    this.interacting = true
     const playerQuest = player.quests.find(q => q.id == this.quest?.id)
     const npcFromQuestStep = player.quests.find(q => q.steps[q.currentStep].npcToTalk == this.name)
     const npcFromAnyQuestStep = player.quests.find(q => q.steps.find(s => s.npcToTalk == this.name))
@@ -513,10 +517,18 @@ export class Npc {
 
   private heartBeat(): void {
     setTimeout(async () => {
-      if (this.isAgressive) {
-        await this.agressiveBehaviour()
+      if (this.interacting) {
+        this.skipedWhileInteracting += 1
+        if (this.skipedWhileInteracting >= this.skipsWhileInteracting) {
+          this.skipedWhileInteracting = 0
+          this.interacting = false
+        }
       } else {
-        this.passiveBehaviour()
+        if (this.isAgressive) {
+          await this.agressiveBehaviour()
+        } else {
+          this.passiveBehaviour()
+        }
       }
 
       if (!this.dead) {
