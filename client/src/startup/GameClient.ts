@@ -34,6 +34,7 @@ export class GameClient {
 
     private sentWalk: boolean = false
     private walkTimeout: number = 0
+    private drawingRoom: boolean = false
     private loginScreen: HTMLElement
     private gameScreen: HTMLElement
     private bagElement: HTMLElement
@@ -370,7 +371,13 @@ export class GameClient {
                         this.canMoveAfterRoomSwitch = true
                     }
                 }
-                player.move(moveData.movedX, moveData.movedY, moveData.currentMovedRoomId)
+
+                if (!this.drawingRoom && this.playerId == moveData.playerMovedId) {
+                    player.move(moveData.movedX, moveData.movedY, moveData.currentMovedRoomId)
+                }
+                else {
+                    player.move(moveData.movedX, moveData.movedY, moveData.currentMovedRoomId)
+                }
             }
         }
         this.drawSprites()
@@ -392,11 +399,15 @@ export class GameClient {
     }
 
     async drawRoom(roomId: Rooms) {
-        const lastRoom = this.currentRoom
-        const nextRoom = this.game.map.getRoomById(roomId)
-        const direction = this.game.map.getDirectionMovedByRoomIds(lastRoom.id, nextRoom.id)
-        await nextRoom.draw(lastRoom, direction, this.isMobile)
-        this.currentRoom = nextRoom
+        if (!this.drawingRoom) {
+            this.drawingRoom = true
+            const lastRoom = this.currentRoom
+            const nextRoom = this.game.map.getRoomById(roomId)
+            const direction = this.game.map.getDirectionMovedByRoomIds(lastRoom.id, nextRoom.id)
+            await nextRoom.draw(lastRoom, direction, this.isMobile)
+            this.currentRoom = nextRoom
+            this.drawingRoom = false
+        }
     }
 
     drawSprites() {
