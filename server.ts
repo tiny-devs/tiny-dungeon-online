@@ -29,7 +29,7 @@ export class Server {
   public init(): void {
     const portInt = Number(this.port)
     this.setPublicFilesList(this.publicFolder)
-    serve(this.reqHandler.bind(this), { port: portInt })
+    Deno.serve({ port: portInt }, this.reqHandler.bind(this))
   }
 
   public async handleNonWsRequests(req: Request): Promise<Response> {
