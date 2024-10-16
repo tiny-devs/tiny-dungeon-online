@@ -1,5 +1,4 @@
-import { flags } from "./deps.ts"
-import { serve } from "./deps.ts"
+import { parseArgs } from "./deps.ts"
 import { serveFile } from "./deps.ts"
 import { ClientHandler } from "./server/clientHandler.ts"
 
@@ -10,7 +9,7 @@ export class Server {
   private publicFiles: string[] = []
 
   constructor(serverConfigs: any) {
-    const argPort: number = flags.parse(Deno.args).port
+    const argPort: number = parseArgs(Deno.args).port
     const herokuPort = Deno.env.get("PORT")
     this.port = herokuPort ? Number(herokuPort) : argPort ? Number(argPort) : serverConfigs.defaultPort
     this.clientHandler = new ClientHandler(serverConfigs)
