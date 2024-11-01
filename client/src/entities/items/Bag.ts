@@ -2,6 +2,7 @@ import { ItemsIds } from '../../../../shared/Enums'
 import BagItem from "./BagItem"
 import { Items } from "./Items"
 import { GameClient } from "../../startup/GameClient"
+import ContextMenu from '../../contextMenu/ContextMenu'
 
 export default class Bag {
     public items: any[] = []
@@ -12,8 +13,10 @@ export default class Bag {
     public coinsEl: HTMLElement
     private client: GameClient
     private itemsCount: number = 0
+    private contextMenu: ContextMenu
 
     constructor(client: GameClient) {
+        this.contextMenu = new ContextMenu(client)
         this.itemsHolderEl = document.getElementById('items')!
         this.coinsEl = document.getElementById('coins')!
         this.client = client
@@ -52,20 +55,18 @@ export default class Bag {
     }
 
     public clickItem(e: Partial<MouseEvent>, itemId: ItemsIds) {
-        if (
-            e.type === 'mouseup'
-        ) {
+        if (e.type === 'mouseup') {
             if (e.type === 'mouseup') {
                 if (e.button == 0) {
                     this.client.useItem(itemId)
                 } else if (e.button == 2) {
-                    this.client.dropItem(itemId)
+                    this.contextMenu.openMenu(itemId)
                 }
             } else {
                 this.client.useItem(itemId)
             }
         } else if (e.type === 'touchmove') {
-            this.client.dropItem(itemId)
+            this.contextMenu.openMenu(itemId)
         }
     }
 
@@ -95,7 +96,7 @@ export default class Bag {
         this.items.splice(0);
     }
 
-    private getItemSprite(itemId: ItemsIds) {
+    public getItemSprite(itemId: ItemsIds) {
         let keyOfItemId = ItemsIds[itemId]
         let items = Items as any
         return items[keyOfItemId]

@@ -1,4 +1,4 @@
-import { Items, Npcs, StepType } from "../../../../shared/Enums.ts"
+import { ItemsIds, Npcs, StepType } from "../../../../shared/Enums.ts"
 import { MonstersToKill } from "./monstersToKill.ts"
 import { ItemsToHave } from "./itemsToHave.ts"
 import StepBase from "./stepBase.ts"
@@ -47,7 +47,7 @@ export default class Step {
         
     }
 
-    public checkItemToHave(item: Items) {
+    public checkItemToHave(item: ItemsIds) {
         if (this.type == StepType.ItemsToHave) {
             const itemToHave = this.itemsToHave.find(i => (i.item == item) && i.amount > 0)
             if (itemToHave) {

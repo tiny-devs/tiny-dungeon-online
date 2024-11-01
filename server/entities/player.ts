@@ -1,4 +1,4 @@
-import { Direction, Rooms, Items, Npcs, Quests, StepType } from '../../shared/Enums.ts'
+import { Direction, Rooms, ItemsIds, Npcs, Quests, StepType } from '../../shared/Enums.ts'
 import Room from '../map/rooms/room.ts'
 import { ClientHandler } from '../clientHandler.ts'
 import Bag from './items/bag.ts'
@@ -477,7 +477,7 @@ export class Player {
         }
     }
 
-    public spawnItem(itemId: Items): boolean {
+    public spawnItem(itemId: ItemsIds): boolean {
         const isAdmin = this.isAdmin()
         if (isAdmin) {
             if (itemId) {

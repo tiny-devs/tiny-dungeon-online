@@ -1,4 +1,4 @@
-import { Items, ItemType } from "../../../shared/Enums.ts"
+import { ItemsIds, ItemType } from "../../../shared/Enums.ts"
 import ItemBase from "./itemBase.ts"
 import { Player } from "../player.ts"
 import WoodenHelm from "./woodenHelm.ts"
@@ -52,7 +52,7 @@ export default class Bag {
         this.player = player
     }
 
-    public useItem(itemId: Items) {
+    public useItem(itemId: ItemsIds) {
         const item = this.items.find(i => i.itemId == itemId)
         if (item) {
             if (item.type == ItemType.Consumable || item.type == ItemType.QuestConsumable) {
@@ -72,7 +72,7 @@ export default class Bag {
         return {used:false,wore:false}
     }
 
-    public dropItem(itemId: Items): boolean {
+    public dropItem(itemId: ItemsIds): boolean {
         const item = this.items.find(i => i.itemId == itemId)
         if (item && ((item.type !== ItemType.Quest && item.type !== ItemType.QuestConsumable) || this.player.isAdmin())) {
             if (this.player.currentRoom.itemsLayer[this.player.y][this.player.x] === 0) {
@@ -115,7 +115,7 @@ export default class Bag {
         }
     }
 
-    public removeItemFromQuest(itemId: Items) {
+    public removeItemFromQuest(itemId: ItemsIds) {
         const item = this.items.find(i => i.itemId == itemId)
         if (item) {
             const index = this.items.indexOf(item)
@@ -125,122 +125,130 @@ export default class Bag {
         }
     }
 
-    public getItemFromItemId(item: Items): ItemBase | null {
-        if (item == Items.Coffee) {
+    public getItemInfo(itemId: ItemsIds): string {
+        const item = this.items.find(i => i.itemId == itemId)
+        if (item) {
+            return `${itemId},${item.level},${item.bonusAttack},${item.bonusDefense},${item.type},${item.healthRefuel}`
+        }
+        return ''
+    }
+
+    public getItemFromItemId(item: ItemsIds): ItemBase | null {
+        if (item == ItemsIds.Coffee) {
             return new Coffee(0)
         }
-        if (item == Items.Bread) {
+        if (item == ItemsIds.Bread) {
             return new Bread(0)
         }
-        if (item == Items.SmallHp) {
+        if (item == ItemsIds.SmallHp) {
             return new SmallHp(0)
         }
-        if (item == Items.LargeHp) {
+        if (item == ItemsIds.LargeHp) {
             return new LargeHp(0)
         }
-        if (item == Items.SacredStone) {
+        if (item == ItemsIds.SacredStone) {
             return new SacredStone(0)
         }
-        if (item == Items.SacredFireSword) {
+        if (item == ItemsIds.SacredFireSword) {
             return new SacredFireSword(0)
         }
-        if (item == Items.JamulsMachete) {
+        if (item == ItemsIds.JamulsMachete) {
             return new JamulsMachete(0)
         }
-        if (item == Items.JamulsGuitar) {
+        if (item == ItemsIds.JamulsGuitar) {
             return new JamulsGuitar(0)
         }
-        if (item == Items.CactusJuice) {
+        if (item == ItemsIds.CactusJuice) {
             return new CactusJuice(0)
         }
-        if (item == Items.WoodenHelm) {
+        if (item == ItemsIds.WoodenHelm) {
             return new WoodenHelm(0)
         }
-        if (item == Items.WoodenArmour) {
+        if (item == ItemsIds.WoodenArmour) {
             return new WoodenArmour(0)
         }
-        if (item == Items.WoodenLegs) {
+        if (item == ItemsIds.WoodenLegs) {
             return new WoodenLegs(0)
         }
-        if (item == Items.WoodenDagger) {
+        if (item == ItemsIds.WoodenDagger) {
             return new WoodenDagger(0)
         }
-        if (item == Items.WoodenSword) {
+        if (item == ItemsIds.WoodenSword) {
             return new WoodenSword(0)
         }
-        if (item == Items.BronzeHelm) {
+        if (item == ItemsIds.BronzeHelm) {
             return new BronzeHelm(0)
         }
-        if (item == Items.BronzeArmour) {
+        if (item == ItemsIds.BronzeArmour) {
             return new BronzeArmour(0)
         }
-        if (item == Items.BronzeLegs) {
+        if (item == ItemsIds.BronzeLegs) {
             return new BronzeLegs(0)
         }
-        if (item == Items.BronzeDagger) {
+        if (item == ItemsIds.BronzeDagger) {
             return new BronzeDagger(0)
         }
-        if (item == Items.BronzeSword) {
+        if (item == ItemsIds.BronzeSword) {
             return new BronzeSword(0)
         }
-        if (item == Items.IronHelm) {
+        if (item == ItemsIds.IronHelm) {
             return new IronHelm(0)
         }
-        if (item == Items.IronArmour) {
+        if (item == ItemsIds.IronArmour) {
             return new IronArmour(0)
         }
-        if (item == Items.IronLegs) {
+        if (item == ItemsIds.IronLegs) {
             return new IronLegs(0)
         }
-        if (item == Items.IronDagger) {
+        if (item == ItemsIds.IronDagger) {
             return new IronDagger(0)
         }
-        if (item == Items.IronSword) {
+        if (item == ItemsIds.IronSword) {
             return new IronSword(0)
         }
-        if (item == Items.BluriteHelm) {
+        if (item == ItemsIds.BluriteHelm) {
             return new BluriteHelm(0)
         }
-        if (item == Items.BluriteArmour) {
+        if (item == ItemsIds.BluriteArmour) {
             return new BluriteArmour(0)
         }
-        if (item == Items.BluriteLegs) {
+        if (item == ItemsIds.BluriteLegs) {
             return new BluriteLegs(0)
         }
-        if (item == Items.BluriteDagger) {
+        if (item == ItemsIds.BluriteDagger) {
             return new BluriteDagger(0)
         }
-        if (item == Items.BluriteSword) {
+        if (item == ItemsIds.BluriteSword) {
             return new BluriteSword(0)
         }
-        if (item == Items.AdamantHelm) {
+        if (item == ItemsIds.AdamantHelm) {
             return new AdamantHelm(0)
         }
-        if (item == Items.AdamantArmour) {
+        if (item == ItemsIds.AdamantArmour) {
             return new AdamantArmour(0)
         }
-        if (item == Items.AdamantLegs) {
+        if (item == ItemsIds.AdamantLegs) {
             return new AdamantLegs(0)
         }
-        if (item == Items.AdamantDagger) {
+        if (item == ItemsIds.AdamantDagger) {
             return new AdamantDagger(0)
         }
-        if (item == Items.AdamantSword) {
+        if (item == ItemsIds.AdamantSword) {
             return new AdamantSword(0)
         }
-        if (item == Items.FireHelm) {
+        if (item == ItemsIds.FireHelm) {
             return new FireHelm(0)
         }
-        if (item == Items.FireArmour) {
+        if (item == ItemsIds.FireArmour) {
             return new FireArmour(0)
         }
-        if (item == Items.FireLegs) {
+        if (item == ItemsIds.FireLegs) {
             return new FireLegs(0)
         }
-        if (item == Items.FireDagger) {
+        if (item == ItemsIds.FireDagger) {
             return new FireDagger(0)
         }
-        if (item == Items.FireSword) {
+        if (item == ItemsIds.FireSword) {
             return new FireSword(0)
         }
         

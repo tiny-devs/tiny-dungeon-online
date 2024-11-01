@@ -1,4 +1,4 @@
-import { Items, Quests, RewardType, StepType } from "../../../../../../shared/Enums.ts"
+import { ItemsIds, Quests, RewardType, StepType } from "../../../../../../shared/Enums.ts"
 import QuestBase from "../../questBase.ts"
 import StepBase from "../../stepBase.ts"
 import { ItemsToHaveBase } from "../../itemsToHaveBase.ts"
@@ -9,10 +9,10 @@ export default class WarriorSomeday extends QuestBase {
             [
                 new StepBase(StepType.ItemsToHave,[],'ephan', [],
                 [
-                    new ItemsToHaveBase(Items.WoodenDagger, 1),
-                    new ItemsToHaveBase(Items.WoodenArmour, 1),
-                    new ItemsToHaveBase(Items.WoodenHelm, 1),
-                    new ItemsToHaveBase(Items.WoodenLegs, 1),
+                    new ItemsToHaveBase(ItemsIds.WoodenDagger, 1),
+                    new ItemsToHaveBase(ItemsIds.WoodenArmour, 1),
+                    new ItemsToHaveBase(ItemsIds.WoodenHelm, 1),
+                    new ItemsToHaveBase(ItemsIds.WoodenLegs, 1),
                 ],0),
                 new StepBase(StepType.NpcToTalk,[],'ephan',
                 [

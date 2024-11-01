@@ -4,10 +4,10 @@ export default class UpdatesDogDialog extends DialogBase {
     constructor() {
         super(['Hi, Im the woofdates dog',
         'The most recent woofdate is...',
-        'Classic Zelda-like transitions!',
-        'It may slow down your traversal a bit',
-        'but this is intended',
-        'I hope you like this beautiful effect!',
+        'Item inspection! 2024-11-01',
+        'After THREE YEARS the lazy dev',
+        'decided to be nostalgic',
+        'and now you can right click items!',
         '-woofdate read-'])
     }
 }

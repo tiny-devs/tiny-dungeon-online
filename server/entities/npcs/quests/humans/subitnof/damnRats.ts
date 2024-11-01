@@ -1,4 +1,4 @@
-import { Items, Npcs, Quests, RewardType, StepType } from "../../../../../../shared/Enums.ts"
+import { ItemsIds, Npcs, Quests, RewardType, StepType } from "../../../../../../shared/Enums.ts"
 import QuestBase from "../../questBase.ts"
 import StepBase from "../../stepBase.ts"
 import { MonstersToKillBase } from "../../monstersToKillBase.ts"
@@ -22,7 +22,7 @@ export default class DamnRats extends QuestBase {
                     ],[],0),
                 new StepBase(StepType.ItemsToHave,[],'lugrus', [],
                 [
-                    new ItemsToHaveBase(Items.Coffee, 1)
+                    new ItemsToHaveBase(ItemsIds.Coffee, 1)
                 ],0),
                 new StepBase(StepType.NpcToTalk,[],'lugrus',
                 [

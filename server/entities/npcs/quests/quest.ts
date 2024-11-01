@@ -1,4 +1,4 @@
-import { Items, Npcs, Quests, RewardType, StepType } from "../../../../shared/Enums.ts"
+import { ItemsIds, Npcs, Quests, RewardType, StepType } from "../../../../shared/Enums.ts"
 import ItemBase from "../../items/itemBase.ts"
 import { Player } from "../../player.ts"
 import FlowerForMytklash from "./gnomes/flowerForMytklash.ts"
@@ -34,7 +34,7 @@ export default class Quest {
         this.newDialogAfterComplete = questData.newDialogAfterComplete
     }
 
-    private checkItemToHave(item: Items) {
+    private checkItemToHave(item: ItemsIds) {
         if (this.isCompleted) {
             return
         }

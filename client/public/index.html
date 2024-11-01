@@ -21,7 +21,7 @@
       body {
         font-family: "Press Start 2P";
         color: #e5e5e5;
-        background-color: #121212;
+	      background-color: #001800;
       }
 
       .title {
@@ -234,6 +234,33 @@
         color: #595959;
       }
 
+      .menu {
+        width: 120px;
+        z-index: 1;
+        box-shadow: 0 4px 5px 3px rgba(0, 0, 0, 0.2);
+        position: fixed;
+        display: none;
+        transition: 0.2s display ease-in;
+        background-color: #787878;
+
+        .menu-options {
+          list-style: none;
+          padding: 10px 0;
+          z-index: 1;
+          
+          .menu-option {
+            font-weight: 500;
+            z-index: 1;
+            font-size: 14px;
+            padding: 10px 40px 10px 20px;
+            cursor: pointer;
+            &:hover {
+              background: rgba(0, 0, 0, 0.2);
+            }
+          }
+        }
+      }
+
       .loading {
         position: fixed !important;
         z-index: 999;
@@ -280,15 +307,11 @@
       ::-webkit-scrollbar {
         width: 7px;
       }
-
-      /* Track */
       ::-webkit-scrollbar-track {
         -webkit-box-shadow: inset 0 0 3px rgba(0,0,0,0.3); 
         -webkit-border-radius: 5px;
         border-radius: 5px;
       }
-
-      /* Handle */
       ::-webkit-scrollbar-thumb {
         -webkit-border-radius: 5px;
         border-radius: 5px;
@@ -303,10 +326,6 @@
   <body>
     <div id="loading" class="loading blue-spinner"></div>
     <div id="content">
-      <div class="title" id="title-content">
-        <h1 id="title">Tiny Land Online</h1>
-        <p id="sub-title">A Tiny Online RPG Game (v1.1.4!)</p>
-      </div>
       <div class="login-flex-container">
         <div id="login" class="login-flex-item">
           <p>Draw yourself:</p>
@@ -408,8 +427,14 @@
             <h3 id="def-text">def: 0</h3>
           </div>
           <div id="exit">
-            <input type="button" value="exit" id="exit-btn"></input>
+            <input type="button" value="LOG OUT (save)" id="exit-btn"></input>
           </div>
+        </div>
+        <div class="menu">
+          <ul class="menu-options">
+            <li class="menu-option">Inspect</li>
+            <li class="menu-option">Drop</li>
+          </ul>
         </div>
       </div>
       <footer>

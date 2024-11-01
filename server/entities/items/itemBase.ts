@@ -1,8 +1,8 @@
-import { Items, ItemType, GearType } from "../../../shared/Enums.ts"
+import { ItemsIds, ItemType, GearType } from "../../../shared/Enums.ts"
 
 export default class ItemBase {
     public id: number
-    public itemId: Items
+    public itemId: ItemsIds
     public type: ItemType
     public gearType: GearType
     public despawnTime: number
@@ -17,7 +17,7 @@ export default class ItemBase {
     public playerSellPrice: number
 
     constructor(id: number,
-    itemId: Items,
+    itemId: ItemsIds,
     type: ItemType,
     gearType: GearType,
     coins: number,

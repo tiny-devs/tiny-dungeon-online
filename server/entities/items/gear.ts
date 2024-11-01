@@ -1,6 +1,6 @@
 import ItemBase from "./itemBase.ts"
 import { Player } from "../player.ts"
-import { GearType, Items } from "../../../shared/Enums.ts"
+import { GearType, ItemsIds } from "../../../shared/Enums.ts"
 import { ClientHandler } from "../../clientHandler.ts"
 
 export default class Gear {
@@ -77,7 +77,7 @@ export default class Gear {
         return wore
     }
 
-    public remove(itemId: Items): boolean {
+    public remove(itemId: ItemsIds): boolean {
         let removed = false
         if (this.head?.itemId == itemId) {
             removed = this.player.bag.addItem(this.head)

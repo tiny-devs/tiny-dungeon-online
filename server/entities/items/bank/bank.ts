@@ -1,4 +1,4 @@
-import { Items } from "../../../../shared/Enums.ts"
+import { ItemsIds } from "../../../../shared/Enums.ts"
 import ItemBase from "../itemBase.ts"
 import { Player } from "../../player.ts"
 
@@ -11,7 +11,7 @@ export default class Bank {
         this.player = player
     }
 
-    public retrieveItem(itemId: Items): boolean {
+    public retrieveItem(itemId: ItemsIds): boolean {
         const item = this.items.find(i => i.itemId == itemId)
         if (item) {
             const success = this.player.bag.addItem(item)

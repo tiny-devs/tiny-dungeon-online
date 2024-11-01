@@ -1,4 +1,4 @@
-import { Items, Quests, RewardType, StepType } from "../../../../../../shared/Enums.ts"
+import { ItemsIds, Quests, RewardType, StepType } from "../../../../../../shared/Enums.ts"
 import QuestBase from "../../questBase.ts"
 import StepBase from "../../stepBase.ts"
 import SacredFireSword from "../../../../items/sacredFireSword.ts"
@@ -32,7 +32,7 @@ export default class TheSacredStone extends QuestBase {
                     ],[],0),
                 new StepBase(StepType.ItemsToHave,[],'francis', [],
                     [
-                        new ItemsToHaveBase(Items.CactusJuice, 3)
+                        new ItemsToHaveBase(ItemsIds.CactusJuice, 3)
                     ],0),
                 new StepBase(StepType.NpcToTalk,[],'francis',
                     [
@@ -103,7 +103,7 @@ export default class TheSacredStone extends QuestBase {
                     ]),
                 new StepBase(StepType.ItemsToHave,[],'ediog', [],
                     [
-                        new ItemsToHaveBase(Items.SacredStone, 1)
+                        new ItemsToHaveBase(ItemsIds.SacredStone, 1)
                     ],0),
                 new StepBase(StepType.NpcToTalk,[],'ediog',
                     [
@@ -126,7 +126,7 @@ export default class TheSacredStone extends QuestBase {
                     ],[],0),
                 new StepBase(StepType.ItemsToHave,[],'ediog', [],
                     [
-                        new ItemsToHaveBase(Items.FireSword, 1)
+                        new ItemsToHaveBase(ItemsIds.FireSword, 1)
                     ],0),
                 new StepBase(StepType.NpcToTalk,[],'ediog',
                     [

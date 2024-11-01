@@ -2,7 +2,7 @@ import { PlayerConfig } from '../models/configs'
 import { Game } from './Game'
 import { Main } from './Main'
 import { Parser } from '../parser/Parser'
-import { Command, PveAttacker, Rooms, Direction, ItemsIds, GearType } from '../../../shared/Enums'
+import { Command, PveAttacker, Rooms, Direction, ItemsIds, GearType, ItemType } from '../../../shared/Enums'
 import { Color, PlayerColors } from '../board/map/tiles/Color'
 import Bag from '../entities/items/Bag'
 import { ParseItemPick } from '../parser/ParseItemPick'
@@ -781,6 +781,10 @@ export class GameClient {
         }
     }
 
+    sendItemInfo(itemId: ItemsIds) {
+        this.ws!.send(`${Command.EntityInfo},${itemId},-1`)
+    }
+
     hideEntityInfo() {
         this.isShowingEntityInfo = true
         this.toggleEntityInfo()
@@ -794,38 +798,56 @@ export class GameClient {
         }
     }
 
+    showItemInfo(data: ParseEntityInfo) {
+        const success = this.fillEntityInfo(data)
+        if (success) {
+            this.isShowingEntityInfo = false
+            this.toggleEntityInfo()
+        }
+    }
+
     fillEntityInfo(data: ParseEntityInfo): boolean {
         let success = true
         const player = this.game.spritesLayer.getPlayerById(this.playerId)!
-        if (data.isNpc) {
-            const npcSelected = this.game.spritesLayer.getNpcByIdAndRoom(data.npcId, player.currentRoomId)
-            if (npcSelected) {
-                if (data.level !== 0) {
-                    this.maxHpInfoElement.innerHTML = `Total HP: ${npcSelected.maxHp}`
-                    this.itemsInfoElement.innerHTML = `Drops: ${data.items.join(', ')}`
+
+        if (data.isItem) {
+            this.maxHpInfoElement.innerHTML = data.itemType == ItemType.Consumable ? `Restores HP: ${data.healthRefuel}` : ''
+            this.itemsInfoElement.innerHTML = data.itemType == ItemType.Consumable ? '' : `Bonus: atk ${data.attack}/def ${data.defense}`
+            this.nameInfoElement.innerHTML = `Name: ${data.name}`
+            this.levelInfoElement.innerHTML = data.level != 0 ? `Min Level: ${data.level}` : ''
+            const itemMatrix = this.bag.getItemSprite(data.npcId)
+            new TinyIcon(itemMatrix, 'img-info', '')
+        } else {
+            if (data.isNpc) {
+                const npcSelected = this.game.spritesLayer.getNpcByIdAndRoom(data.npcId, player.currentRoomId)
+                if (npcSelected) {
+                    if (data.level !== 0) {
+                        this.maxHpInfoElement.innerHTML = `Total HP: ${npcSelected.maxHp}`
+                        this.itemsInfoElement.innerHTML = `Drops: ${data.items.join(', ')}`
+                        this.nameInfoElement.innerHTML = `Name: ${data.name}`
+                        this.levelInfoElement.innerHTML = `Level: ${data.level} (atk ${data.attack}/def ${data.defense})`
+                    } else {
+                        this.maxHpInfoElement.innerHTML = ``
+                        this.itemsInfoElement.innerHTML = ``
+                        this.nameInfoElement.innerHTML = `Name: ${data.name}`
+                        this.levelInfoElement.innerHTML = ``
+                    }
+                    
+                    new TinyIcon(npcSelected.tileMatrix, 'img-info', '')
+                } else {
+                    success = false
+                }
+            } else {
+                const playerSelected = this.game.spritesLayer.getPlayerByName(data.name)
+                if (playerSelected) {
+                    this.maxHpInfoElement.innerHTML = `Total HP: ${playerSelected.maxHp}`
+                    this.itemsInfoElement.innerHTML = `Gear: ${data.items.join(', ')}`
                     this.nameInfoElement.innerHTML = `Name: ${data.name}`
                     this.levelInfoElement.innerHTML = `Level: ${data.level} (atk ${data.attack}/def ${data.defense})`
+                    new TinyIcon(playerSelected.matrix, 'img-info', playerSelected.color)
                 } else {
-                    this.maxHpInfoElement.innerHTML = ``
-                    this.itemsInfoElement.innerHTML = ``
-                    this.nameInfoElement.innerHTML = `Name: ${data.name}`
-                    this.levelInfoElement.innerHTML = ``
+                    success = false
                 }
-                
-                new TinyIcon(npcSelected.tileMatrix, 'img-info', '')
-            } else {
-                success = false
-            }
-        } else {
-            const playerSelected = this.game.spritesLayer.getPlayerByName(data.name)
-            if (playerSelected) {
-                this.maxHpInfoElement.innerHTML = `Total HP: ${playerSelected.maxHp}`
-                this.itemsInfoElement.innerHTML = `Gear: ${data.items.join(', ')}`
-                this.nameInfoElement.innerHTML = `Name: ${data.name}`
-                this.levelInfoElement.innerHTML = `Level: ${data.level} (atk ${data.attack}/def ${data.defense})`
-                new TinyIcon(playerSelected.matrix, 'img-info', playerSelected.color)
-            } else {
-                success = false
             }
         }
 

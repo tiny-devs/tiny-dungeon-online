@@ -1,5 +1,5 @@
 import { Player } from './entities/player.ts'
-import { Command, Direction, Items, GearType, Rooms } from '../shared/Enums.ts'
+import { Command, Direction, ItemsIds, GearType, Rooms } from '../shared/Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
@@ -62,7 +62,7 @@ export class ClientHandler {
       //       `${this.topPlayers[2].level}`)
       //   }
       // }
-    } catch (e) {
+    } catch (e: any) {
       const success = this.handleExceptions(e, currentPlayer, 'broadcastRank')
       if (success) {
         this.broadcastRank()
@@ -79,7 +79,7 @@ export class ClientHandler {
           this.send(player,`${Command.UpdatePlayerId},${oldId},${newId}`)
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       const success = this.handleExceptions(e, currentPlayer, 'broadcastPlayerConnection')
       if (success) {
         this.broadcastPlayerIdUpdate(newId,oldId)
@@ -102,7 +102,7 @@ export class ClientHandler {
             `${data}`)
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       const success = this.handleExceptions(e, currentPlayer, 'broadcastPlayerConnection')
       if (success) {
         this.broadcastPlayerConnection(playerId)
@@ -140,7 +140,7 @@ export class ClientHandler {
           }
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       const success = this.handleExceptions(e, currentPlayer, 'broadcastPlayerMove')
       if (success) {
         this.nearbycastPlayerMove(playerMoved,direction)
@@ -157,7 +157,7 @@ export class ClientHandler {
           this.send(player,`${Command.Message},"${message}"`)
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, currentPlayer, 'broadcastMessage')
     }
   }
@@ -176,7 +176,7 @@ export class ClientHandler {
             `${npcMoved.roomId}`)
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       const success = this.handleExceptions(e, currentPlayer, 'roomcastNpcMove')
       if (success) {
         this.roomcastNpcMove(npcMoved)
@@ -198,7 +198,7 @@ export class ClientHandler {
           `${pveData.player.id},` +
           `${pveData.room.id}`)
       }
-    } catch (e) {
+    } catch (e: any) {
       const success = this.handleExceptions(e,currentPlayer, 'roomcastPveFight')
       if (success) {
         this.roomcastPveFight(pveData)
@@ -219,7 +219,7 @@ export class ClientHandler {
           `${roomId},` +
           `${x},${y}`)
       }
-    } catch (e) {
+    } catch (e: any) {
       const success = this.handleExceptions(e, currentPlayer, 'roomcastItemDrop')
       if (success) {
         this.roomcastItemDrop(itemData,roomId,y,x)
@@ -227,7 +227,7 @@ export class ClientHandler {
     }
   }
 
-  public roomcastItemPick(roomId: number, y: number, x: number, itemId: Items, coins: number, playerId: string): void {
+  public roomcastItemPick(roomId: number, y: number, x: number, itemId: ItemsIds, coins: number, playerId: string): void {
     let currentPlayer = null
     try{
       const room = this.map.getRoomById(roomId)
@@ -239,7 +239,7 @@ export class ClientHandler {
           `${itemId},${coins},`+
           `${x},${y}`)
       }
-    } catch (e) {
+    } catch (e: any) {
       const success = this.handleExceptions(e, currentPlayer, 'roomcastItemPick')
       if (success) {
         this.roomcastItemPick(roomId,y,x,itemId,coins,playerId)
@@ -268,7 +268,7 @@ export class ClientHandler {
         this.send(player,`${Command.Chat},${sentBy.id},"${message}"`)
       }
       return true
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, currentPlayer, 'roomcastItemsInRoom')
       return false
     }
@@ -296,7 +296,7 @@ export class ClientHandler {
       this.unicastNpcsInRoom(player)
       this.unicastItemsInRoom(player)
       this.unicastPlayersInRoom(player)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'switchRooms')
     }
   }
@@ -310,7 +310,7 @@ export class ClientHandler {
         currentPlayer = player
         this.send(player,`${Command.ItemsInRoom},${room.id},${data}`)
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, currentPlayer, 'roomcastItemsInRoom')
     }
   }
@@ -318,23 +318,23 @@ export class ClientHandler {
   public unicastMessage(player: Player, message: string): void {
     try{
       this.send(player,`${Command.Message},"${message}"`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastMessage')
     }
   }
 
-  public unicastItemRemove(player: Player, itemId: Items): void {
+  public unicastItemRemove(player: Player, itemId: ItemsIds): void {
     try{
       this.send(player,`${Command.ItemRemove},${itemId}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastItemRemove')
     }
   }
 
-  public unicastItemWear(player: Player, itemId: Items, gearType: GearType): void {
+  public unicastItemWear(player: Player, itemId: ItemsIds, gearType: GearType): void {
     try{
       this.send(player,`${Command.ItemWear},${itemId},${gearType}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastItemWear')
     }
   }
@@ -345,7 +345,7 @@ export class ClientHandler {
       this.send(player,`${Command.Stats},`+
         `${data.hp},${data.maxHp},${data.attack},${data.defense},`+
         `${data.level},${data.xp},${data.xpNeeded}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastPlayerStats')
     }
   }
@@ -353,7 +353,7 @@ export class ClientHandler {
   public unicastDialog(player: Player, dialog: string) {
     try {
       this.send(player,`${Command.Dialog},"${dialog}"`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastDialog')
     }
   }
@@ -362,7 +362,7 @@ export class ClientHandler {
     try{
       const data = player.currentRoom.getAllItemsInRoom()[0]
       this.send(player,`${Command.ItemsInRoom},${player.currentRoomId},${data}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastItemsInRoom')
     }
   }
@@ -371,7 +371,7 @@ export class ClientHandler {
     try{
       const data = player.currentRoom.getAllNpcsInRoom()
       this.send(player,`${Command.NpcsInRoom},${data}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastNpcsInRoom')
     }
   }
@@ -380,23 +380,23 @@ export class ClientHandler {
     try{
       const data = player.currentRoom.getAllPlayersPositionsInRoomExceptSelf(player.id)
       this.send(player,`${Command.PlayersInRoom},${player.currentRoom.id},${data}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastPlayersInRoom')
     }
   }
 
-  private unicastItemUse(player: Player, itemId: Items): void {
+  private unicastItemUse(player: Player, itemId: ItemsIds): void {
     try{
       this.send(player,`${Command.ItemUse},${itemId}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastItemUse')
     }
   }
 
-  private unicastPlayerDroped(player: Player, itemId: Items): void {
+  private unicastPlayerDroped(player: Player, itemId: ItemsIds): void {
     try{
       this.send(player,`${Command.ItemDroped},${itemId}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastPlayerDroped')
     }
   }
@@ -404,7 +404,7 @@ export class ClientHandler {
   private unicastPlayerDropedGold(player: Player, amount: number): void {
     try{
       this.send(player,`${Command.GoldDroped},${amount}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastPlayerDropedGold')
     }
   }
@@ -415,8 +415,19 @@ export class ClientHandler {
       if (entityInfo.length) {
         this.send(player,`${Command.EntityInfo},${entityInfo}`)
       }
-    } catch (e) {
-      this.handleExceptions(e, player, 'loadPlayerDataFromHash')
+    } catch (e: any) {
+      this.handleExceptions(e, player, 'unicastEntityInfo')
+    }
+  }
+
+  private unicastItemInfo(player: Player, itemId: ItemsIds) {
+    try{
+      const itemInfo = player.bag.getItemInfo(itemId)
+      if (itemInfo.length) {
+        this.send(player,`${Command.EntityInfo},-1,${itemInfo}`)
+      }
+    } catch (e: any) {
+      this.handleExceptions(e, player, 'unicastItemInfo')
     }
   }
 
@@ -429,7 +440,7 @@ export class ClientHandler {
       //   `${this.topPlayers[1].level},`+
       //   `${this.topPlayers[2].name},`+
       //   `${this.topPlayers[2].level}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastRank')
     }
   }
@@ -438,7 +449,7 @@ export class ClientHandler {
     try{
       const playerDataHash = await this.playerDataManager.encryptUserData(player.getPlayerDataForSave())
       this.send(player,`${Command.Save},${playerDataHash}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastPlayerDataHashSave')
     }
   }
@@ -451,7 +462,7 @@ export class ClientHandler {
         }
   
         this.send(player,data)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastPlayerBag')
     }
   }
@@ -459,7 +470,7 @@ export class ClientHandler {
   public unicastOpenStore(player: Player, merchantId: number) {
     try{
       this.send(player,`${Command.OpenStore},${merchantId}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastOpenStore')
     }
   }
@@ -475,7 +486,7 @@ export class ClientHandler {
 
         this.send(player, dataItems)
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastStoreItems')
     }
   }
@@ -488,7 +499,7 @@ export class ClientHandler {
       }
 
       this.send(player, dataItems)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastPlayerItemsPrices')
     }
   }
@@ -517,7 +528,7 @@ export class ClientHandler {
       } else {
         this.unicastItemTraded(player, false, 'Merchant not found!', itemId, player.bag.coins, Command.BuyItemStore)
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'tryBuyItem')
     }
   }
@@ -537,7 +548,7 @@ export class ClientHandler {
       } else {
         this.unicastItemTraded(player, false, 'Trying to sell from far away', itemId, player.bag.coins, Command.SellItemStore)
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'trySellItem')
     }
   }
@@ -549,7 +560,7 @@ export class ClientHandler {
       } else {
         this.send(player, `${command},${success},'',${itemId},${currentCoins}`)
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastItemTraded')
     }
   }
@@ -591,7 +602,7 @@ export class ClientHandler {
   
         this.send(player,data)
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'unicastPlayerDataLoaded')
     }
   }
@@ -602,7 +613,7 @@ export class ClientHandler {
       const playerLoaded = player.loadPlayerDataFromSave(data)
       //this.db.saveAccount({id: player.id, data: data})
       return playerLoaded
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'loadPlayerDataFromHash')
       return false
     }
@@ -612,7 +623,7 @@ export class ClientHandler {
     try{
       const playerDataHash = await this.playerDataManager.encryptUserData(player.getPlayerDataForSave())
       this.send(player,`${Command.Exit},${playerDataHash}`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'loadPlayerDataFromHash')
     }
   }
@@ -687,7 +698,7 @@ export class ClientHandler {
         default:
           break
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log('source: executeAdminCommand')
       console.log(e)
     }
@@ -710,7 +721,7 @@ export class ClientHandler {
         console.log('--- FIXED ---')
       }
       return success
-    } catch (e) {
+    } catch (e: any) {
       console.log('source: handleExceptions')
       console.log(e)
     }
@@ -728,7 +739,7 @@ export class ClientHandler {
             this.logPlayerOut(player)
             success = true
           }
-        } catch (e) {
+        } catch (e: any) {
           console.log('source: removeAllClosedSockets', currentPlayer?.name)
           console.log(e)
         }
@@ -781,7 +792,7 @@ export class ClientHandler {
       if (roomId) {
         adm.teleport(roomId)
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, adm, 'teleport')
     }
     return false
@@ -795,7 +806,7 @@ export class ClientHandler {
       if (item) {
         adm.spawnItem(item)
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, adm, 'spawnItem')
     }
     return false
@@ -804,7 +815,7 @@ export class ClientHandler {
   private checkNameDuplicate(name: string, player: Player): boolean {
     try {
       return this.playerNames.some(pName => pName.toLowerCase() == name.toLowerCase())
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'checkNameDuplicate')
     }
     return false
@@ -814,7 +825,7 @@ export class ClientHandler {
     try {
       const players = this.getAllPlayers()
       return players.filter(p => p.id == id).length > 1
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'checkNameDuplicate')
     }
     return false
@@ -823,7 +834,7 @@ export class ClientHandler {
   private unicastError(player: Player, description: string): boolean {
     try {
       this.send(player, `${Command.Error},"${description}"`)
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'checkNameDuplicate')
     }
     return false
@@ -845,7 +856,7 @@ export class ClientHandler {
           }
         }
       }
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, currentPlayer, 'kickPlayer')
     }
   }
@@ -866,7 +877,7 @@ export class ClientHandler {
       }
 
       return true
-    } catch (e) {
+    } catch (e: any) {
       this.handleExceptions(e, player, 'logPlayerOut')
     }
     return false
@@ -875,7 +886,7 @@ export class ClientHandler {
   private pong(player: Player): void {
     try {
       this.send(player,`${Command.Pong}`)
-    } catch (e) {
+    } catch (e: any) {
       console.log('source: pong')
       console.log(e)
     }
@@ -912,7 +923,7 @@ export class ClientHandler {
         this.logPlayerOut(player)
         return false
       }
-    } catch (e) {
+    } catch (e: any) {
       console.log('source: send')
       console.log(e)
     }
@@ -926,7 +937,7 @@ export class ClientHandler {
       ws.onmessage = (m) => this.handleClientMessage(player, m);
       ws.onclose = () => this.handleClientClose(player);
       ws.onerror = (e) => this.handleClientError(e, player);
-    } catch (e) {
+    } catch (e: any) {
       console.log('source: main loop')
       console.log(e)
     }
@@ -1077,7 +1088,11 @@ export class ClientHandler {
             break
           }
           case Command.EntityInfo:
-            this.unicastEntityInfo(player, Number(eventData[1]), Number(eventData[2]))
+            if (Number(eventData[2]) < 0) {
+              this.unicastItemInfo(player, Number(eventData[1]))
+            } else {
+              this.unicastEntityInfo(player, Number(eventData[1]), Number(eventData[2]))
+            }
             break
           case Command.OpenBank:
             console.log(player, Number(eventData[1]), Number(eventData[2]))
@@ -1111,7 +1126,7 @@ export class ClientHandler {
           return
         }
   
-      } catch(e) {
+      } catch(e: any) {
         this.handleExceptions(e,player, 'main loop')
       }
     }

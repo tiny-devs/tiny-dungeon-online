@@ -1,4 +1,4 @@
-import { Items, Npcs, Quests, RewardType, StepType } from "../../../../../../shared/Enums.ts"
+import { Npcs, Quests, RewardType, StepType } from "../../../../../../shared/Enums.ts"
 import QuestBase from "../../questBase.ts"
 import BluriteArmour from "../../../../items/bluriteArmour.ts"
 import StepBase from "../../stepBase.ts"
