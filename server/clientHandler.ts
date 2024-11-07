@@ -196,7 +196,8 @@ export class ClientHandler {
           `${pveData.npc.id},` +
           `${pveData.player.hp},` +
           `${pveData.player.id},` +
-          `${pveData.room.id}`)
+          `${pveData.room.id},` +
+          `${pveData.fightingNpcId}`)
       }
     } catch (e: any) {
       const success = this.handleExceptions(e,currentPlayer, 'roomcastPveFight')
@@ -800,7 +801,7 @@ export class ClientHandler {
 
   private spawnItem(adm: Player, itemName: string): boolean {
     try {
-      const itemsAny = Items as any
+      const itemsAny = ItemsIds as any
       const itemNameUpperCase = itemName.charAt(0).toUpperCase() + itemName.slice(1)
       const item = itemsAny[itemNameUpperCase]
       if (item) {

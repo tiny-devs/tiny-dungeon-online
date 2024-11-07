@@ -14,6 +14,7 @@ export class Game {
     public map: Map
     public spritesLayer: SpritesLayer
     public board: Board
+    public playerId: string = ''
 
     constructor(gameConfigs: DimensionsConfig, mainElements: Main) {
         this.gridConfig = new GridConfig({

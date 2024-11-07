@@ -2,6 +2,7 @@ import { Game } from '../startup/Game'
 import { SpritesLayer } from '../board/layers/SpritesLayer'
 import { Color } from '../board/map/tiles/Color'
 import { Rooms, Direction } from '../../../shared/Enums'
+import { ParsePve } from '../parser/ParsePve'
 
 export class Player {
     public x: number
@@ -13,7 +14,7 @@ export class Player {
     public hp: number
     public maxHp: number
     public isFighting: boolean
-    public pveData: any
+    public pveData: ParsePve | null = null
     public matrix: any[][]
     public chatMessage: string = ''
     private chatMessageTimeout: number = 0
@@ -59,12 +60,14 @@ export class Player {
         this.layer.ctx.fill()
     }
 
-    takeDamage(pveData: any) {
+    takeDamage(pveData: ParsePve) {
         this.pveData = pveData
         this.hp = pveData.playerHp
         this.isFighting = true
         this.drawHp()
         if (this.hp <= 0) {
+            this.x = -1
+            this.y = -1
             this.hp = this.maxHp
             this.isFighting = false
         }
@@ -119,19 +122,21 @@ export class Player {
     }
 
     drawHit() {
-        let dmgFactor = ''
-        this.layer.ctx.font = '15px arial'
-        this.layer.ctx.textAlign = 'center'
-        if (this.pveData.damageCaused == 0) {
-            this.layer.ctx.fillStyle = Color.Blue
-        } else {
-            this.layer.ctx.fillStyle = Color.Red
-            dmgFactor = '-'
-        }
+        if (this.pveData) {
+            let dmgFactor = ''
+            this.layer.ctx.font = '15px arial'
+            this.layer.ctx.textAlign = 'center'
+            if (this.pveData.damageCaused == 0) {
+                this.layer.ctx.fillStyle = Color.Blue
+            } else {
+                this.layer.ctx.fillStyle = Color.Red
+                dmgFactor = '-'
+            }
 
-        const x = this.x * this.game.gridConfig.cellWidth + this.game.gridConfig.cellWidth / 2
-        const y = this.y * this.game.gridConfig.cellHeight - 10
-        this.layer.ctx.fillText(`${dmgFactor}${this.pveData.damageCaused}`, x, y)
+            const x = this.x * this.game.gridConfig.cellWidth + this.game.gridConfig.cellWidth / 2
+            const y = this.y * this.game.gridConfig.cellHeight - 10
+            this.layer.ctx.fillText(`${dmgFactor}${this.pveData.damageCaused}`, x, y)
+        }
     }
 
     move(x: number, y: number, currentRoomId: Rooms) {

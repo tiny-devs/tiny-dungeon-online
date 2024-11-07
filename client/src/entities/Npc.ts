@@ -2,6 +2,7 @@ import { Game } from '../startup/Game'
 import { Color } from '../board/map/tiles/Color'
 import { Rooms } from '../../../shared/Enums'
 import { Misc } from './Misc'
+import { ParsePve } from '../parser/ParsePve'
 
 export class Npc {
     public id: number
@@ -18,7 +19,7 @@ export class Npc {
     private game: Game
     private layer: any
     private tileSize: number
-    private pveData: any
+    private pveData: ParsePve | null = null
 
     constructor(game: Game, layer: any, npcData: Partial<Npc>, npcMatrix: any[], npcId: number) {
         this.game = game
@@ -68,29 +69,21 @@ export class Npc {
         }
 
         this.layer.ctx.fill()
+
+        this.drawTargetIndicator()
     }
 
-    drawExclamation() {
-        this.layer.ctx.beginPath()
-
-        for (let column = 0; column < this.tileSize; column++) {
-            for (let line = 0; line < this.tileSize; line++) {
-                const tileColor = Misc.Exclamation[line][column]
-                if (tileColor !== 0) {
-                    this.layer.ctx.fillStyle = tileColor
-                    const startX = ((column * this.game.gridConfig.cellWidth) / this.tileSize + this.x * this.game.gridConfig.cellWidth) | 0
-                    const startY = ((line * this.game.gridConfig.cellHeight) / this.tileSize + this.y * this.game.gridConfig.cellHeight) | 0
-                    const width = this.game.gridConfig.cellWidth / this.tileSize
-                    const height = this.game.gridConfig.cellHeight / this.tileSize
-                    this.layer.ctx.fillRect(startX, startY, width, height)
-                }
-            }
+    drawTargetIndicator() {
+        const playerClient = this.game.spritesLayer.getPlayerById(this.game.playerId)
+        if (this.pveData && playerClient && playerClient.pveData?.playerTargetingNpcId == this.id) {
+            this.layer.ctx.strokeStyle = Color.LightRed
+            const calculatedX = this.x * this.game.gridConfig.cellWidth
+            const calculatedY = this.y * this.game.gridConfig.cellHeight
+            this.layer.ctx.strokeRect(calculatedX, calculatedY, this.game.gridConfig.cellWidth, this.game.gridConfig.cellHeight)
         }
-
-        this.layer.ctx.fill()
     }
 
-    takeDamage(pveData: any) {
+    takeDamage(pveData: ParsePve) {
         this.pveData = pveData
         this.hp = pveData.npcHp
         this.isFighting = true
@@ -98,6 +91,7 @@ export class Npc {
         if (this.hp <= 0) {
             this.hp = this.maxHp
             this.isFighting = false
+            this.pveData = null
         }
     }
 
@@ -114,17 +108,19 @@ export class Npc {
     }
 
     drawHit() {
-        let dmgFactor = ''
-        this.layer.ctx.font = '15px arial'
-        this.layer.ctx.textAlign = 'center'
-        if (this.pveData.damageCaused == 0) {
-            this.layer.ctx.fillStyle = Color.Blue
-        } else {
-            this.layer.ctx.fillStyle = Color.Red
-            dmgFactor = '-'
-        }
+        if (this.pveData) {
+            let dmgFactor = ''
+            this.layer.ctx.font = '15px arial'
+            this.layer.ctx.textAlign = 'center'
+            if (this.pveData.damageCaused == 0) {
+                this.layer.ctx.fillStyle = Color.Blue
+            } else {
+                this.layer.ctx.fillStyle = Color.Red
+                dmgFactor = '-'
+            }
 
-        this.layer.ctx.fillText(`${dmgFactor}${this.pveData.damageCaused}`, this.x * this.game.gridConfig.cellWidth + this.game.gridConfig.cellWidth / 2, this.y * this.game.gridConfig.cellHeight - 10)
+            this.layer.ctx.fillText(`${dmgFactor}${this.pveData.damageCaused}`, this.x * this.game.gridConfig.cellWidth + this.game.gridConfig.cellWidth / 2, this.y * this.game.gridConfig.cellHeight - 10)
+        }
     }
 
     move(moveData: any) {

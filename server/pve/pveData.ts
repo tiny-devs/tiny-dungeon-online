@@ -10,6 +10,7 @@ export class PveData {
 	public attacker: PveAttacker
 	public damageCaused: number
 	public damageDefended: number
+	public fightingNpcId: number
 
 	constructor(room: Room,
 	player: Player,
@@ -21,5 +22,6 @@ export class PveData {
 		this.attacker = attacker
 		this.damageCaused = 0
 		this.damageDefended = 0
+		this.fightingNpcId = player.fightingNpcId == null ? 0 : player.fightingNpcId
 	}
 }

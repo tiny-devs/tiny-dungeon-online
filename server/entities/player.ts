@@ -423,8 +423,10 @@ export class Player {
         this.hp -= actualDamage < 0 ? 0 : actualDamage
         if (this.hp <= 0) {
             this.applyXpPenaltyForDeath()
-            this.hp = this.totalHp()
-            this.respawn()
+            setTimeout(() => {
+                this.hp = this.totalHp()
+                this.respawn()
+            }, 1000);
         }
 
         return defense

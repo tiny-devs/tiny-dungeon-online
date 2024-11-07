@@ -19,6 +19,7 @@ import { ParseHidePlayer } from '../parser/ParseHidePlayer'
 import Store from '../entities/items/Store'
 import { ParseBoughtItem } from '../parser/ParseBoughtItem'
 import { ParseSoldPlayerItem } from '../parser/ParseSoldPlayerItem'
+import { ParsePve } from '../parser/ParsePve'
 
 export class GameClient {
     public loggedIn: boolean
@@ -525,7 +526,7 @@ export class GameClient {
         this.sentWalk = false
     }
 
-    drawPve(pveData: any) {
+    drawPve(pveData: ParsePve) {
         const player = this.game.spritesLayer.getPlayerById(pveData.playerId)!
         if (pveData.attacker == PveAttacker.Npc) {
             player.takeDamage(pveData)
@@ -744,6 +745,8 @@ export class GameClient {
         this.applyStats(loadData.hp, loadData.maxHp, loadData.attack, loadData.defense, loadData.level, loadData.xp, loadData.xpNeeded)
         this.loadItems(loadData.itemsIds)
         this.loadGear(loadData.gearHead, loadData.gearTorso, loadData.gearLegs, loadData.gearWeapon)
+
+        this.game.playerId = this.playerId
     }
 
     loadItems(items: ItemsIds[]) {

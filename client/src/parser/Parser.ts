@@ -157,6 +157,7 @@ export class Parser {
         if (this.client.loggedIn === false) {
             this.client.loggedIn = true
             this.client.playerId = loginData.playerId
+            this.client.game.playerId = loginData.playerId
             this.client.bag.playerId = loginData.playerId
             this.client.gear.playerId = loginData.playerId
             this.client.game.applyServerRules(loginData.serverRules)
