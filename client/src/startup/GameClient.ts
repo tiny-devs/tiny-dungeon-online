@@ -83,6 +83,7 @@ export class GameClient {
     private down: HTMLElement
     private left: HTMLElement
     private right: HTMLElement
+    private gdriveUserDataElement: HTMLElement
     private isMobile: boolean
     private mobileDirection: number = 0
     private mobileCanMove: boolean = false
@@ -147,6 +148,7 @@ export class GameClient {
         this.isShowingMessage = false
         this.messageTimeout = 0
         this.adminPassword = mainElements.adminPassword
+        this.gdriveUserDataElement = mainElements.gdriveUserDataElement
 
         this.gameScreen.onclick = () => this.sendEntityInfo()
         
@@ -346,7 +348,17 @@ export class GameClient {
     }
 
     getPlayerLoginData() {
-        const playerLoadData = localStorage.getItem(this.localStorageLoadKey)
+        let playerLoadData: string | null = null
+        try {
+            if (this.gdriveUserDataElement.innerHTML) {
+                playerLoadData = JSON.parse(this.gdriveUserDataElement.innerHTML).data
+            }
+        }catch{ console.log('coudnt load gdrive data') }
+        
+        if (playerLoadData == null) {
+            playerLoadData = localStorage.getItem(this.localStorageLoadKey)
+        }
+        
         const playerData = playerLoadData ? playerLoadData : '0'
         const adminPassword = this.adminPassword ? this.adminPassword : '0'
         const playerMatrix = JSON.stringify(this.playerMatrix)
@@ -721,8 +733,13 @@ export class GameClient {
         this.game.spritesLayer.updatePlayerId(data.oldId, data.newId)
     }
 
-    savePlayerData(playerHexData: string) {
-        localStorage.setItem(this.localStorageLoadKey, playerHexData)
+    async savePlayerData(playerHexData: string) {
+        if (this.gdriveUserDataElement.innerHTML) {
+            this.gdriveUserDataElement.innerHTML = `{"data":"${playerHexData}"}`
+        } else {
+            localStorage.setItem(this.localStorageLoadKey, playerHexData)
+        }
+        
         this.displayPlayerSaved()
     }
 
@@ -963,7 +980,10 @@ export class GameClient {
     exitConfirmed(data: string) {
         this.savePlayerData(data)
         alert('Exit Successful!')
-        window.location.reload()
+        this.gameScreen.style.visibility = 'hidden'
+        setTimeout(() => {
+            window.location.reload()
+        }, 2000)
     }
 
     getRandomPlayerColor() {

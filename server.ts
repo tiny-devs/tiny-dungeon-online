@@ -47,6 +47,10 @@ export class Server {
       response = await serveFile(req, "./client/public/favicon.ico")
     }
 
+    if (req.method === "GET" && cleanedUrl === "/web_neutral_rd_ctn@1x.png") {
+      response = await serveFile(req, "./client/public/web_neutral_rd_ctn@1x.png")
+    }
+
     for (const file of this.publicFiles) {
       if (req.method === "GET" && cleanedUrl === `/js/${file}`) {
         response = await serveFile(req, `./client/public/${file}`)

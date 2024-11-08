@@ -14,7 +14,6 @@
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
-
       gtag('config', 'G-QMDCFYG6EB');
     </script>
     <style>
@@ -23,82 +22,74 @@
         color: #e5e5e5;
 	      background-color: #001800;
       }
-
       .title {
         text-align: center;
       }
-
       .login-flex-container {
         display: flex;
         justify-content: center;
       }
-
       .login-flex-item {
         text-align: center;
       }
-
       h3 {
         font-size: 70%;
       }
-
+      .google-btn {
+        border: none;
+        background-color: #ffffff00;
+      }
+      .google-btn:hover {
+        cursor: pointer;
+      }
       #game-messages {
         max-width: 512px;
       }
-
       #message {
         overflow-wrap: break-word;
         word-wrap: break-word;
         hyphens: auto;
       }
-
       #chat-message {
         margin-top: 15px;
         width: 70%;
       }
-
       #send-chat {
         width: 20%;
         margin: 0;
         margin-left: -5px;
         padding: 0;
       }
-      
       #game-info, #game-rank, #show-rank, #entity-info {
         display: none;
       }
-
       #coins {
         border: 1px solid #e5e5e5;
         margin: 0px;
         cursor: pointer;
       }
-
       #coins-drop {
         border: 1px solid #e5e5e5;
         margin: 0px;
         display: none;
       }
-
       #bag {
         border: 1px solid #e5e5e5;
         width: 128px;
         height: 192px;
       }
-
       #store {
         border: 1px solid #e5e5e5;
         width: 128px;
         height: 192px;
         overflow-y: scroll;
       }
-
       #gear {
         border: 1px solid #e5e5e5;
         width: 128px;
         height: auto;
         text-align: center;
       }
-
       .bottom-info-area {
         position: relative;
         border: 1px solid #e5e5e5;
@@ -106,60 +97,48 @@
         min-width: 256px;
         max-width: 512px;
       }
-
       .bottom-info-area input{
         position: absolute;
         top: 0px;
         right: 0px;
       }
-
       .bottom-info-area > * {
         margin: 5px;
       }
-
       .item-btn {
         text-align: center;
         cursor: pointer;
       }
-
       .gear-slot {
         border: 1px solid #e5e5e5;
         align-self: auto;
         margin-top: 5px;
       }
-
       #login {
         border-style: solid;
         padding: 0.62rem;
         border-width: 0.12rem;
         border-radius: 0.31rem;
       }
-
       sub {
         font-size: 50%;
       }
-
       #help-draw-mobile {
         display: none;
       }
-
       #mobile-controls {
         display: none;
       }
-
       .game-flex-container {
         display: flex;
         justify-content: center;
       }
-
       .game-flex-item {
         align-self: auto;
       }
-
       .canvas-layer {
         position: absolute;
       }
-
       h3, p, li {
         cursor: default;
         -webkit-touch-callout: none;
@@ -169,7 +148,6 @@
         -ms-user-select: none;
         user-select: none;
       }
-
       .progress {
         margin:10px auto;
         padding:0;
@@ -177,30 +155,24 @@
         height:10px;
         overflow:hidden;
       }
-
       .hp-progress {
         background:#FF004D;
       }
-
       .xp-progress {
         background:#FFF1E8;
       }
-
       .bar {
         position:relative;
         float:left;
         min-width:1%;
         height:100%;
       }
-
       #hp-bar {
         background:#008751;
       }
-
       #xp-bar {
         background:#C2C3C7;
       }
-
       .percent {
         position:absolute;
         top:50%;
@@ -211,7 +183,6 @@
         font-size:11px;
         color:#000000;
       }
-
       .d {
         position:absolute;
         top: 30px;
@@ -222,18 +193,15 @@
         font-size:12px;
         color:#e5e5e5;
       }
-
       footer {
         left: 0;
         bottom: 0;
         width: 100%;
         text-align: center;
       }
-
       a {
         color: #595959;
       }
-
       .menu {
         width: 120px;
         z-index: 1;
@@ -260,7 +228,6 @@
           }
         }
       }
-
       .loading {
         position: fixed !important;
         z-index: 999;
@@ -283,7 +250,6 @@
         height: 100%;
         background-color: rgba(255,255,255,0.4);
       }
-
       .blue-spinner {
         border: 3px solid hsla(185, 100%, 62%, 0.2);
         border-top-color: #3cefff;
@@ -292,18 +258,15 @@
         height: 2em;
         animation: spin 1s linear infinite;
       }
-
       .mobile-button {
         width: 50px;
         height: 50px;
       }
-
       @keyframes spin {
         to {
           transform: rotate(360deg);
         }
       }
-
       ::-webkit-scrollbar {
         width: 7px;
       }
@@ -328,6 +291,14 @@
     <div id="content">
       <div class="login-flex-container">
         <div id="login" class="login-flex-item">
+          <div>
+            <button id="authorize_button" onclick="handleAuthClick()" class="google-btn" style="visibility: hidden;">
+                <img alt="Continue with Google" src="web_neutral_rd_ctn@1x.png"/>
+            </button>
+            <p id="login_confirmation" style="display: none;">Data Loaded!</p>
+            <div id="gdrive_userdata" style="display: none;"></div>
+            <div id="gdrive_fileid" style="display: none;"></div>
+          </div>
           <p>Draw yourself:</p>
           <canvas id="draw" width="200" height="200"></canvas>
           <br/>
@@ -441,6 +412,166 @@
         <a href="https://github.com/tiny-devs/tiny-dungeon-online/wiki/How-to-Play" target="_blank">how to play</a></p>
       </footer>
     </div>
+    <script type="text/javascript">
+      const CLIENT_ID = '119002660973-770rqbgj9gat36dhi2e4rv1cus0sdreu.apps.googleusercontent.com';
+      const GAPIK = '---------------------------------------------------';
+      const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
+      const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.appfolder';
+
+      let tokenClient;
+      let gapiInited = false;
+      let gisInited = false;
+      let firstLoad = true;
+      let loaded = false;
+      const localStorageLoadKey = 'tinydata';
+
+      document.getElementById('authorize_button').style.visibility = 'hidden';
+      document.getElementById('login_confirmation').style.display = 'none';
+
+      elementToObserve = window.document.getElementById('gdrive_userdata');
+      observer = new MutationObserver(userDataChanged);
+      observer.observe(elementToObserve, {characterData: false, childList: true, attributes: false});
+
+      function gapiLoaded() {
+        gapi.load('client', initializeGapiClient);
+      }
+
+      async function initializeGapiClient() {
+        await gapi.client.init({
+          apiKey: GAPIK,
+          discoveryDocs: [DISCOVERY_DOC],
+        });
+        gapiInited = true;
+        maybeEnableButtons();
+      }
+
+      function gisLoaded() {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CLIENT_ID,
+          scope: SCOPES,
+          callback: window.location.href,
+        });
+        gisInited = true;
+        maybeEnableButtons();
+      }
+
+      function maybeEnableButtons() {
+        if (gapiInited && gisInited) {
+          document.getElementById('authorize_button').style.visibility = 'visible';
+        }
+      }
+
+      function handleAuthClick() {
+        document.getElementById('authorize_button').disabled = true
+        tokenClient.callback = async (resp) => {
+          if (resp.error !== undefined) {
+            document.getElementById('authorize_button').disabled = false
+            throw (resp);
+          }
+          document.getElementById('login_confirmation').style.display = 'block';
+          document.getElementById('authorize_button').style.display = 'none';
+          await loadData();
+        };
+
+        if (gapi.client.getToken() === null) {
+          tokenClient.requestAccessToken({prompt: 'consent'});
+        } else {
+          tokenClient.requestAccessToken({prompt: ''});
+        }
+      }
+
+      function handleSignoutClick() {
+        const token = gapi.client.getToken();
+        if (token !== null) {
+          google.accounts.oauth2.revoke(token.access_token);
+          gapi.client.setToken('');
+          document.getElementById('authorize_button').style.display = 'block';
+          document.getElementById('login_confirmation').style.display = 'none';
+          document.getElementById('authorize_button').disabled = false
+        }
+      }
+
+      async function loadData() {
+        try {
+            const response = await getAppDataFile()
+            let fileId = ''
+            if (response.files.length == 0) {
+                const createdFile = await createAppDataFile()
+                const localData = localStorage.getItem(localStorageLoadKey)
+                await saveAppData(createdFile.id, {data:localData})
+                fileId = createdFile.id
+            } else {
+                fileId = response.files[0].id
+            }
+            const file = await getAppDataFileContent(fileId)
+            if (file) {
+              loaded = true
+              document.getElementById('gdrive_userdata').innerHTML = file.body;
+              document.getElementById('gdrive_fileid').innerHTML = fileId;
+            } else {
+              document.getElementById('login_confirmation').innerHTML = 'Error loading data'
+            }
+        } catch (err) {
+            return;
+        }
+      }
+
+        async function getAppDataFile() {
+            const result = await gapi.client.drive.files.list({
+                q: 'name="tinydata.json"',
+                spaces: 'appDataFolder',
+                fields: 'files(id)'
+            })
+            return JSON.parse(result.body)
+        }
+
+        async function createAppDataFile() {
+            const result = await gapi.client.drive.files
+                .create({
+                    resource: {
+                        name: 'tinydata.json',
+                        parents: ['appDataFolder']
+                    },
+                    fields: 'id'
+                });
+            return JSON.parse(result.body)
+        }
+
+        async function getAppDataFileContent(fileId) {
+            return await gapi.client.drive.files
+                .get({
+                    fileId: fileId,
+                    alt: 'media'
+                });
+        }
+
+        async function saveAppData(fileId, data) {
+            try { data = JSON.parse(data) } catch { }
+          
+            return await gapi.client.request({
+                path: '/upload/drive/v3/files/' + fileId,
+                method: 'PATCH',
+                params: {
+                    uploadType: 'media'
+                },
+                body: JSON.stringify(data)
+            });
+        }
+
+        async function userDataChanged() {
+          if (loaded && firstLoad) {
+            firstLoad = false;
+            return;
+          }
+          const newData = document.getElementById('gdrive_userdata').innerHTML
+          const fileId = document.getElementById('gdrive_fileid').innerHTML
+          if (newData && fileId) {
+            const result = await saveAppData(fileId, newData)
+          }
+        }
+    </script>
+    <script async defer src="https://apis.google.com/js/api.js" onload="gapiLoaded()"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" onload="gisLoaded()"></script>
     <script src="js/bundle.js"></script>
   </body>
 </html>

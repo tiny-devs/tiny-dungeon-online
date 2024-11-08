@@ -54,6 +54,7 @@ export class Main {
     public top2Element: HTMLElement
     public top3Element: HTMLElement
     public loadingElement: HTMLElement
+    public gdriveUserDataElement: HTMLElement
     public adminPassword: string = ''
 
     public drawingGrid: DrawingCanvas
@@ -117,6 +118,7 @@ export class Main {
         this.top2Element = document.getElementById('top2')!
         this.top3Element = document.getElementById('top3')!
         this.loadingElement = document.getElementById('loading')!
+        this.gdriveUserDataElement = document.getElementById('gdrive_userdata')!
 
         this.gameScreen.style.display = 'none'
         this.bagElement.style.display = 'none'
