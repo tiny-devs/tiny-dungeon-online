@@ -356,6 +356,7 @@ export class GameClient {
         }catch{ console.log('coudnt load gdrive data') }
         
         if (playerLoadData == null) {
+            alert('Loging in with local user (no data from Google was found)')
             playerLoadData = localStorage.getItem(this.localStorageLoadKey)
         }
         
@@ -508,7 +509,6 @@ export class GameClient {
                 if (isValidMove && !this.isTyping && direction !== 0) {
                     if (!isOnMapLimit) {
                         this.ws!.send(`${Command.Move},${direction}`)
-                        this.waitServer()
                     }
                     this.hideCoinsDropElement()
                     if (this.storeOpen) {
@@ -524,13 +524,6 @@ export class GameClient {
         setTimeout(() => {
             this.canMove = true
         }, 70)
-    }
-
-    waitServer() {
-        this.sentWalk = true
-        this.walkTimeout = window.setTimeout(() => {
-            this.sentWalk = false
-        }, 150)
     }
 
     serverReturned() {
@@ -627,7 +620,6 @@ export class GameClient {
     }
 
     displayDialog(message: string, isQuestStart: boolean, isWarning: boolean) {
-        this.serverReturned()
         if (!this.isShowingMessage) {
             clearTimeout(this.messageTimeout)
             

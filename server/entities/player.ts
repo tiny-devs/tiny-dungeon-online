@@ -150,10 +150,11 @@ export class Player {
             }
 
             if (validMove) {
-                if (this.changedRoom()){
+                const hasChangedRoom = this.changedRoom()
+                if (hasChangedRoom){
                     this.fightingNpcId = null
                 }
-                this.delayMove()
+                this.delayMove(hasChangedRoom)
                 this.pickupAnyItemAtCoords(this.y,this.x)
             }
         }
@@ -551,9 +552,10 @@ export class Player {
         }
     }
 
-    private delayMove(): void {
+    private delayMove(hasChangedRoom: boolean): void {
+        const delayTime = hasChangedRoom ? 950 : 50
         this.canMove = false;
-        setTimeout(() => { this.canMove = true; }, 50);
+        setTimeout(() => { this.canMove = true; }, delayTime)
     }
 
     private getXpNeededForLevel(level: number) {

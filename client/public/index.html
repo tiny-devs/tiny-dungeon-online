@@ -424,13 +424,14 @@
       let firstLoad = true;
       let loaded = false;
       const localStorageLoadKey = 'tinydata';
-
-      document.getElementById('authorize_button').style.visibility = 'hidden';
-      document.getElementById('login_confirmation').style.display = 'none';
-
-      elementToObserve = window.document.getElementById('gdrive_userdata');
-      observer = new MutationObserver(userDataChanged);
+      const authorizeEl = document.getElementById('authorize_button');
+      const loginConfirmEl = document.getElementById('login_confirmation');
+      const elementToObserve = window.document.getElementById('gdrive_userdata');
+      const observer = new MutationObserver(userDataChanged);
       observer.observe(elementToObserve, {characterData: false, childList: true, attributes: false});
+
+      authorizeEl.style.visibility = 'hidden';
+      loginConfirmEl.style.display = 'none';
 
       function gapiLoaded() {
         gapi.load('client', initializeGapiClient);
@@ -446,10 +447,14 @@
       }
 
       function gisLoaded() {
+        let redirectUri = 'https://diguifi.itch.io/tiny-land';
+        if (window.location.href.includes('localhost')) {
+          redirectUri = window.location.href;
+        }
         tokenClient = google.accounts.oauth2.initTokenClient({
           client_id: CLIENT_ID,
           scope: SCOPES,
-          callback: window.location.href,
+          callback: redirectUri,
         });
         gisInited = true;
         maybeEnableButtons();
@@ -457,19 +462,17 @@
 
       function maybeEnableButtons() {
         if (gapiInited && gisInited) {
-          document.getElementById('authorize_button').style.visibility = 'visible';
+          authorizeEl.style.visibility = 'visible';
         }
       }
 
       function handleAuthClick() {
-        document.getElementById('authorize_button').disabled = true
         tokenClient.callback = async (resp) => {
           if (resp.error !== undefined) {
-            document.getElementById('authorize_button').disabled = false
             throw (resp);
           }
-          document.getElementById('login_confirmation').style.display = 'block';
-          document.getElementById('authorize_button').style.display = 'none';
+          loginConfirmEl.style.display = 'block';
+          authorizeEl.style.display = 'none';
           await loadData();
         };
 
@@ -485,9 +488,8 @@
         if (token !== null) {
           google.accounts.oauth2.revoke(token.access_token);
           gapi.client.setToken('');
-          document.getElementById('authorize_button').style.display = 'block';
-          document.getElementById('login_confirmation').style.display = 'none';
-          document.getElementById('authorize_button').disabled = false
+          authorizeEl.style.display = 'block';
+          loginConfirmEl.style.display = 'none';
         }
       }
 
@@ -509,7 +511,7 @@
               document.getElementById('gdrive_userdata').innerHTML = file.body;
               document.getElementById('gdrive_fileid').innerHTML = fileId;
             } else {
-              document.getElementById('login_confirmation').innerHTML = 'Error loading data'
+              loginConfirmEl.innerHTML = 'Error loading data'
             }
         } catch (err) {
             return;
@@ -524,7 +526,6 @@
             })
             return JSON.parse(result.body)
         }
-
         async function createAppDataFile() {
             const result = await gapi.client.drive.files
                 .create({
@@ -536,7 +537,6 @@
                 });
             return JSON.parse(result.body)
         }
-
         async function getAppDataFileContent(fileId) {
             return await gapi.client.drive.files
                 .get({
@@ -544,7 +544,6 @@
                     alt: 'media'
                 });
         }
-
         async function saveAppData(fileId, data) {
             try { data = JSON.parse(data) } catch { }
           
@@ -557,7 +556,6 @@
                 body: JSON.stringify(data)
             });
         }
-
         async function userDataChanged() {
           if (loaded && firstLoad) {
             firstLoad = false;

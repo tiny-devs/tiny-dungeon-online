@@ -43,7 +43,7 @@ export class Npc {
   public name: string
   public quest: QuestBase | null
   private interacting = false
-  private skipsWhileInteracting = 5
+  private skipsWhileInteracting = 10
   private skipedWhileInteracting = 0
 
   constructor(id: number,
