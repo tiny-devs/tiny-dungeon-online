@@ -295,6 +295,7 @@
             <button id="authorize_button" onclick="handleAuthClick()" class="google-btn" style="visibility: hidden;">
                 <img alt="Continue with Google" src="web_neutral_rd_ctn@1x.png"/>
             </button>
+            <p id="login_loading" style="display: none;">Loading data...</p>
             <p id="login_confirmation" style="display: none;">Data Loaded!</p>
             <div id="gdrive_userdata" style="display: none;"></div>
             <div id="gdrive_fileid" style="display: none;"></div>
@@ -423,15 +424,15 @@
       let gisInited = false;
       let firstLoad = true;
       let loaded = false;
-      const localStorageLoadKey = 'tinydata';
       const authorizeEl = document.getElementById('authorize_button');
+      const loginLoadingEl = document.getElementById('login_loading');
       const loginConfirmEl = document.getElementById('login_confirmation');
+      const startBtn = window.document.getElementById('confirm-btn');
       const elementToObserve = window.document.getElementById('gdrive_userdata');
       const observer = new MutationObserver(userDataChanged);
       observer.observe(elementToObserve, {characterData: false, childList: true, attributes: false});
 
       authorizeEl.style.visibility = 'hidden';
-      loginConfirmEl.style.display = 'none';
 
       function gapiLoaded() {
         gapi.load('client', initializeGapiClient);
@@ -471,7 +472,8 @@
           if (resp.error !== undefined) {
             throw (resp);
           }
-          loginConfirmEl.style.display = 'block';
+          loginLoadingEl.style.display = 'block';
+          startBtn.disabled = true;
           authorizeEl.style.display = 'none';
           await loadData();
         };
@@ -499,8 +501,7 @@
             let fileId = ''
             if (response.files.length == 0) {
                 const createdFile = await createAppDataFile()
-                const localData = localStorage.getItem(localStorageLoadKey)
-                await saveAppData(createdFile.id, {data:localData})
+                await saveAppData(createdFile.id, {data:"0"})
                 fileId = createdFile.id
             } else {
                 fileId = response.files[0].id
@@ -508,6 +509,9 @@
             const file = await getAppDataFileContent(fileId)
             if (file) {
               loaded = true
+              loginConfirmEl.style.display = 'block';
+              loginLoadingEl.style.display = 'none';
+              startBtn.disabled = false;
               document.getElementById('gdrive_userdata').innerHTML = file.body;
               document.getElementById('gdrive_fileid').innerHTML = fileId;
             } else {
