@@ -3,6 +3,7 @@ import { SpritesLayer } from '../board/layers/SpritesLayer'
 import { Color } from '../board/map/tiles/Color'
 import { Rooms, Direction } from '../../../shared/Enums'
 import { ParsePve } from '../parser/ParsePve'
+import { FreeTiles } from "../../../shared/solidLayers"
 
 export class Player {
     public x: number
@@ -10,7 +11,7 @@ export class Player {
     public color: Color
     public name: string
     public id: string
-    public currentRoomId: Rooms
+    public currentRoomId: Rooms | null
     public hp: number
     public maxHp: number
     public isFighting: boolean
@@ -139,7 +140,7 @@ export class Player {
         }
     }
 
-    move(x: number, y: number, currentRoomId: Rooms) {
+    move(x: number, y: number, currentRoomId: Rooms | null) {
         if (x != this.x || y != this.y) {
             this.isFighting = false
         }
@@ -153,7 +154,9 @@ export class Player {
         let valid = true
         const nextPosition = this.getNextPositionFromDirection(direction)
         if (!this.isOnBorder(collisionShape, direction)) {
-            if (collisionShape[nextPosition.y][nextPosition.x] !== 0 && collisionShape[nextPosition.y][nextPosition.x] !== -1) {
+
+            const nextTile = collisionShape[nextPosition.y][nextPosition.x]
+            if (!FreeTiles.some(x => x == nextTile)) {
                 valid = false
             }
         }
@@ -175,6 +178,10 @@ export class Player {
     }
 
     isOnMapLimit(direction: Direction, step: number = 1): boolean {
+        if (this.currentRoomId == null) {
+            return true
+        }
+
         const nextPosition = this.getNextPositionFromDirection(direction, step)
         const roomsWithNoNorth = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
         const roomsWithNoSouth = [90, 91, 92, 93, 94, 95, 96, 97, 98, 99]

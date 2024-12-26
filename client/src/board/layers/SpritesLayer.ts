@@ -86,7 +86,7 @@ export class SpritesLayer {
             if (dataInRoom) {
                 player.move(dataInRoom.x, dataInRoom.y, data.roomId)
             } else if (player.id !== clientPlayerId) {
-                player.move(-1, -1, -1)
+                player.move(-1, -1, null)
             }
         }
     }

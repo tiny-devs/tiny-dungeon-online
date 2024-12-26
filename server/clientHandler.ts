@@ -945,7 +945,7 @@ export class ClientHandler {
   }
 
   private handleOpenClient(ws: WebSocket) {
-    const initialRoom = this.map.rooms[0]
+    const initialRoom = this.map.rooms.find(x => x.id == 0)!
     const playerId = globalThis.crypto.randomUUID()
     const player = new Player(playerId, '', '', 0, 0, initialRoom, this.boardRows, this.boardColumns, ws, this)
 
@@ -957,7 +957,7 @@ export class ClientHandler {
     if (player) {
       let duplicatedName = false
       let exit = false
-      const initialRoom = this.map.rooms[0]
+      const initialRoom = this.map.rooms.find(x => x.id == 0)!
   
       const eventDataString = m.data as string
   

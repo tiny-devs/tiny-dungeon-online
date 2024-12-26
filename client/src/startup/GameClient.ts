@@ -20,6 +20,7 @@ import Store from '../entities/items/Store'
 import { ParseBoughtItem } from '../parser/ParseBoughtItem'
 import { ParseSoldPlayerItem } from '../parser/ParseSoldPlayerItem'
 import { ParsePve } from '../parser/ParsePve'
+import { Player } from '../entities/Player'
 
 export class GameClient {
     public loggedIn: boolean
@@ -96,7 +97,6 @@ export class GameClient {
     private parser: Parser
     private currentRoom: any
     private canMove: boolean
-    private canMoveAfterRoomSwitch: boolean = true
     private keys: any = {}
     private chatTimeout: number = 5
     private canChat: boolean = true
@@ -379,10 +379,10 @@ export class GameClient {
                     this.serverReturned()
                     if (moveData.currentMovedRoomId != this.currentRoomId) {
                         this.game.spritesLayer.clear()
+                        const oldPlayerRoomId = player.currentRoomId!
                         player.move(-1, -1, moveData.currentMovedRoomId)
-                        await this.drawRoom(moveData.currentMovedRoomId)
+                        await this.drawRoom(moveData.currentMovedRoomId, oldPlayerRoomId)
                         this.currentRoomId = moveData.currentMovedRoomId
-                        this.canMoveAfterRoomSwitch = true
                     }
                 }
 
@@ -412,12 +412,16 @@ export class GameClient {
         }
     }
 
-    async drawRoom(roomId: Rooms) {
+    async drawRoom(roomId: Rooms, oldRoomId: number) {
         if (!this.drawingRoom) {
             this.drawingRoom = true
             const lastRoom = this.currentRoom
             const nextRoom = this.game.map.getRoomById(roomId)
-            const direction = this.game.map.getDirectionMovedByRoomIds(lastRoom.id, nextRoom.id)
+            let direction = this.game.map.getDirectionMovedByRoomIds(lastRoom.id, nextRoom.id)
+            const adjacentRoom = roomId == oldRoomId + 1 || roomId == oldRoomId - 1 || roomId == oldRoomId + 10 || roomId == oldRoomId - 10
+            if (!adjacentRoom || roomId < 0) {
+                direction = Direction.None
+            }
             await nextRoom.draw(lastRoom, direction, this.isMobile)
             this.currentRoom = nextRoom
             this.drawingRoom = false
@@ -477,7 +481,7 @@ export class GameClient {
         this.afkTabMinCountdown = 9
         this.afkTabSecCountdown = 59
         this.restartAfkTimer()
-        if (this.canMove && this.canMoveAfterRoomSwitch && !this.sentWalk) {
+        if (this.canMove && !this.sentWalk) {
             this.delayMove()
 
             let direction = 0
@@ -498,13 +502,6 @@ export class GameClient {
                 const player = this.game.spritesLayer.getPlayerById(this.playerId)!
                 const isValidMove = player.isValidMove(direction, this.currentRoom.solidLayerShape)
                 const isOnMapLimit = player.isOnMapLimit(direction)
-                const changedRoom = (direction == Direction.Up && player.y == 0) ||
-                    (direction == Direction.Down && player.y == 15) ||
-                    (direction == Direction.Right && player.x == 15) ||
-                    (direction == Direction.Left && player.x == 0)
-                if (changedRoom && !isOnMapLimit) {
-                    this.canMoveAfterRoomSwitch = false
-                }
     
                 if (isValidMove && !this.isTyping && direction !== 0) {
                     if (!isOnMapLimit) {
@@ -831,7 +828,7 @@ export class GameClient {
             new TinyIcon(itemMatrix, 'img-info', '')
         } else {
             if (data.isNpc) {
-                const npcSelected = this.game.spritesLayer.getNpcByIdAndRoom(data.npcId, player.currentRoomId)
+                const npcSelected = this.game.spritesLayer.getNpcByIdAndRoom(data.npcId, player.currentRoomId!)
                 if (npcSelected) {
                     if (data.level !== 0) {
                         this.maxHpInfoElement.innerHTML = `Total HP: ${npcSelected.maxHp}`

@@ -2,8 +2,10 @@ import { SolidLayers } from "../../shared/solidLayers.ts"
 import { ClientHandler } from "../clientHandler.ts"
 import { Rooms } from "../../shared/Enums.ts"
 import { MapDimensionsHeightWidth, NpcSpawns } from "./npcSpawns.ts"
+import { DoorSpawns } from "./doorSpawns.ts"
 import Exits from "./rooms/exits.ts"
 import Room from "./rooms/room.ts"
+import Door from "./rooms/door.ts";
 
 export class MapBuilder {
   private clientHandler: ClientHandler
@@ -14,9 +16,10 @@ export class MapBuilder {
   }
   
   public buildMap() {
-    const map = []
+    const map: Room[] = []
     const enumRoomsAny = Rooms as any
     const npcSpawnsAny = NpcSpawns as any
+    const doorSpawnsAny = DoorSpawns as any
     const exits = this.generateExits()
 
     let count = 0
@@ -24,12 +27,25 @@ export class MapBuilder {
       const roomId = enumRoomsAny[key]
       const solidLayer = value
       let npcSpawns = npcSpawnsAny[key]
+      let doorSpawns = doorSpawnsAny[key]
 
       if (!npcSpawns) {
         npcSpawns = this.generateEmptyNpcSpawns()
       }
 
-      map.push(new Room(roomId, exits[count], this.clientHandler, solidLayer, npcSpawns))
+      if (!doorSpawns) {
+        doorSpawns = []
+      }
+
+      for (const door of doorSpawns) {
+        const doorTyped = door as Door
+        const roomNotCreated = !map.some(x => x.id == doorTyped.toRoomId)
+        if (doorTyped.toRoomId < 0 && roomNotCreated) {
+          map.push(new Room(doorTyped.toRoomId, doorTyped.exits, this.clientHandler, doorTyped.solidLayer, doorTyped.npcSpawns, []))
+        }
+      }
+
+      map.push(new Room(roomId, exits[count], this.clientHandler, solidLayer, npcSpawns, doorSpawns))
       count += 1
     }
 
@@ -43,10 +59,10 @@ export class MapBuilder {
 
     for (let height=0; height < mapHeight; height++) {
       for (let width=0; width < mapWidth; width++) {
-        const n = (height - 1 >= 0) ? Rooms[width + ((height-1) * mapWidth)] ? width + ((height-1) * mapWidth) : -1 : -1
-        const s = (height + 1 < mapHeight) ? Rooms[width + ((height+1) * mapWidth)] ? width + ((height+1) * mapWidth) : -1 : -1
-        const w = (width - 1 >= 0) ? Rooms[(width-1) + (height * mapWidth)] ? (width-1) + (height * mapWidth) : -1 : -1
-        const e = (width + 1 < mapWidth) ? Rooms[(width+1) + (height * mapWidth)] ? (width+1) + (height * mapWidth) : -1 : -1
+        const n = (height - 1 >= 0) ? Rooms[width + ((height-1) * mapWidth)] ? width + ((height-1) * mapWidth) : null : null
+        const s = (height + 1 < mapHeight) ? Rooms[width + ((height+1) * mapWidth)] ? width + ((height+1) * mapWidth) : null : null
+        const w = (width - 1 >= 0) ? Rooms[(width-1) + (height * mapWidth)] ? (width-1) + (height * mapWidth) : null : null
+        const e = (width + 1 < mapWidth) ? Rooms[(width+1) + (height * mapWidth)] ? (width+1) + (height * mapWidth) : null : null
         
         exits.push(new Exits(n, s, w, e))
       }

@@ -58,10 +58,11 @@ export class Room {
     }
 
     async draw(lastRoom: Room | undefined = undefined, direction: Direction = 0, isMobile = false) {
-        if (lastRoom) {
+        if (lastRoom && direction != Direction.None) {
             let xModifier = -1
             let yModifier = 0
             let animationSize = 2.0
+
             if (direction == Direction.Left) {
                 yModifier = 0
                 xModifier = 1
@@ -100,6 +101,7 @@ export class Room {
             }
         }
         else {
+            this.clear()
             for (const tile of this.tiles) {
                 tile.draw()
             }
@@ -108,5 +110,10 @@ export class Room {
 
     sleep(ms: number) {
         return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    clear() {
+        this.game.backgroundLayer.clear()
+        this.game.solidLayer.clear()
     }
 }

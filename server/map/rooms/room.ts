@@ -4,6 +4,7 @@ import { Npc } from '../../entities/npc.ts'
 import { ClientHandler } from '../../clientHandler.ts'
 import ItemBase from '../../entities/items/itemBase.ts'
 import { ItemsIds } from "../../../shared/Enums.ts";
+import Door from './door.ts';
 
 export default class Room {
   public id: number
@@ -17,8 +18,9 @@ export default class Room {
   public itemsCount = 0
   public boardRows = 16
   public boardColumns = 16
+  public doors: Door[] = []
 
-  constructor(id: number, exits: Exits, clientHandler: ClientHandler, solidLayer: any, npcSpawns: any) {
+  constructor(id: number, exits: Exits, clientHandler: ClientHandler, solidLayer: any, npcSpawns: any, doors: Door[]) {
     this.id = id
     this.exits = exits
     this.clientHandler = clientHandler
@@ -26,6 +28,7 @@ export default class Room {
     this.boardColumns = clientHandler.boardColumns
     this.solidLayer = solidLayer
     this.npcSpawns = npcSpawns
+    this.doors = doors
     this.itemsLayer = this.buildItemsLayer()
     this.spawnNpcs()
   }
@@ -57,7 +60,7 @@ export default class Room {
     }
   }
 
-  goNorth(): any {
+  goNorth(): { valid: boolean, roomId: number | null } {
     let isValid = false
     if (this.exits.hasNorth()) {
       isValid = true
@@ -65,7 +68,11 @@ export default class Room {
     return { valid: isValid, roomId: this.exits.n }
   }
 
-  goSouth(): any {
+  getNewNorthPosition(newX: number, newY: number): { x: number, y: number } {
+    return this.calculateExitPosition(newX, newY, this.exits.customXYN)
+  }
+
+  goSouth(): { valid: boolean, roomId: number | null } {
     let isValid = false
     if (this.exits.hasSouth()) {
       isValid = true
@@ -73,7 +80,11 @@ export default class Room {
     return { valid: isValid, roomId: this.exits.s }
   }
 
-  goWest(): any {
+  getNewSouthPosition(newX: number, newY: number): { x: number, y: number } {
+    return this.calculateExitPosition(newX, newY, this.exits.customXYS)
+  }
+
+  goWest(): { valid: boolean, roomId: number | null } {
     let isValid = false
     if (this.exits.hasWest()) {
       isValid = true
@@ -81,12 +92,27 @@ export default class Room {
     return { valid: isValid, roomId: this.exits.w }
   }
 
-  goEast(): any {
+  getNewWestPosition(newX: number, newY: number): { x: number, y: number } {
+    return this.calculateExitPosition(newX, newY, this.exits.customXYW)
+  }
+
+  goEast(): { valid: boolean, roomId: number | null } {
     let isValid = false
     if (this.exits.hasEast()) {
       isValid = true
     }
     return { valid: isValid, roomId: this.exits.e }
+  }
+
+  getNewEastPosition(newX: number, newY: number): { x: number, y: number } {
+    return this.calculateExitPosition(newX, newY, this.exits.customXYE)
+  }
+
+  private calculateExitPosition(newX: number, newY: number, customExitPosition: number[]): { x: number, y: number } {
+    if (customExitPosition.length > 0) {
+      return {x: customExitPosition[0], y: customExitPosition[1]}
+    }
+    return {x: newX, y: newY}
   }
 
   addItem(y: number, x: number, item: ItemBase) {
@@ -222,6 +248,22 @@ export default class Room {
   isNeighbourToRoom(roomId: number): boolean {
     const exitsArray = [this.exits.n, this.exits.s, this.exits.e, this.exits.w]
     return exitsArray.some(x => x === roomId)
+  }
+
+  public isOpenDoor(y: number, x: number, player: Player): boolean {
+    const door = this.doors.find(door => door.x == x && door.y == y)
+    if (door) {
+      return door.playerCanEnter(player)
+    }
+    return false
+  }
+
+  public getDoorRoomIdAndSpawnPos(y: number, x: number, player: Player): { roomId: number, spawnX: number, spawnY: number } {
+    const door = this.doors.find(door => door.x == x && door.y == y)
+    if (door) {
+      return { roomId: player.currentRoomId = door.toRoomId, spawnX: door.playerSpawnXY[0], spawnY: door.playerSpawnXY[1] }
+    }
+    return { roomId: player.currentRoomId, spawnX: player.x, spawnY: player.y }
   }
 
   private buildItemsLayer() {

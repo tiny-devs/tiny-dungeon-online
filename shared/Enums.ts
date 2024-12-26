@@ -49,7 +49,6 @@ export enum Command {
 }
 
 export enum Rooms {
-    None = -1,
     InitialRoom = 0,
     Woods,
     Woods2,
@@ -150,6 +149,11 @@ export enum Rooms {
     Desert15,
     Kharjid,
     Desert16,
+}
+
+export enum RoomsInsides {
+    SubitnofCastle1 = -1,
+    MagesTower1 = -4,
 }
 
 export enum PveAttacker {

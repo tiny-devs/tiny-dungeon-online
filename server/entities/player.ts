@@ -8,7 +8,8 @@ import QuestBase from "./npcs/quests/questBase.ts"
 import ItemBase from "./items/itemBase.ts"
 import { Admins } from "../data/admins.ts"
 import { ItemsToHave } from "./npcs/quests/itemsToHave.ts"
-import Bank from "./items/bank/bank.ts";
+import Bank from "./items/bank/bank.ts"
+import { FreeTiles } from "../../shared/solidLayers.ts"
 
 export class Player {
     public id: string
@@ -37,6 +38,7 @@ export class Player {
     public badBehaviour = 0
     public canChat = true
     public clientWs: WebSocket
+    public dead = false
     private afkTimeout = 0
     private afkTotalSeconds = 601 // 10:01 min
     private currentAfkSecondsLeft = 601
@@ -72,77 +74,123 @@ export class Player {
     public move(key: Direction): boolean {
         this.currentAfkSecondsLeft = this.afkTotalSeconds
         let validMove = false
+        let shouldDelay = true
+        const borders = [0,this.clientHandler.boardRows]
 
-        if (this.canMove) {
+        if (this.canMove && !this.dead) {
             switch (key) {
                 case Direction.Right:
                     if (this.x + 1 < this.boardRows) {
-                        if (this.notCollided(this.y,this.x + 1)) {
-                            this.x++
+                        const next = [this.y,this.x + 1]
+                        if (this.notCollided(next[0],next[1])) {
+                            if (this.currentRoom.isOpenDoor(next[0],next[1],this)) {
+                                const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
+                                shouldDelay = false
+                                this.currentRoomId = result.roomId
+                                this.x = result.spawnX
+                                this.y = result.spawnY
+                            } else {
+                                this.x++
+                            }
                             validMove = true
-                        } else if (this.hasNpc(this.y,this.x + 1)) {
-                            const npc = this.getNpc(this.y,this.x + 1)
+                        } else if (this.hasNpc(next[0],next[1])) {
+                            const npc = this.getNpc(next[0],next[1])
                             npc!.interactWith(this)
                         }
                     } else {
                         const result = this.currentRoom.goEast()
                         if (result.valid) {
-                            this.currentRoomId = result.roomId
-                            this.x = 0
+                            this.currentRoomId = result.roomId!
+                            const resultPos = this.currentRoom.getNewEastPosition(0, this.y)
+                            this.x = resultPos.x
+                            this.y = resultPos.y
                             validMove = true
                         }
                     }
                     break;
                 case Direction.Down:
                     if (this.y + 1 < this.boardColumns) {
-                        if (this.notCollided(this.y + 1,this.x)) {
-                            this.y++
+                        const next = [this.y + 1,this.x]
+                        if (this.notCollided(next[0],next[1])) {
+                            if (this.currentRoom.isOpenDoor(next[0],next[1],this)) {
+                                const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
+                                shouldDelay = false
+                                this.currentRoomId = result.roomId
+                                this.x = result.spawnX
+                                this.y = result.spawnY
+                            } else {
+                                this.y++
+                            }
                             validMove = true
-                        } else if (this.hasNpc(this.y + 1,this.x)) {
-                            const npc = this.getNpc(this.y + 1,this.x)
+                        } else if (this.hasNpc(next[0],next[1])) {
+                            const npc = this.getNpc(next[0],next[1])
                             npc!.interactWith(this)
                         }
                     } else {
                         const result = this.currentRoom.goSouth()
                         if (result.valid) {
-                            this.currentRoomId = result.roomId
-                            this.y = 0
+                            this.currentRoomId = result.roomId!
+                            const resultPos = this.currentRoom.getNewSouthPosition(this.x, 0)
+                            this.x = resultPos.x
+                            this.y = resultPos.y
                             validMove = true
                         }
                     }
                     break;
                 case Direction.Left:
                     if (this.x - 1 >= 0) {
-                        if (this.notCollided(this.y,this.x - 1)) {
-                            this.x--
+                        const next = [this.y,this.x - 1]
+                        if (this.notCollided(next[0],next[1])) {
+                            if (this.currentRoom.isOpenDoor(next[0],next[1],this)) {
+                                const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
+                                shouldDelay = false
+                                this.currentRoomId = result.roomId
+                                this.x = result.spawnX
+                                this.y = result.spawnY
+                            } else {
+                                this.x--
+                            }
                             validMove = true
-                        } else if (this.hasNpc(this.y,this.x - 1)) {
-                            const npc = this.getNpc(this.y,this.x - 1)
+                        } else if (this.hasNpc(next[0],next[1])) {
+                            const npc = this.getNpc(next[0],next[1])
                             npc!.interactWith(this)
                         }
                     } else {
                         const result = this.currentRoom.goWest()
                         if (result.valid) {
-                            this.currentRoomId = result.roomId
-                            this.x = this.boardRows - 1
+                            this.currentRoomId = result.roomId!
+                            const resultPos = this.currentRoom.getNewWestPosition(this.boardRows - 1, this.y)
+                            this.x = resultPos.x
+                            this.y = resultPos.y
                             validMove = true
                         }
                     }
                     break;
                 case Direction.Up:
                     if (this.y - 1 >= 0) {
-                        if (this.notCollided(this.y - 1,this.x)) {
-                            this.y--
+                        const next = [this.y - 1,this.x]
+                        if (this.notCollided(next[0],next[1])) {
+                            if (this.currentRoom.isOpenDoor(next[0],next[1],this)) {
+                                const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
+                                shouldDelay = false
+                                this.currentRoomId = result.roomId
+                                this.x = result.spawnX
+                                this.y = result.spawnY
+                            } else {
+                                this.y--
+                            }
                             validMove = true
-                        } else if (this.hasNpc(this.y - 1,this.x)) {
-                            const npc = this.getNpc(this.y - 1,this.x)
+                        } else if (this.hasNpc(next[0],next[1])) {
+                            const npc = this.getNpc(next[0],next[1])
                             npc!.interactWith(this)
                         }
                     } else {
                         const result = this.currentRoom.goNorth()
                         if (result.valid) {
-                            this.currentRoomId = result.roomId
-                            this.y = this.boardColumns - 1
+                            this.currentRoomId = result.roomId!
+                            const resultPos = this.currentRoom.getNewWestPosition(this.x, this.boardColumns - 1)
+                            this.x = resultPos.x
+                            this.y = resultPos.y
                             validMove = true
                         }
                     }
@@ -154,7 +202,11 @@ export class Player {
                 if (hasChangedRoom){
                     this.fightingNpcId = null
                 }
-                this.delayMove(hasChangedRoom)
+                if (shouldDelay) {
+                    shouldDelay = this.x == 0 || this.x == this.clientHandler.boardColumns-1 || this.y == 0 || this.y == this.clientHandler.boardRows-1
+                }
+
+                this.delayMove(hasChangedRoom && shouldDelay)
                 this.pickupAnyItemAtCoords(this.y,this.x)
             }
         }
@@ -423,8 +475,10 @@ export class Player {
     
         this.hp -= actualDamage < 0 ? 0 : actualDamage
         if (this.hp <= 0) {
+            this.dead = true
             this.applyXpPenaltyForDeath()
             setTimeout(() => {
+                this.dead = false
                 this.hp = this.totalHp()
                 this.respawn()
             }, 1000);
@@ -511,8 +565,9 @@ export class Player {
         return Admins.some(a => a.name == this.name)
     }
 
-    private notCollided(y: number, x: number): boolean {        
-        const notSolidTile = this.currentRoom.solidLayer[y][x] === 0 || this.currentRoom.solidLayer[y][x] === -1
+    private notCollided(y: number, x: number): boolean {
+        const selectedTile = this.currentRoom.solidLayer[y][x]
+        const notSolidTile = FreeTiles.some(x => x == selectedTile)
         const notNpc = !this.hasNpc(y,x)
 
         return notSolidTile && notNpc
