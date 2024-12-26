@@ -137,13 +137,13 @@ export default class TheSacredStone extends QuestBase {
                         'thanks for everything!',
                         'we will be researching over the stone',
                         'may someday Tiny Land be a safe place again!',
-                        '-you received 1500 xp!-',
+                        '-you received 3500 xp!-',
                         '-you received Sacred Fire Sword!-',
                     ],[],0),
             ],
             RewardType.Both,
             new SacredFireSword(0),
-            1500,
+            3500,
             'Hi there, hero! The mages are busy researching the stone!')
     }
 }

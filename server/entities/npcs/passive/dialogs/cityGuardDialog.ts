@@ -5,9 +5,7 @@ export default class CityGuardDialog extends DialogBase {
         super(['Welcome to Subitnof',
         'Here you\'ll find some merchants',
         'maybe some people might trust you a quest',
-        'the castle is closed for now',
-        'but soon any visitors will be able',
-        'to meet the king adn keeper of this place',
+        'the castle is south west',
         'long live Subitnof and the king!',''])
     }
 }

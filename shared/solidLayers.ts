@@ -1867,8 +1867,8 @@ export const SolidLayers = {
 export const SolidLayersInsides = {
     SubitnofCastle1: [[0,0,Tiles.Chain,0,0,0,0,0,0,0,0,0,0,Tiles.Chain,0,0],
         [0,0,Tiles.Chandelier,0,Tiles.Clock,0,0,0,0,0,0,Tiles.Clock,0,Tiles.Chandelier,0,0],
-        [Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.ClockBody,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.ClockBody,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1],
-        [Tiles.Brick2,Tiles.Vase,0,0,0,0,0,0,0,0,0,0,0,0,Tiles.Vase,Tiles.Brick2],
+        [Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.ClockBody,Tiles.Brick1,Tiles.Brick1,0,0,Tiles.Brick1,Tiles.Brick1,Tiles.ClockBody,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1],
+        [Tiles.Brick2,Tiles.Vase,0,0,0,0,0,Tiles.Vase,Tiles.Vase,0,0,0,0,0,Tiles.Vase,Tiles.Brick2],
         [Tiles.Brick1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Tiles.Brick1],
         [Tiles.Brick2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Tiles.Brick2],
         [Tiles.Brick1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Tiles.Brick1],
@@ -1879,8 +1879,8 @@ export const SolidLayersInsides = {
         [Tiles.Brick2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Tiles.Brick2],
         [Tiles.Brick1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Tiles.Brick1],
         [Tiles.Brick2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Tiles.Brick2],
-        [Tiles.Brick1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Tiles.Brick1],
-        [Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,0,0,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2],
+        [Tiles.Brick1,0,0,0,0,0,0,NpcWall,NpcWall,0,0,0,0,0,0,Tiles.Brick1],
+        [Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,NpcWall,NpcWall,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2,Tiles.Brick2],
     ],
     MagesTower1: [
         [0,0,Tiles.Chain,0,0,0,0,0,0,0,0,0,0,Tiles.Chain,0,0],

@@ -1,4 +1,5 @@
-import { Npcs } from '../../../shared/Enums.ts'
+
+import { Npcs } from '../../../../shared/Enums.ts'
 import NpcBase from '../npcBase.ts'
 import ZeroDialog from "./dialogs/zeroDialog.ts"
 

@@ -283,7 +283,8 @@ export enum Npcs {
     DesertMale1,
     DesertMale2,
     DesertMale3,
-    DesertMale4
+    DesertMale4,
+    KingSubitnof
 }
 
 export enum ItemType {
@@ -302,7 +303,8 @@ export enum Quests {
     JamulsMachete,
     TheSacredStone,
     WarriorSomeday,
-    ZombieKiller
+    ZombieKiller,
+    SomebodyOnceToldMe
 }
 
 export enum StepType {
