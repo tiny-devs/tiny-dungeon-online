@@ -250,12 +250,12 @@ export default class Room {
     return exitsArray.some(x => x === roomId)
   }
 
-  public isOpenDoor(y: number, x: number, player: Player): boolean {
+  public isOpenDoor(y: number, x: number, player: Player): {open: boolean,closedReason: string} {
     const door = this.doors.find(door => door.x == x && door.y == y)
     if (door) {
       return door.playerCanEnter(player)
     }
-    return false
+    return {open:false,closedReason:''}
   }
 
   public getDoorRoomIdAndSpawnPos(y: number, x: number, player: Player): { roomId: number, spawnX: number, spawnY: number } {

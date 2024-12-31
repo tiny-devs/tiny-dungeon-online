@@ -71,11 +71,11 @@ export class Player {
         this.afkTimer()
     }
 
-    public move(key: Direction): boolean {
+    public move(key: Direction): { isValid: boolean, message: string } {
         this.currentAfkSecondsLeft = this.afkTotalSeconds
         let validMove = false
         let shouldDelay = true
-        const borders = [0,this.clientHandler.boardRows]
+        let message = ''
 
         if (this.canMove && !this.dead) {
             switch (key) {
@@ -83,14 +83,18 @@ export class Player {
                     if (this.x + 1 < this.boardRows) {
                         const next = [this.y,this.x + 1]
                         if (this.notCollided(next[0],next[1])) {
-                            if (this.currentRoom.isOpenDoor(next[0],next[1],this)) {
+                            const doorData = this.currentRoom.isOpenDoor(next[0],next[1],this)
+                            if (doorData.open) {
                                 const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
                                 shouldDelay = false
                                 this.currentRoomId = result.roomId
                                 this.x = result.spawnX
                                 this.y = result.spawnY
                             } else {
-                                this.x++
+                                message = doorData.closedReason
+                                if (!message) {
+                                    this.x++
+                                }
                             }
                             validMove = true
                         } else if (this.hasNpc(next[0],next[1])) {
@@ -112,14 +116,18 @@ export class Player {
                     if (this.y + 1 < this.boardColumns) {
                         const next = [this.y + 1,this.x]
                         if (this.notCollided(next[0],next[1])) {
-                            if (this.currentRoom.isOpenDoor(next[0],next[1],this)) {
+                            const doorData = this.currentRoom.isOpenDoor(next[0],next[1],this)
+                            if (doorData.open) {
                                 const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
                                 shouldDelay = false
                                 this.currentRoomId = result.roomId
                                 this.x = result.spawnX
                                 this.y = result.spawnY
                             } else {
-                                this.y++
+                                message = doorData.closedReason
+                                if (!message) {
+                                    this.y++
+                                }
                             }
                             validMove = true
                         } else if (this.hasNpc(next[0],next[1])) {
@@ -141,14 +149,18 @@ export class Player {
                     if (this.x - 1 >= 0) {
                         const next = [this.y,this.x - 1]
                         if (this.notCollided(next[0],next[1])) {
-                            if (this.currentRoom.isOpenDoor(next[0],next[1],this)) {
+                            const doorData = this.currentRoom.isOpenDoor(next[0],next[1],this)
+                            if (doorData.open) {
                                 const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
                                 shouldDelay = false
                                 this.currentRoomId = result.roomId
                                 this.x = result.spawnX
                                 this.y = result.spawnY
                             } else {
-                                this.x--
+                                message = doorData.closedReason
+                                if (!message) {
+                                    this.x--
+                                }
                             }
                             validMove = true
                         } else if (this.hasNpc(next[0],next[1])) {
@@ -170,14 +182,18 @@ export class Player {
                     if (this.y - 1 >= 0) {
                         const next = [this.y - 1,this.x]
                         if (this.notCollided(next[0],next[1])) {
-                            if (this.currentRoom.isOpenDoor(next[0],next[1],this)) {
+                            const doorData = this.currentRoom.isOpenDoor(next[0],next[1],this)
+                            if (doorData.open) {
                                 const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
                                 shouldDelay = false
                                 this.currentRoomId = result.roomId
                                 this.x = result.spawnX
                                 this.y = result.spawnY
                             } else {
-                                this.y--
+                                message = doorData.closedReason
+                                if (!message) {
+                                    this.y--
+                                }
                             }
                             validMove = true
                         } else if (this.hasNpc(next[0],next[1])) {
@@ -211,7 +227,7 @@ export class Player {
             }
         }
 
-        return validMove
+        return { isValid: validMove, message: message }
     }
 
     public changedRoom(): boolean {

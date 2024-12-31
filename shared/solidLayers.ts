@@ -304,7 +304,7 @@ export const SolidLayers = {
         [0 ,Tiles.FenceV,0 ,0 ,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,0 ,0 ,Tiles.FenceV,0 ,Tiles.FenceV],
         [0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,0 ,0 ,Tiles.FenceV],
         [0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,0 ,0 ,Tiles.FenceV,0 ,Tiles. FenceC,Tiles.FenceH,Tiles. FenceC,0 ,Tiles.FenceV],
-        [0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,0 ,0 ,Tiles.FenceV,0 ,Tiles.FenceV],
+        [0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,0 , Tiles.DungeonDoor,Tiles.FenceV,0 ,Tiles.FenceV],
         [0 ,0 ,0 ,Tiles.FenceV,0 ,0 ,0 ,Tiles. FenceC,Tiles.FenceH,Tiles. FenceC,Tiles.FenceH,0 ,Tiles.FenceH,Tiles. FenceC,0 ,Tiles.FenceV],
         [0 ,Tiles. FenceC,Tiles.FenceH,Tiles. FenceC,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,0 ,0 ,0 ,0 ,0 ,0 ,Tiles.FenceV],
         [0 ,Tiles.FenceV,0 ,0 ,0 ,Tiles.FenceV,0 ,Tiles.FenceV,0 ,Tiles.FenceH,Tiles.FenceH,Tiles.FenceH,Tiles.FenceH,Tiles. FenceC,Tiles.FenceH,Tiles. FenceC],

@@ -113,13 +113,13 @@ export class ClientHandler {
   public nearbycastPlayerMove(playerMoved: Player, direction: Direction): void {
     let currentPlayer = null
     try{
-      const isValid = playerMoved.move(direction)
+      const movementData = playerMoved.move(direction)
       if (playerMoved.changedRoom()) {
         const newRoom = this.map.getRoomById(playerMoved.currentRoomId)
         this.switchRooms(playerMoved, newRoom)
       }
     
-      if (isValid) {
+      if (movementData.isValid) {
         for (const room of this.map.rooms) {
           for (const player of room.players) {
             const isInSame = playerMoved.currentRoomId === player.currentRoomId
@@ -138,6 +138,10 @@ export class ClientHandler {
               this.send(player,`${Command.HidePlayer},${playerMoved.id},${playerMoved.currentRoomId}`)
             }
           }
+        }
+
+        if (movementData.message) {
+          this.unicastMessage(playerMoved, movementData.message)
         }
       }
     } catch (e: any) {

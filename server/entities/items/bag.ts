@@ -133,6 +133,10 @@ export default class Bag {
         return ''
     }
 
+    public hasAllItems(itemsIdsToHave: ItemsIds[]): boolean {
+        return itemsIdsToHave.every(x => this.items.some(y => y.itemId == x))
+    }
+
     public getItemFromItemId(item: ItemsIds): ItemBase | null {
         if (item == ItemsIds.Coffee) {
             return new Coffee(0)

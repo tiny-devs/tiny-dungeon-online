@@ -124,4 +124,9 @@ export default class Gear {
 
         return headBonus + torsoBonus + legsBonus + weaponBonus
     }
+
+    public wearingAllItems(itemsIdsToHave: ItemsIds[]): boolean {
+        const wearing = [this.head?.itemId, this.torso?.itemId, this.legs?.itemId, this.weapon?.itemId]
+        return itemsIdsToHave.every(x => wearing.some(y => y == x))
+    }
 }
