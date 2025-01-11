@@ -154,6 +154,7 @@ export enum Rooms {
 export enum RoomsInsides {
     SubitnofCastle1 = -1,
     MagesTower1 = -4,
+    GnomesCave1 = -7,
 }
 
 export enum PveAttacker {

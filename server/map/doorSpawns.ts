@@ -7,7 +7,7 @@ import Exits from "./rooms/exits.ts";
 
 export const DoorSpawns = {
   Gnomes1: [
-    new Door(12,7,RoomsInsides.MagesTower1,new Exits(null,Rooms.Gnomes1,null,null,[],[11,7]),SolidLayersInsides.MagesTower1,NpcSpawnsInsides.MagesTower1,[8,15], new DoorConditions([ItemsIds.JamulsGuitar],[],[],0,0,0,'You need a magic instrument to get in'))
+    new Door(12,7,RoomsInsides.GnomesCave1,new Exits(null,Rooms.Gnomes1,null,null,[],[11,7]),SolidLayersInsides.GnomesCave1,NpcSpawnsInsides.GnomesCave1,[8,15], new DoorConditions([ItemsIds.JamulsGuitar],[],[],0,0,0,'You need a magic instrument to get in'))
   ],
   Mages: [
     new Door(8,11,RoomsInsides.MagesTower1,new Exits(null,Rooms.Mages,null,null,[],[8,12]),SolidLayersInsides.MagesTower1,NpcSpawnsInsides.MagesTower1,[8,15], null)

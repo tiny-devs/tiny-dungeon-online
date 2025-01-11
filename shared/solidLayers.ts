@@ -1900,4 +1900,22 @@ export const SolidLayersInsides = {
         [Tiles.Brick2,0,0,0,0,0,NpcWall,NpcWall,0,0,0,Tiles.Brick2,0,0,Tiles.FruitsBox3,Tiles.Brick2],
         [Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,NpcWall,NpcWall,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1]
     ],
+    GnomesCave1: [
+        [0,0,Tiles.Chain,0,0,0,0,0,0,0,0,0,0,Tiles.Chain,0,0],
+        [0,0,Tiles.Chain,0,0,0,0,0,0,0,0,0,0,Tiles.Chain,0,0],
+        [0,0,Tiles.Chandelier,0,0,0,0,0,0,0,0,0,0,Tiles.Chandelier,0,0],
+        [Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Lamp,Tiles.Brick1,Tiles.Brick1,0,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1],
+        [Tiles.Brick2,Tiles.FruitsBox2,Tiles.FruitsBox3,0,0,Tiles.FruitsBox,Tiles.Brick2,Tiles.FruitsBox2,0,0,0,0,0,0,Tiles.Chest,Tiles.Brick2],
+        [Tiles.Brick1,Tiles.FruitsBox,0,0,0,0,Tiles.Brick1,0,0,0,0,0,0,0,0,Tiles.Brick1],
+        [Tiles.Brick2,0,0,Tiles.Table3,0,0,Tiles.Brick2,0,0,Tiles.Table2,0,Tiles.Table1,Tiles.Table2,0,0,Tiles.Brick2],
+        [Tiles.Brick1,0,0,0,0,0,Tiles.Brick1,0,0,0,0,0,0,0,0,Tiles.Brick1],
+        [Tiles.Brick2,0,0,NpcWall,0,0,Tiles.Brick2,0,0,0,0,0,0,0,0,Tiles.Brick2],
+        [Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,NpcWall,Tiles.Brick1,Tiles.Brick1,Tiles.Clock,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,0,0,0,Tiles.Brick1],
+        [Tiles.Brick2,0,0,NpcWall,0,0,0,0,0,0,Tiles.FlowerPot,Tiles.Brick2,0,0,0,Tiles.Brick2],
+        [Tiles.Brick1,0,0,0,0,0,0,0,0,0,0,Tiles.Brick1,0,0,0,Tiles.Brick1],
+        [Tiles.Brick2,0,0,0,0,0,0,0,0,0,NpcWall,NpcWall,NpcWall,0,0,Tiles.Brick2],
+        [Tiles.Brick1,0,0,0,0,0,0,0,0,0,0,Tiles.Brick1,0,0,0,Tiles.Brick1],
+        [Tiles.Brick2,Tiles.Brick1,0,0,0,0,NpcWall,NpcWall,0,0,0,Tiles.Brick2,0,0,Tiles.FruitsBox3,Tiles.Brick2],
+        [Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,NpcWall,NpcWall,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1,Tiles.Brick1]
+    ],
 }
