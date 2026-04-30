@@ -414,8 +414,7 @@
       </footer>
     </div>
     <script type="text/javascript">
-      const CLIENT_ID = '119002660973-770rqbgj9gat36dhi2e4rv1cus0sdreu.apps.googleusercontent.com';
-      const GAPIK = '---------------------------------------------------';
+      const CLIENT_ID = '';
       const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/drive/v3/rest';
       const SCOPES = 'https://www.googleapis.com/auth/drive.appdata https://www.googleapis.com/auth/drive.appfolder';
 
@@ -430,7 +429,7 @@
       const startBtn = window.document.getElementById('confirm-btn');
       const elementToObserve = window.document.getElementById('gdrive_userdata');
       const observer = new MutationObserver(userDataChanged);
-      observer.observe(elementToObserve, {characterData: false, childList: true, attributes: false});
+      observer.observe(elementToObserve, {characterData: true, childList: true, subtree: true});
 
       authorizeEl.style.visibility = 'hidden';
 
@@ -440,22 +439,25 @@
 
       async function initializeGapiClient() {
         await gapi.client.init({
-          apiKey: GAPIK,
-          discoveryDocs: [DISCOVERY_DOC],
+          discoveryDocs: [DISCOVERY_DOC]
         });
         gapiInited = true;
         maybeEnableButtons();
       }
 
       function gisLoaded() {
-        let redirectUri = 'https://diguifi.itch.io/tiny-land';
-        if (window.location.href.includes('localhost')) {
-          redirectUri = window.location.href;
-        }
         tokenClient = google.accounts.oauth2.initTokenClient({
           client_id: CLIENT_ID,
           scope: SCOPES,
-          callback: redirectUri,
+          callback: () => {},
+          error_callback: (error) => {
+            console.error('Google OAuth error', error);
+            loginLoadingEl.style.display = 'none';
+            startBtn.disabled = false;
+            authorizeEl.style.display = 'block';
+            loginConfirmEl.style.display = 'none';
+            loginConfirmEl.textContent = '';
+          }
         });
         gisInited = true;
         maybeEnableButtons();
@@ -468,11 +470,18 @@
       }
 
       function handleAuthClick() {
+        if (!tokenClient) {
+          console.error('Google token client not initialized.');
+          return;
+        }
+
         tokenClient.callback = async (resp) => {
           if (resp.error !== undefined) {
             throw (resp);
           }
+          gapi.client.setToken(resp);
           loginLoadingEl.style.display = 'block';
+          loginConfirmEl.style.display = 'none';
           startBtn.disabled = true;
           authorizeEl.style.display = 'none';
           await loadData();
@@ -489,7 +498,7 @@
         const token = gapi.client.getToken();
         if (token !== null) {
           google.accounts.oauth2.revoke(token.access_token);
-          gapi.client.setToken('');
+          gapi.client.setToken(null);
           authorizeEl.style.display = 'block';
           loginConfirmEl.style.display = 'none';
         }
@@ -499,7 +508,7 @@
         try {
             const response = await getAppDataFile()
             let fileId = ''
-            if (response.files.length == 0) {
+            if (!response.files || response.files.length === 0) {
                 const createdFile = await createAppDataFile()
                 await saveAppData(createdFile.id, {data:"0"})
                 fileId = createdFile.id
@@ -507,18 +516,25 @@
                 fileId = response.files[0].id
             }
             const file = await getAppDataFileContent(fileId)
-            if (file) {
+            if (typeof file === 'string') {
               loaded = true
               loginConfirmEl.style.display = 'block';
               loginLoadingEl.style.display = 'none';
+              loginConfirmEl.textContent = 'Data Loaded!';
               startBtn.disabled = false;
-              document.getElementById('gdrive_userdata').innerHTML = file.body;
-              document.getElementById('gdrive_fileid').innerHTML = fileId;
+              document.getElementById('gdrive_userdata').textContent = file;
+              document.getElementById('gdrive_fileid').textContent = fileId;
             } else {
-              loginConfirmEl.innerHTML = 'Error loading data'
+              throw new Error('Invalid Google Drive file response.');
             }
         } catch (err) {
-            return;
+            console.error(err)
+            loginLoadingEl.style.display = 'none';
+            loginConfirmEl.style.display = 'block';
+            loginConfirmEl.textContent = 'Error loading data';
+            authorizeEl.style.display = 'block';
+            startBtn.disabled = false;
+            return
         }
       }
 
@@ -528,7 +544,7 @@
                 spaces: 'appDataFolder',
                 fields: 'files(id)'
             })
-            return JSON.parse(result.body)
+            return result.result
         }
         async function createAppDataFile() {
             const result = await gapi.client.drive.files
@@ -539,14 +555,15 @@
                     },
                     fields: 'id'
                 });
-            return JSON.parse(result.body)
+            return result.result
         }
         async function getAppDataFileContent(fileId) {
-            return await gapi.client.drive.files
+            const result = await gapi.client.drive.files
                 .get({
                     fileId: fileId,
                     alt: 'media'
                 });
+            return result.body
         }
         async function saveAppData(fileId, data) {
             try { data = JSON.parse(data) } catch { }
@@ -565,10 +582,10 @@
             firstLoad = false;
             return;
           }
-          const newData = document.getElementById('gdrive_userdata').innerHTML
-          const fileId = document.getElementById('gdrive_fileid').innerHTML
+          const newData = document.getElementById('gdrive_userdata').textContent
+          const fileId = document.getElementById('gdrive_fileid').textContent
           if (newData && fileId) {
-            const result = await saveAppData(fileId, newData)
+            await saveAppData(fileId, newData)
           }
         }
     </script>
