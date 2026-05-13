@@ -167,9 +167,11 @@ export class Main {
     }
 
     setupMobile() {
+        const storeEl = document.getElementById('store')!
         document.body.addEventListener(
             'touchmove',
             (e) => {
+                if (storeEl.contains(e.target as Node)) return
                 e.preventDefault()
             },
             { passive: false }

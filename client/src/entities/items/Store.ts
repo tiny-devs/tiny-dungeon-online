@@ -63,9 +63,9 @@ export default class Store {
         }
     }
 
-    public clickItem(e: Partial<MouseEvent>, itemId: ItemsIds) {
+    public clickItem(e: Partial<MouseEvent> | TouchEvent, itemId: ItemsIds) {
         if (e.type === 'mouseup') {
-            if (e.button == 0) {
+            if ((e as Partial<MouseEvent>).button == 0) {
                 if (this.isPlayerBuying) {
                     this.client.tryBuyItem(itemId)
                 } else if (this.isPlayerSelling) {
@@ -110,8 +110,10 @@ export default class Store {
         newButton.classList.add('item-btn');
         newButton.id = elementId
         newButton.onmouseup = (e) => this.clickItem(e, itemId)
-        newButton.ontouchstart = (e) => this.clickItem(e, itemId)
-        newButton.ontouchmove = (e) => this.clickItem(e, itemId)
+        let touchMoved = false
+        newButton.addEventListener('touchstart', () => { touchMoved = false }, { passive: true })
+        newButton.addEventListener('touchmove', () => { touchMoved = true }, { passive: true })
+        newButton.addEventListener('touchend', (e) => { if (!touchMoved) { e.preventDefault(); this.clickItem(e, itemId) } }, { passive: false })
         newButton.oncontextmenu = () => false
         newSpan.appendChild(newButton)
         this.itemsHolderEl.appendChild(newSpan)
