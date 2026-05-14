@@ -2,7 +2,7 @@ import { Game } from '../../startup/Game'
 
 export class BackgroundLayer {
     private game: Game
-    private ctx: CanvasRenderingContext2D
+    public ctx: CanvasRenderingContext2D
 
     constructor(game: Game) {
         this.game = game

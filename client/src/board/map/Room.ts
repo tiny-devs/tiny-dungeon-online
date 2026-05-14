@@ -9,6 +9,8 @@ export class Room {
     public backgroundLayerShape: Color[][][][]
     public solidLayerShape: (number | (number | Color)[][])[][]
     public tiles: Tile[]
+    private backgroundBuffer: HTMLCanvasElement | null
+    private solidBuffer: HTMLCanvasElement | null
 
     private game: Game
 
@@ -19,6 +21,8 @@ export class Room {
         this.backgroundLayerShape = backgroundLayer
         this.solidLayerShape = solidLayer
         this.tiles = []
+        this.backgroundBuffer = null
+        this.solidBuffer = null
 
         this.initTiles()
     }
@@ -58,58 +62,145 @@ export class Room {
     }
 
     async draw(lastRoom: Room | undefined = undefined, direction: Direction = 0, isMobile = false) {
+        this.ensureBuffers()
+
         if (lastRoom && direction != Direction.None) {
-            let xModifier = -1
-            let yModifier = 0
-            let animationSize = 2.0
-
-            if (direction == Direction.Left) {
-                yModifier = 0
-                xModifier = 1
-            }
-            if (direction == Direction.Up) {
-                yModifier = -1
-                xModifier = 0
-            }
-            if (direction == Direction.Down) {
-                yModifier = 1
-                xModifier = 0
-            }
-            if (isMobile) {
-                animationSize = 1.0
-            }
-            let lastRoomAxisPosition = 0
-            let currentRoomAxisPosition = this.game.gridConfig.columns
-            const sleepTime = 32/animationSize
-            const axisStep = 1.0/animationSize
-            for (let axisPosition = this.game.gridConfig.columns * animationSize; axisPosition >= 0; axisPosition--) {
-
-                for (let i = 0; i < this.tiles.length; i++) {
-                    this.tiles[i].draw(xModifier * currentRoomAxisPosition, yModifier * currentRoomAxisPosition)
-                    
-                    if (lastRoom.tiles[i]) {
-                        lastRoom.tiles[i].draw(xModifier * lastRoomAxisPosition, yModifier * lastRoomAxisPosition)
-                    }
-                }
-
-                await this.sleep(sleepTime)
-                if (axisPosition != 0) {
-                    this.game.solidLayer.clear()
-                }
-                lastRoomAxisPosition = lastRoomAxisPosition - axisStep
-                currentRoomAxisPosition = currentRoomAxisPosition - axisStep
-            }
+            lastRoom.ensureBuffers()
+            await this.animateRoomTransition(lastRoom, direction, isMobile)
         }
         else {
-            this.clear()
-            for (const tile of this.tiles) {
-                tile.draw()
-            }
+            this.drawBuffers()
         }
     }
 
-    sleep(ms: number) {
-        return new Promise(resolve => setTimeout(resolve, ms));
+    private ensureBuffers() {
+        if (!this.backgroundBuffer) {
+            this.backgroundBuffer = this.createLayerBuffer(this.backgroundLayerShape, this.game.backgroundLayer)
+        }
+
+        if (!this.solidBuffer) {
+            this.solidBuffer = this.createLayerBuffer(this.solidLayerShape, this.game.solidLayer)
+        }
+    }
+
+    private createLayerBuffer(layerShape: any[][], targetLayer: { ctx: CanvasRenderingContext2D }) {
+        const canvas = document.createElement('canvas')
+        canvas.width = this.game.gridConfig.width
+        canvas.height = this.game.gridConfig.height
+
+        const ctx = canvas.getContext('2d')!
+        ctx.imageSmoothingEnabled = false
+
+        for (let column = 0; column < this.game.gridConfig.columns; column++) {
+            for (let line = 0; line < this.game.gridConfig.rows; line++) {
+                const tileToDraw = layerShape[line][column] as any
+                if (tileToDraw != 0 && tileToDraw != -1) {
+                    new Tile(this.game, { ctx }, column, line, this.resolveTileMatrix(tileToDraw, targetLayer)).draw()
+                }
+            }
+        }
+
+        return canvas
+    }
+
+    private resolveTileMatrix(tileToDraw: any, targetLayer: { ctx: CanvasRenderingContext2D }) {
+        if (targetLayer === this.game.solidLayer) {
+            const tiles = SolidTiles as any
+            return tiles[Object.keys(SolidTiles)[tileToDraw - 1]]
+        }
+
+        return tileToDraw
+    }
+
+    private async animateRoomTransition(lastRoom: Room, direction: Direction, isMobile: boolean) {
+        const axis = this.getTransitionAxis(direction)
+        const distance = axis.x !== 0 ? this.game.gridConfig.width : this.game.gridConfig.height
+        const duration = 520
+        const backgroundCtx = this.game.backgroundLayer.ctx
+        const solidCtx = this.game.solidLayer.ctx
+
+        backgroundCtx.imageSmoothingEnabled = false
+        solidCtx.imageSmoothingEnabled = false
+
+        await new Promise<void>((resolve) => {
+            const startTime = performance.now()
+
+            const renderFrame = (now: number) => {
+                const elapsed = now - startTime
+                const progress = Math.min(elapsed / duration, 1)
+                const easedProgress = this.easeOutCubic(progress)
+                const lastRoomOffset = -distance * easedProgress
+                const currentRoomOffset = distance * (1 - easedProgress)
+
+                this.clear()
+                this.drawTransitionFrame(lastRoom, backgroundCtx, axis, lastRoomOffset, currentRoomOffset, 'backgroundBuffer')
+                this.drawTransitionFrame(lastRoom, solidCtx, axis, lastRoomOffset, currentRoomOffset, 'solidBuffer')
+
+                if (progress < 1) {
+                    requestAnimationFrame(renderFrame)
+                    return
+                }
+
+                this.drawBuffers()
+                resolve()
+            }
+
+            requestAnimationFrame(renderFrame)
+        })
+    }
+
+    private drawTransitionFrame(
+        lastRoom: Room,
+        ctx: CanvasRenderingContext2D,
+        axis: { x: number, y: number },
+        lastRoomOffset: number,
+        currentRoomOffset: number,
+        bufferKey: 'backgroundBuffer' | 'solidBuffer'
+    ) {
+        const lastBuffer = lastRoom[bufferKey]
+        const currentBuffer = this[bufferKey]
+
+        if (lastBuffer) {
+            ctx.drawImage(lastBuffer, Math.round(axis.x * lastRoomOffset), Math.round(axis.y * lastRoomOffset))
+        }
+
+        if (currentBuffer) {
+            ctx.drawImage(currentBuffer, Math.round(axis.x * currentRoomOffset), Math.round(axis.y * currentRoomOffset))
+        }
+    }
+
+    private getTransitionAxis(direction: Direction) {
+        if (direction == Direction.Left) {
+            return { x: -1, y: 0 }
+        }
+
+        if (direction == Direction.Up) {
+            return { x: 0, y: 1 }
+        }
+
+        if (direction == Direction.Down) {
+            return { x: 0, y: -1 }
+        }
+
+        return { x: 1, y: 0 }
+    }
+
+    private drawBuffers() {
+        this.clear()
+
+        if (this.backgroundBuffer) {
+            this.game.backgroundLayer.ctx.imageSmoothingEnabled = false
+            this.game.backgroundLayer.ctx.drawImage(this.backgroundBuffer, 0, 0)
+        }
+
+        if (this.solidBuffer) {
+            this.game.solidLayer.ctx.imageSmoothingEnabled = false
+            this.game.solidLayer.ctx.drawImage(this.solidBuffer, 0, 0)
+        }
+    }
+
+    private easeOutCubic(progress: number) {
+        return 1 - Math.pow(1 - progress, 3)
     }
 
     clear() {
