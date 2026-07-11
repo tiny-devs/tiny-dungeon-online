@@ -128,7 +128,7 @@ export default class Room {
       itemId: clonedItem.itemId
     }, this.id, y, x)
 
-    this.startDespawnTimer(y, x, clonedItem.despawnTime)
+    this.startDespawnTimer(y, x, clonedItem.despawnTime, nextId)
   }
 
   removeItem(y: number, x: number, playerId: string) {
@@ -239,9 +239,12 @@ export default class Room {
     return entityInfo
   }
 
-  startDespawnTimer(y: number, x: number, despawnTime: number) {
-    setTimeout(() => { 
-      this.removeItem(y,x,'')
+  startDespawnTimer(y: number, x: number, despawnTime: number, itemInstanceId: number) {
+    setTimeout(() => {
+      const item = this.itemsLayer[y][x]
+      if (item && item !== 0 && item.id === itemInstanceId) {
+        this.removeItem(y, x, '')
+      }
     }, despawnTime);
   }
 

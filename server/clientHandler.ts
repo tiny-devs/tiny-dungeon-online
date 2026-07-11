@@ -429,7 +429,7 @@ export class ClientHandler {
     }
   }
 
-  private unicastPlayerDropedGold(player: Player, amount: number): void {
+  public unicastPlayerDropedGold(player: Player, amount: number): void {
     try{
       this.send(player,`${Command.GoldDroped},${amount}`)
     } catch (e: any) {

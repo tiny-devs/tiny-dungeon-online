@@ -504,7 +504,7 @@ export class Player {
         }
     }
 
-    public takeDamage(dmg: number, crit: boolean): number {
+    public takeDamage(dmg: number, crit: boolean, isPvp = false): number {
         let defense = this.getDefenseFromDamage(crit)
         defense = defense > dmg ? dmg : defense
         const actualDamage = (dmg - defense)
@@ -512,6 +512,9 @@ export class Player {
         this.hp -= actualDamage < 0 ? 0 : actualDamage
         if (this.hp <= 0) {
             this.dead = true
+            if (isPvp) {
+                this.applyPvpCoinPenalty()
+            }
             this.applyXpPenaltyForDeath()
             clearPvpLocks(this)
             setTimeout(() => {
@@ -522,6 +525,13 @@ export class Player {
         }
 
         return defense
+    }
+
+    private applyPvpCoinPenalty(): void {
+        const amount = this.bag.dropAllCoinsOnDeath()
+        if (amount > 0) {
+            this.clientHandler.unicastPlayerDropedGold(this, amount)
+        }
     }
 
     public checkCriticalHit(hit: number): boolean {

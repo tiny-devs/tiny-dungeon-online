@@ -95,6 +95,29 @@ export default class Bag {
         return false
     }
 
+    public dropAllCoinsOnDeath(): number {
+        const amount = this.coins
+        if (amount <= 0) {
+            return 0
+        }
+        this.coins = 0
+
+        const room = this.player.currentRoom
+        const y = this.player.y
+        const x = this.player.x
+        const existing = room.itemsLayer[y][x]
+
+        if (existing && existing !== 0) {
+            if (existing.itemId === ItemsIds.Coin) {
+                existing.coins += amount
+                return amount
+            }
+            room.removeItem(y, x, '')
+        }
+        room.addItem(y, x, new Coins(1, amount))
+        return amount
+    }
+
     public addItem(item: ItemBase): boolean {
         if (item.type == ItemType.Money) {
             this.coins += item.coins

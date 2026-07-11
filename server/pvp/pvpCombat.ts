@@ -99,7 +99,7 @@ export async function engage(attacker: Player, defender: Player): Promise<void> 
   try {
     // Swing 1 — initiator
     const dmg1 = attacker.getAttackDamage()
-    const def1 = defender.takeDamage(dmg1, attacker.checkCriticalHit(dmg1))
+    const def1 = defender.takeDamage(dmg1, attacker.checkCriticalHit(dmg1), true)
     const net1 = dmg1 - def1
 
     const swing1 = new PvpData(attacker.currentRoom, attacker, defender)
@@ -117,7 +117,7 @@ export async function engage(attacker: Player, defender: Player): Promise<void> 
     // Swing 2 — counter only if still the same fight
     if (stillSameFight(attacker, defender)) {
       const dmg2 = defender.getAttackDamage()
-      const def2 = attacker.takeDamage(dmg2, defender.checkCriticalHit(dmg2))
+      const def2 = attacker.takeDamage(dmg2, defender.checkCriticalHit(dmg2), true)
       const net2 = dmg2 - def2
 
       const swing2 = new PvpData(defender.currentRoom, defender, attacker)
