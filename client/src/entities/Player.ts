@@ -19,6 +19,7 @@ export class Player {
     public matrix: any[][]
     public chatMessage: string = ''
     private chatMessageTimeout: number = 0
+    private lastDamageCaused: number = 0
     private game: Game
     private layer: SpritesLayer
     private playerSize: number
@@ -61,9 +62,9 @@ export class Player {
         this.layer.ctx.fill()
     }
 
-    takeDamage(pveData: ParsePve) {
-        this.pveData = pveData
-        this.hp = pveData.playerHp
+    applyHit(damageCaused: number, newHp: number) {
+        this.lastDamageCaused = damageCaused
+        this.hp = newHp
         this.isFighting = true
         this.drawHp()
         if (this.hp <= 0) {
@@ -72,6 +73,11 @@ export class Player {
             this.hp = this.maxHp
             this.isFighting = false
         }
+    }
+
+    takeDamage(pveData: ParsePve) {
+        this.pveData = pveData
+        this.applyHit(pveData.damageCaused, pveData.playerHp)
     }
 
     drawHp() {
@@ -123,21 +129,19 @@ export class Player {
     }
 
     drawHit() {
-        if (this.pveData) {
-            let dmgFactor = ''
-            this.layer.ctx.font = '15px arial'
-            this.layer.ctx.textAlign = 'center'
-            if (this.pveData.damageCaused == 0) {
-                this.layer.ctx.fillStyle = Color.Blue
-            } else {
-                this.layer.ctx.fillStyle = Color.Red
-                dmgFactor = '-'
-            }
-
-            const x = this.x * this.game.gridConfig.cellWidth + this.game.gridConfig.cellWidth / 2
-            const y = this.y * this.game.gridConfig.cellHeight - 10
-            this.layer.ctx.fillText(`${dmgFactor}${this.pveData.damageCaused}`, x, y)
+        let dmgFactor = ''
+        this.layer.ctx.font = '15px arial'
+        this.layer.ctx.textAlign = 'center'
+        if (this.lastDamageCaused == 0) {
+            this.layer.ctx.fillStyle = Color.Blue
+        } else {
+            this.layer.ctx.fillStyle = Color.Red
+            dmgFactor = '-'
         }
+
+        const x = this.x * this.game.gridConfig.cellWidth + this.game.gridConfig.cellWidth / 2
+        const y = this.y * this.game.gridConfig.cellHeight - 10
+        this.layer.ctx.fillText(`${dmgFactor}${this.lastDamageCaused}`, x, y)
     }
 
     move(x: number, y: number, currentRoomId: Rooms | null) {

@@ -10,6 +10,8 @@ import { Admins } from "../data/admins.ts"
 import { ItemsToHave } from "./npcs/quests/itemsToHave.ts"
 import Bank from "./items/bank/bank.ts"
 import { FreeTiles } from "../../shared/solidLayers.ts"
+import { isPvpRoom } from '../../shared/pvp.ts'
+import { tryEngage, clearPvpLocks } from '../pvp/pvpCombat.ts'
 
 export class Player {
     public id: string
@@ -23,6 +25,8 @@ export class Player {
     public currentRoomId: number
     public currentRoom: Room
     public fightingNpcId: null | number = null
+    public fightingPlayerId: string | null = null
+    public pvpEngaging = false // true only while async engage() is running
     public hp = 10
     public maxHp = 10
     public attack = 4
@@ -82,7 +86,10 @@ export class Player {
                 case Direction.Right:
                     if (this.x + 1 < this.boardRows) {
                         const next = [this.y,this.x + 1]
-                        if (this.notCollided(next[0],next[1])) {
+                        if (isPvpRoom(this.currentRoomId) && this.hasPlayer(next[0], next[1])) {
+                            const other = this.getPlayer(next[0], next[1])!
+                            void tryEngage(this, other)
+                        } else if (this.notCollided(next[0],next[1])) {
                             const doorData = this.currentRoom.isOpenDoor(next[0],next[1],this)
                             if (doorData.open) {
                                 const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
@@ -115,7 +122,11 @@ export class Player {
                 case Direction.Down:
                     if (this.y + 1 < this.boardColumns) {
                         const next = [this.y + 1,this.x]
-                        if (this.notCollided(next[0],next[1])) {
+                        // PvP bump first (only in Desert rooms). Does not set validMove.
+                        if (isPvpRoom(this.currentRoomId) && this.hasPlayer(next[0], next[1])) {
+                            const other = this.getPlayer(next[0], next[1])!
+                            void tryEngage(this, other)
+                        } else if (this.notCollided(next[0],next[1])) {
                             const doorData = this.currentRoom.isOpenDoor(next[0],next[1],this)
                             if (doorData.open) {
                                 const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
@@ -148,7 +159,11 @@ export class Player {
                 case Direction.Left:
                     if (this.x - 1 >= 0) {
                         const next = [this.y,this.x - 1]
-                        if (this.notCollided(next[0],next[1])) {
+                        // PvP bump first (only in Desert rooms). Does not set validMove.
+                        if (isPvpRoom(this.currentRoomId) && this.hasPlayer(next[0], next[1])) {
+                            const other = this.getPlayer(next[0], next[1])!
+                            void tryEngage(this, other)
+                        } else if (this.notCollided(next[0],next[1])) {
                             const doorData = this.currentRoom.isOpenDoor(next[0],next[1],this)
                             if (doorData.open) {
                                 const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
@@ -181,7 +196,11 @@ export class Player {
                 case Direction.Up:
                     if (this.y - 1 >= 0) {
                         const next = [this.y - 1,this.x]
-                        if (this.notCollided(next[0],next[1])) {
+                        // PvP bump first (only in Desert rooms). Does not set validMove.
+                        if (isPvpRoom(this.currentRoomId) && this.hasPlayer(next[0], next[1])) {
+                            const other = this.getPlayer(next[0], next[1])!
+                            void tryEngage(this, other)
+                        } else if (this.notCollided(next[0],next[1])) {
                             const doorData = this.currentRoom.isOpenDoor(next[0],next[1],this)
                             if (doorData.open) {
                                 const result = this.currentRoom.getDoorRoomIdAndSpawnPos(next[0],next[1],this)
@@ -217,6 +236,7 @@ export class Player {
                 const hasChangedRoom = this.changedRoom()
                 if (hasChangedRoom){
                     this.fightingNpcId = null
+                    clearPvpLocks(this)
                 }
                 if (shouldDelay) {
                     shouldDelay = this.x == 0 || this.x == this.clientHandler.boardColumns-1 || this.y == 0 || this.y == this.clientHandler.boardRows-1
@@ -493,6 +513,7 @@ export class Player {
         if (this.hp <= 0) {
             this.dead = true
             this.applyXpPenaltyForDeath()
+            clearPvpLocks(this)
             setTimeout(() => {
                 this.dead = false
                 this.hp = this.totalHp()
@@ -543,6 +564,7 @@ export class Player {
         const isAdmin = this.isAdmin()
         if (isAdmin) {
             this.fightingNpcId = null
+            clearPvpLocks(this)
             this.currentRoomId = roomId
             this.x = 0
             this.y = 0
@@ -570,6 +592,7 @@ export class Player {
 
     private respawn() {
         this.fightingNpcId = null
+        clearPvpLocks(this) // safe if already cleared on death
         this.currentRoomId = Rooms.InitialRoom
         this.x = 0
         this.y = 0
@@ -595,6 +618,18 @@ export class Player {
 
     private getNpc(y: number, x: number) {
         return this.currentRoom.npcs.find(npc => npc.x == x && npc.y == y)
+    }
+
+    private hasPlayer(y: number, x: number): boolean {
+        return this.currentRoom.players.some(
+            p => p.x === x && p.y === y && p.id !== this.id && !p.dead
+        )
+    }
+
+    private getPlayer(y: number, x: number): Player | undefined {
+        return this.currentRoom.players.find(
+            p => p.x === x && p.y === y && p.id !== this.id && !p.dead
+        )
     }
 
     private pickupAnyItemAtCoords(y: number, x: number): boolean {

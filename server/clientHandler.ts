@@ -4,6 +4,8 @@ import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
 import { PveData } from './pve/pveData.ts'
+import { PvpData } from './pvp/pvpData.ts'
+import { clearPvpLocks } from './pvp/pvpCombat.ts'
 import ConnectionManager from "./data/connectionManager.ts"
 import DataManager from "./data/dataManager.ts"
 import { Admins } from "./data/admins.ts"
@@ -207,6 +209,27 @@ export class ClientHandler {
       const success = this.handleExceptions(e,currentPlayer, 'roomcastPveFight')
       if (success) {
         this.roomcastPveFight(pveData)
+      }
+    }
+  }
+
+  public roomcastPvpFight(pvpData: PvpData): void {
+    let currentPlayer = null
+    try{
+      for (const player of pvpData.room.players) {
+        currentPlayer = player
+        this.send(player,`${Command.Pvp},`+
+          `${pvpData.attacker.id},` +
+          `${pvpData.defender.id},` +
+          `${pvpData.damageCaused},` +
+          `${pvpData.attacker.hp},` +
+          `${pvpData.defender.hp},` +
+          `${pvpData.room.id}`)
+      }
+    } catch (e: any) {
+      const success = this.handleExceptions(e, currentPlayer, 'roomcastPvpFight')
+      if (success) {
+        this.roomcastPvpFight(pvpData)
       }
     }
   }
@@ -872,6 +895,7 @@ export class ClientHandler {
 
   private logPlayerOut(player: Player): boolean {
     try{
+      clearPvpLocks(player)
       const room = this.map.getRoomById(player.currentRoom.id)
       room.removePlayer(player)
       player.x = -1

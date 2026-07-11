@@ -45,7 +45,8 @@ export enum Command {
     OpenBank,
     StoreItem,
     RetrieveItem,
-    CloseBank
+    CloseBank,
+    Pvp,
 }
 
 export enum Rooms {

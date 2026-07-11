@@ -4,6 +4,7 @@ import { ParseMove } from './ParseMove'
 import { ParseNpcMove } from './ParseNpcMove'
 import { ParseNpcsInRoom } from './ParseNpcsInRoom'
 import { ParsePve } from './ParsePve'
+import { ParsePvp } from './ParsePvp'
 import { ParseError } from './ParseError'
 import { ParseItemPick } from './ParseItemPick'
 import { ParseItemDrop } from './ParseItemDrop'
@@ -65,6 +66,9 @@ export class Parser {
                     break
                 case Command.Pve:
                     this.parsePve(data)
+                    break
+                case Command.Pvp:
+                    this.parsePvp(data)
                     break
                 case Command.ItemsInRoom:
                     this.parseItemsInRoom(data)
@@ -206,6 +210,12 @@ export class Parser {
         const pveData = new ParsePve(data)
 
         this.client.drawPve(pveData)
+    }
+
+    private parsePvp(data: string) {
+        const pvpData = new ParsePvp(data)
+
+        this.client.drawPvp(pvpData)
     }
 
     private parseError(data: string) {

@@ -20,6 +20,7 @@ import Store from '../entities/items/Store'
 import { ParseBoughtItem } from '../parser/ParseBoughtItem'
 import { ParseSoldPlayerItem } from '../parser/ParseSoldPlayerItem'
 import { ParsePve } from '../parser/ParsePve'
+import { ParsePvp } from '../parser/ParsePvp'
 import { Player } from '../entities/Player'
 
 export class GameClient {
@@ -544,6 +545,21 @@ export class GameClient {
             }
         }
         
+        this.drawSprites()
+    }
+
+    drawPvp(pvpData: ParsePvp) {
+        const attacker = this.game.spritesLayer.getPlayerById(pvpData.attackerPlayerId)
+        const defender = this.game.spritesLayer.getPlayerById(pvpData.defenderPlayerId)
+        if (!attacker || !defender) return
+
+        // Sync both HPs; float only on the defender for this packet
+        attacker.hp = pvpData.attackerHp
+        defender.applyHit(pvpData.damageCaused, pvpData.defenderHp)
+
+        this.updateHpElements(attacker.hp, attacker.maxHp, attacker.id)
+        this.updateHpElements(defender.hp, defender.maxHp, defender.id)
+
         this.drawSprites()
     }
 
