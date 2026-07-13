@@ -38,6 +38,7 @@ export class Npc {
   public dead = false
   public isMerchant = false
   public sells: ItemBase[]
+  public isBanker = false
   public dialog: DialogBase | null
   public drops: ItemBase[]
   public name: string
@@ -82,6 +83,7 @@ export class Npc {
     this.quest = npcData.quest
     this.isMerchant = npcData.isMerchant
     this.sells = npcData.sells
+    this.isBanker = npcData.isBanker
 
     this.heartBeat()
   }
@@ -159,7 +161,7 @@ export class Npc {
         player.fightingNpcId = this.id
         this.fightingPlayer = player
       }
-    } else if (this.dialog != null || this.isMerchant) {
+    } else if (this.dialog != null || this.isMerchant || this.isBanker) {
       this.talkTo(player)
     }
   }
@@ -239,6 +241,9 @@ export class Npc {
     
     if (this.isMerchant) {
       this.room.clientHandler.unicastOpenStore(player,this.npcId)
+    }
+    if (this.isBanker) {
+      this.room.clientHandler.unicastOpenBank(player, this.npcId)
     }
   }
 

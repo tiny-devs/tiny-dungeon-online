@@ -54,6 +54,7 @@ import Boris from "../entities/npcs/passive/humans/subitnof/boris.ts";
 import Celine from "../entities/npcs/passive/humans/subitnof/celine.ts";
 import Ephan from "../entities/npcs/passive/humans/subitnof/ephan.ts";
 import Francis from "../entities/npcs/passive/humans/subitnof/francis.ts";
+import Banker from "../entities/npcs/passive/humans/subitnof/banker.ts";
 import James from "../entities/npcs/passive/humans/subitnof/james.ts";
 import Jasmine from "../entities/npcs/passive/humans/subitnof/jasmine.ts";
 import Michael from "../entities/npcs/passive/humans/subitnof/michael.ts";
@@ -1221,7 +1222,7 @@ export const NpcSpawns = {
   [0,0,new Oswald(),0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+  [0,new Banker(),0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,0,new Beatrice(),0,0,0,0,0,0,0,0],
   [0,0,0,0,0,0,new Ephan(),0,0,0,0,0,0,0,0,0],

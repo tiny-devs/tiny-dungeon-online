@@ -286,7 +286,8 @@ export enum Npcs {
     DesertMale2,
     DesertMale3,
     DesertMale4,
-    KingSubitnof
+    KingSubitnof,
+    Banker
 }
 
 export enum ItemType {

@@ -86,6 +86,19 @@
         -webkit-overflow-scrolling: touch;
         touch-action: pan-y;
       }
+      #bank {
+        border: 1px solid #e5e5e5;
+        width: 128px;
+        height: 192px;
+        overflow-y: scroll;
+        -webkit-overflow-scrolling: touch;
+        touch-action: pan-y;
+      }
+      #bank-coins {
+        border: 1px solid #e5e5e5;
+        margin: 0;
+        cursor: pointer;
+      }
       #gear {
         border: 1px solid #e5e5e5;
         width: 128px;
@@ -392,6 +405,10 @@
             <div id="player-selling-items"></div>
             <div id="store-items"></div>
           </div>
+          <div id="bank">
+            <h3 id="bank-coins">Bank GP: 0</h3>
+            <div id="bank-items"></div>
+          </div>
           <div id="gear">
             <canvas id="head" width="32" height="32" class="item-btn gear-slot"></canvas>
             <canvas id="weapon" width="32" height="32" class="item-btn gear-slot"></canvas>
@@ -408,6 +425,7 @@
           <ul class="menu-options">
             <li class="menu-option">Inspect</li>
             <li class="menu-option">Drop</li>
+            <li class="menu-option" id="store-menu-option" style="display: none;">Store</li>
           </ul>
         </div>
       </div>

@@ -56,14 +56,20 @@ export default class Bag {
 
     public clickItem(e: Partial<MouseEvent>, itemId: ItemsIds) {
         if (e.type === 'mouseup') {
-            if (e.type === 'mouseup') {
-                if (e.button == 0) {
+            if (e.button == 0) {
+                // Bank open: left-click stores to bank (mirrors store-sell click → SellItemStore)
+                if (this.client.bankOpen) {
+                    this.client.storeItem(itemId)
+                } else {
                     this.client.useItem(itemId)
-                } else if (e.button == 2) {
-                    this.contextMenu.openMenu(itemId)
                 }
-            } else {
-                this.client.useItem(itemId)
+            } else if (e.button == 2) {
+                this.contextMenu.openMenu(itemId)
+            }
+        } else if (e.type === 'touchstart') {
+            // Mobile: deposit on tap while bank is open (otherwise keep original no-op on touchstart)
+            if (this.client.bankOpen) {
+                this.client.storeItem(itemId)
             }
         } else if (e.type === 'touchmove') {
             this.contextMenu.openMenu(itemId)

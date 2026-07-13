@@ -33,6 +33,9 @@ import { ParseBoughtItem } from './ParseBoughtItem'
 import { ParsePlayerSellItems } from './ParsePlayerSellItems'
 import { ParseSoldPlayerItem } from './ParseSoldPlayerItem'
 import { ParseGoldDroped } from './ParseGoldDroped'
+import { ParseOpenBank } from './ParseOpenBank'
+import { ParseStoreItem } from './ParseStoreItem'
+import { ParseRetrieveItem } from './ParseRetrieveItem'
 
 export class Parser {
     private client: GameClient
@@ -141,6 +144,15 @@ export class Parser {
                     break
                 case Command.SellItemStore:
                     this.parseSellPlayerItem(data)
+                    break
+                case Command.OpenBank:
+                    this.parseOpenBank(data)
+                    break
+                case Command.StoreItem:
+                    this.parseStoreItem(data)
+                    break
+                case Command.RetrieveItem:
+                    this.parseRetrieveItem(data)
                     break
                 case Command.EraseSave:
                     this.client.resetPlayerData()
@@ -347,6 +359,24 @@ export class Parser {
         const soldItemData = new ParseSoldPlayerItem(data)
 
         this.client.soldPlayerItem(soldItemData)
+    }
+
+    private parseOpenBank(data: string) {
+        const openBankData = new ParseOpenBank(data)
+
+        this.client.promptOpenBank(openBankData)
+    }
+
+    private parseStoreItem(data: string) {
+        const storeItemData = new ParseStoreItem(data)
+
+        this.client.onStoreItemResult(storeItemData)
+    }
+
+    private parseRetrieveItem(data: string) {
+        const retrieveItemData = new ParseRetrieveItem(data)
+
+        this.client.onRetrieveItemResult(retrieveItemData)
     }
 
     private parseSave(data: string) {

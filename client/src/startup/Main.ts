@@ -18,6 +18,7 @@ export class Main {
     public storeElement: HTMLElement
     public storePromptElement: HTMLElement
     public storeItemsElement: HTMLElement
+    public bankElement: HTMLElement
     public gearElement: HTMLElement
     public exitElement: HTMLElement
     public coinsElement: HTMLElement
@@ -82,6 +83,7 @@ export class Main {
         this.storeElement = document.getElementById('store')!
         this.storePromptElement = document.getElementById('store-prompt')!
         this.storeItemsElement = document.getElementById('store-items')!
+        this.bankElement = document.getElementById('bank')!
         this.gearElement = document.getElementById('gear')!
         this.exitElement = document.getElementById('exit')!
         this.coinsElement = document.getElementById('coins')!
@@ -125,6 +127,7 @@ export class Main {
         this.storeElement.style.display = 'none'
         this.storePromptElement.style.display = 'none'
         this.storeItemsElement.style.display = 'none'
+        this.bankElement.style.display = 'none'
         this.coinsElement.style.display = 'none'
         this.gearElement.style.display = 'none'
         this.exitElement.style.display = 'none'
@@ -168,10 +171,12 @@ export class Main {
 
     setupMobile() {
         const storeEl = document.getElementById('store')!
+        const bankEl = document.getElementById('bank')!
         document.body.addEventListener(
             'touchmove',
             (e) => {
                 if (storeEl.contains(e.target as Node)) return
+                if (bankEl.contains(e.target as Node)) return
                 e.preventDefault()
             },
             { passive: false }

@@ -41,6 +41,10 @@ export default class ContextMenu {
 
     public openMenu(itemId: ItemsIds) {
         this.currentItemId = itemId
+        const storeOption = document.getElementById('store-menu-option')
+        if (storeOption) {
+            storeOption.style.display = this.client.bankOpen ? 'block' : 'none'
+        }
         this.setPosition(this.originTop, this.originLeft)
     }
 
@@ -51,6 +55,9 @@ export default class ContextMenu {
             }
             if (optionSelected == 'Inspect') {
                 this.client.sendItemInfo(this.currentItemId)
+            }
+            if (optionSelected == 'Store') {
+                this.client.storeItem(this.currentItemId)
             }
         }
         

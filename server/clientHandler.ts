@@ -1,5 +1,5 @@
 import { Player } from './entities/player.ts'
-import { Command, Direction, ItemsIds, GearType, Rooms } from '../shared/Enums.ts'
+import { Command, Direction, ItemsIds, GearType, Rooms, ItemType } from '../shared/Enums.ts'
 import Room from './map/rooms/room.ts'
 import Map from './map/map.ts'
 import { Npc } from './entities/npc.ts'
@@ -500,6 +500,162 @@ export class ClientHandler {
       this.send(player,`${Command.OpenStore},${merchantId}`)
     } catch (e: any) {
       this.handleExceptions(e, player, 'unicastOpenStore')
+    }
+  }
+
+  public unicastOpenBank(player: Player, bankerNpcId: number) {
+    try {
+      let itemsData = ''
+      for (let i = 0; i < player.bank.items.length; i++) {
+        itemsData += `${player.bank.items[i].itemId}`
+        if (i < player.bank.items.length - 1) {
+          itemsData += ','
+        }
+      }
+      this.send(player, `${Command.OpenBank},${bankerNpcId}@${player.bank.coins}@${itemsData}`)
+    } catch (e: any) {
+      this.handleExceptions(e, player, 'unicastOpenBank')
+    }
+  }
+
+  public unicastBankActionResult(
+    player: Player,
+    command: Command,
+    success: boolean,
+    message: string,
+    itemId: number,
+    bagCoins: number,
+    bankCoins: number,
+    amount?: number
+  ) {
+    try {
+      if (!success) {
+        this.send(player, `${command},${success},${message}`)
+      } else if (amount !== undefined && amount > 0) {
+        this.send(player, `${command},${success},'',${itemId},${bagCoins},${bankCoins},${amount}`)
+      } else {
+        this.send(player, `${command},${success},'',${itemId},${bagCoins},${bankCoins}`)
+      }
+    } catch (e: any) {
+      this.handleExceptions(e, player, 'unicastBankActionResult')
+    }
+  }
+
+  private hasBankerInRoom(player: Player): boolean {
+    return player.currentRoom.npcs.some(n => n.isBanker)
+  }
+
+  public tryStoreItem(player: Player, itemId: number, amount?: number) {
+    try {
+      if (!this.hasBankerInRoom(player)) {
+        this.unicastBankActionResult(player, Command.StoreItem, false, 'Banker not found!', itemId, player.bag.coins, player.bank.coins)
+        return
+      }
+
+      if (itemId === ItemsIds.Coin) {
+        const goldAmount = amount || 0
+        if (goldAmount <= 0) {
+          this.unicastBankActionResult(player, Command.StoreItem, false, 'Invalid amount!', itemId, player.bag.coins, player.bank.coins)
+          return
+        }
+        if (goldAmount > player.bag.coins) {
+          this.unicastBankActionResult(player, Command.StoreItem, false, 'Not enough gold!', itemId, player.bag.coins, player.bank.coins)
+          return
+        }
+        const ok = player.bank.storeGold(goldAmount)
+        if (ok) {
+          player.bank.markDirty()
+          this.unicastBankActionResult(player, Command.StoreItem, true, '', ItemsIds.Coin, player.bag.coins, player.bank.coins, goldAmount)
+        } else {
+          this.unicastBankActionResult(player, Command.StoreItem, false, 'Failed to store gold!', itemId, player.bag.coins, player.bank.coins)
+        }
+        return
+      }
+
+      const item = player.bag.items.find(i => i.itemId == itemId)
+      if (!item) {
+        this.unicastBankActionResult(player, Command.StoreItem, false, 'Item not found!', itemId, player.bag.coins, player.bank.coins)
+        return
+      }
+      const isQuestItem = item.type === ItemType.Quest || item.type === ItemType.QuestConsumable
+      if (isQuestItem && !player.isAdmin()) {
+        this.unicastBankActionResult(player, Command.StoreItem, false, 'Cannot store quest items!', itemId, player.bag.coins, player.bank.coins)
+        return
+      }
+      if (player.bank.items.length >= player.bank.size) {
+        this.unicastBankActionResult(player, Command.StoreItem, false, 'Bank full!', itemId, player.bag.coins, player.bank.coins)
+        return
+      }
+
+      const ok = player.bank.storeItem(itemId)
+      if (ok) {
+        player.bank.markDirty()
+        this.unicastBankActionResult(player, Command.StoreItem, true, '', itemId, player.bag.coins, player.bank.coins)
+      } else {
+        this.unicastBankActionResult(player, Command.StoreItem, false, 'Cannot store item!', itemId, player.bag.coins, player.bank.coins)
+      }
+    } catch (e: any) {
+      this.handleExceptions(e, player, 'tryStoreItem')
+    }
+  }
+
+  public tryRetrieveItem(player: Player, itemId: number, amount?: number) {
+    try {
+      if (!this.hasBankerInRoom(player)) {
+        this.unicastBankActionResult(player, Command.RetrieveItem, false, 'Banker not found!', itemId, player.bag.coins, player.bank.coins)
+        return
+      }
+
+      if (itemId === ItemsIds.Coin) {
+        const goldAmount = amount || 0
+        if (goldAmount <= 0) {
+          this.unicastBankActionResult(player, Command.RetrieveItem, false, 'Invalid amount!', itemId, player.bag.coins, player.bank.coins)
+          return
+        }
+        if (goldAmount > player.bank.coins) {
+          this.unicastBankActionResult(player, Command.RetrieveItem, false, 'Not enough gold!', itemId, player.bag.coins, player.bank.coins)
+          return
+        }
+        const ok = player.bank.retrieveGold(goldAmount)
+        if (ok) {
+          player.bank.markDirty()
+          this.unicastBankActionResult(player, Command.RetrieveItem, true, '', ItemsIds.Coin, player.bag.coins, player.bank.coins, goldAmount)
+        } else {
+          this.unicastBankActionResult(player, Command.RetrieveItem, false, 'Failed to withdraw gold!', itemId, player.bag.coins, player.bank.coins)
+        }
+        return
+      }
+
+      const item = player.bank.items.find(i => i.itemId == itemId)
+      if (!item) {
+        this.unicastBankActionResult(player, Command.RetrieveItem, false, 'Item not found!', itemId, player.bag.coins, player.bank.coins)
+        return
+      }
+      if (player.bag.items.length >= player.bag.size) {
+        this.unicastBankActionResult(player, Command.RetrieveItem, false, 'No space!', itemId, player.bag.coins, player.bank.coins)
+        return
+      }
+
+      const ok = player.bank.retrieveItem(itemId)
+      if (ok) {
+        player.bank.markDirty()
+        this.unicastBankActionResult(player, Command.RetrieveItem, true, '', itemId, player.bag.coins, player.bank.coins)
+      } else {
+        this.unicastBankActionResult(player, Command.RetrieveItem, false, 'Cannot withdraw item!', itemId, player.bag.coins, player.bank.coins)
+      }
+    } catch (e: any) {
+      this.handleExceptions(e, player, 'tryRetrieveItem')
+    }
+  }
+
+  public closeBank(player: Player) {
+    try {
+      // Persist once on close (store/retrieve no longer save each action)
+      if (player.bank.consumeDirty()) {
+        this.unicastPlayerDataHashSave(player)
+      }
+    } catch (e: any) {
+      this.handleExceptions(e, player, 'closeBank')
     }
   }
 
@@ -1124,16 +1280,22 @@ export class ClientHandler {
             }
             break
           case Command.OpenBank:
-            console.log(player, Number(eventData[1]), Number(eventData[2]))
+            // Bank opens server-side via banker NPC interact only
             break
-          case Command.StoreItem:
-            console.log(player, Number(eventData[1]), Number(eventData[2]))
+          case Command.StoreItem: {
+            const storeItemId = +eventData[1]
+            const storeAmount = eventData[2] !== undefined ? +eventData[2] : undefined
+            this.tryStoreItem(player, storeItemId, storeAmount)
             break
-          case Command.RetrieveItem:
-            console.log(player, Number(eventData[1]), Number(eventData[2]))
+          }
+          case Command.RetrieveItem: {
+            const retrieveItemId = +eventData[1]
+            const retrieveAmount = eventData[2] !== undefined ? +eventData[2] : undefined
+            this.tryRetrieveItem(player, retrieveItemId, retrieveAmount)
             break
+          }
           case Command.CloseBank:
-            console.log(player, Number(eventData[1]), Number(eventData[2]))
+            this.closeBank(player)
             break
           case Command.Exit:
             exit = true

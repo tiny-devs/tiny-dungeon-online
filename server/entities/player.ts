@@ -337,7 +337,12 @@ export class Player {
             }
         }
 
-        return simpleData + bagData + gearData + questData
+        let bankData = `@${this.bank.coins}`
+        for (const item of this.bank.items) {
+            bankData += `;${item.itemId}`
+        }
+
+        return simpleData + bagData + gearData + questData + bankData
     }
 
     public loadPlayerDataFromSave(data: string): boolean {
@@ -387,6 +392,20 @@ export class Player {
                     const monstersToKillData = questDataInfos[3].split('-')
                     if (questDataInfos.length == 4) {
                         this.loadQuest(+questDataInfos[0], +questDataInfos[1], +questDataInfos[2] == 1, monstersToKillData)
+                    }
+                }
+            }
+
+            // Backward compatible: old saves have no bank section
+            if (allData[5]) {
+                const bankData = allData[5].split(';')
+                this.bank.coins = +bankData[0] || 0
+                if (bankData[1]) {
+                    for (let i = 1; i < bankData.length; i++) {
+                        const item = this.bag.getItemFromItemId(+bankData[i])
+                        if (item) {
+                            this.bank.items.push(item)
+                        }
                     }
                 }
             }

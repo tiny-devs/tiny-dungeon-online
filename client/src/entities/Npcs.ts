@@ -573,4 +573,12 @@ export const Npcs = {
         [0,Color.LightYellow,Color.DarkRed,Color.DarkRed,Color.LightGrey,Color.DarkRed,Color.LightYellow,0],
         [0,0,Color.DarkRed,Color.DarkRed,Color.Wine,Color.DarkRed,0,0],
         [0,0,Color.DarkRed,Color.DarkRed,Color.Wine,Color.DarkRed,0,0],],
+    Banker: [[0,0,Color.Grey,Color.Grey,Color.Grey,Color.Grey,0,0],
+        [0,Color.Grey,Color.LightYellow,Color.LightYellow,Color.LightYellow,Color.LightYellow,0,0],
+        [0,Color.Grey,Color.LightYellow,Color.Black,Color.LightYellow,Color.Black,0,0],
+        [0,Color.Grey,Color.LightYellow,Color.LightYellow,Color.LightYellow,Color.LightYellow,0,0],
+        [0,Color.LightBrown,Color.LightBrown,Color.LightBrown,Color.Grey,Color.LightBrown,Color.LightBrown,0],
+        [0,Color.LightYellow,Color.Grey,Color.Grey,Color.LightBrown,Color.Grey,Color.LightYellow,0],
+        [0,0,Color.Brown,Color.Brown,Color.Brown,Color.Brown,0,0],
+        [0,0,Color.Brown,Color.Brown,0,Color.Brown,0,0],],
 } as any

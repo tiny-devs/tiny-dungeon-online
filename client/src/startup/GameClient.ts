@@ -17,8 +17,12 @@ import TinyIcon from '../models/configs/ClientConfig'
 import { ParseMove } from '../parser/ParseMove'
 import { ParseHidePlayer } from '../parser/ParseHidePlayer'
 import Store from '../entities/items/Store'
+import Bank from '../entities/items/Bank'
 import { ParseBoughtItem } from '../parser/ParseBoughtItem'
 import { ParseSoldPlayerItem } from '../parser/ParseSoldPlayerItem'
+import { ParseOpenBank } from '../parser/ParseOpenBank'
+import { ParseStoreItem } from '../parser/ParseStoreItem'
+import { ParseRetrieveItem } from '../parser/ParseRetrieveItem'
 import { ParsePve } from '../parser/ParsePve'
 import { ParsePvp } from '../parser/ParsePvp'
 import { Player } from '../entities/Player'
@@ -28,12 +32,14 @@ export class GameClient {
     public playerName: string
     public playerId: string
     public bag: Bag
+    public bank: Bank
     public gear: Gear
     public currentNpcStore: Store
     public currentRoomId: Rooms
     public game: Game
     public gameVersion: number = 0
     public canCheckUpdateData: boolean = false
+    public bankOpen = false
 
     private sentWalk: boolean = false
     private walkTimeout: number = 0
@@ -43,6 +49,7 @@ export class GameClient {
     private bagElement: HTMLElement
     private storeElement: HTMLElement
     private storePromptElement: HTMLElement
+    private bankElement: HTMLElement
     private gearElement: HTMLElement
     private exitElement: HTMLElement
     private exit: HTMLElement
@@ -103,6 +110,7 @@ export class GameClient {
     private canChat: boolean = true
     private isTyping: boolean = false
     private storeOpen: boolean = false
+    private coinTransferMode: 'drop' | 'store' | 'withdraw' = 'drop'
     private localStorageLoadKey: string = 'tinydata'
     private localStorageShowUpdatesKey: string = 'tinyupdates'
     private adminPassword: string = ''
@@ -120,6 +128,7 @@ export class GameClient {
         this.storeElement = mainElements.storeElement
         this.storePromptElement = mainElements.storePromptElement
         this.storeItemsElement = mainElements.storeItemsElement
+        this.bankElement = mainElements.bankElement
         this.coinsElement = mainElements.coinsElement
         this.coinsDropElement = mainElements.coinsDropElement
         this.coinsToDropElement = mainElements.coinsToDropElement
@@ -257,7 +266,11 @@ export class GameClient {
             this.coinsToDropElement.innerHTML = this.amountCoinsDropElement.value
         }
         this.coinsElement.onclick = () => {
-            this.showCoinsDropElement()
+            if (this.bankOpen) {
+                this.showCoinsStoreElement()
+            } else {
+                this.showCoinsDropElement()
+            }
         }
         this.cancelCoinsDropElement = mainElements.cancelCoinsDropElement as HTMLButtonElement
         this.cancelCoinsDropElement.onclick = () => {
@@ -265,7 +278,7 @@ export class GameClient {
         }
         this.confirmCoinsDropElement = mainElements.confirmCoinsDropElement as HTMLButtonElement
         this.confirmCoinsDropElement.onclick = () => {
-            this.dropCoins()
+            this.confirmCoinsTransfer()
         }
         
         
@@ -278,6 +291,7 @@ export class GameClient {
         this.playerName = clientConfigs.playerName
         this.playerId = ''
         this.bag = new Bag(this)
+        this.bank = new Bank(this)
         this.gear = new Gear(this)
         this.currentNpcStore = new Store(this)
         this.currentRoomId = Rooms.InitialRoom
@@ -512,6 +526,9 @@ export class GameClient {
                     if (this.storeOpen) {
                         this.closeStore()
                     }
+                    if (this.bankOpen) {
+                        this.closeBank()
+                    }
                 }
             }
         }
@@ -574,6 +591,115 @@ export class GameClient {
 
     dropItem(itemId: ItemsIds) {
         this.ws!.send(`${Command.ItemDrop},${itemId}`)
+    }
+
+    storeItem(itemId: ItemsIds) {
+        this.ws!.send(`${Command.StoreItem},${itemId}`)
+    }
+
+    storeCoins(amount: number) {
+        this.ws!.send(`${Command.StoreItem},${ItemsIds.Coin},${amount}`)
+    }
+
+    tryRetrieveItem(itemId: ItemsIds) {
+        this.ws!.send(`${Command.RetrieveItem},${itemId}`)
+    }
+
+    retrieveCoins(amount: number) {
+        this.ws!.send(`${Command.RetrieveItem},${ItemsIds.Coin},${amount}`)
+    }
+
+    promptOpenBank(data: ParseOpenBank) {
+        // Option A: keep bag visible while bank is open
+        this.bankElement.style.display = 'block'
+        this.bankOpen = true
+        this.bank.removeAllItems()
+        this.bank.setGold(data.bankCoins)
+        for (const itemId of data.itemIds) {
+            this.bank.addItem(itemId)
+        }
+    }
+
+    closeBank() {
+        if (this.bankOpen && this.ws) {
+            // Server saves player data once on bank close (not on every store/retrieve)
+            this.ws.send(`${Command.CloseBank}`)
+        }
+        this.bankElement.style.display = 'none'
+        this.bank.removeAllItems()
+        this.bank.setGold(0)
+        this.bank.coinsEl.style.display = 'block'
+        this.bankOpen = false
+        this.hideCoinsDropElement()
+    }
+
+    onStoreItemResult(data: ParseStoreItem) {
+        if (data.success) {
+            this.bag.setGold(data.bagCoins)
+            this.bank.setGold(data.bankCoins)
+            if (data.itemId === ItemsIds.Coin) {
+                // gold only — balances already updated
+            } else {
+                this.bag.removeItem(data.itemId)
+                this.bank.addItem(data.itemId)
+            }
+        } else {
+            this.displayMessage(data.message)
+        }
+    }
+
+    onRetrieveItemResult(data: ParseRetrieveItem) {
+        if (data.success) {
+            this.bag.setGold(data.bagCoins)
+            this.bank.setGold(data.bankCoins)
+            if (data.itemId === ItemsIds.Coin) {
+                // gold only — balances already updated
+            } else {
+                this.bank.removeItem(data.itemId)
+                this.bag.addItem(data.itemId, 0, this.playerId)
+            }
+        } else {
+            this.displayMessage(data.message)
+        }
+    }
+
+    showBankCoinsWithdraw() {
+        if (!this.bankOpen) {
+            return
+        }
+        this.coinTransferMode = 'withdraw'
+        this.confirmCoinsDropElement.setAttribute('value', 'withdraw')
+        this.bank.coinsEl.style.display = 'none'
+        this.coinsDropElement.style.display = 'block'
+        this.amountCoinsDropElement.max = String(this.bank.coins)
+        this.amountCoinsDropElement.value = '0'
+        this.coinsToDropElement.innerHTML = '0'
+    }
+
+    showCoinsStoreElement() {
+        this.coinTransferMode = 'store'
+        this.confirmCoinsDropElement.setAttribute('value', 'store')
+        this.coinsElement.style.display = 'none'
+        this.coinsDropElement.style.display = 'block'
+        this.amountCoinsDropElement.max = String(this.bag.coins)
+        this.amountCoinsDropElement.value = '0'
+        this.coinsToDropElement.innerHTML = '0'
+    }
+
+    confirmCoinsTransfer() {
+        const amount = this.amountCoinsDropElement.value
+        const isANumber = !isNaN(Number(amount))
+        if (isANumber && Number(amount) > 0) {
+            const value = Number(amount)
+            if (this.coinTransferMode === 'store') {
+                this.storeCoins(value)
+            } else if (this.coinTransferMode === 'withdraw') {
+                this.retrieveCoins(value)
+            } else {
+                this.ws!.send(`${Command.GoldDroped},${value}`)
+            }
+        }
+        this.hideCoinsDropElement()
     }
 
     useItem(itemId: ItemsIds) {
@@ -955,27 +1081,34 @@ export class GameClient {
     }
 
     showCoinsDropElement() {
+        this.coinTransferMode = 'drop'
+        this.confirmCoinsDropElement.setAttribute('value', 'drop')
         this.coinsElement.style.display = 'none'
         this.coinsDropElement.style.display = 'block'
         this.amountCoinsDropElement.max = String(this.bag.coins)
     }
 
     hideCoinsDropElement() {
-        this.coinsElement.style.display = 'block'
+        const wasWithdraw = this.coinTransferMode === 'withdraw'
         this.coinsDropElement.style.display = 'none'
         this.amountCoinsDropElement.value = '0'
         this.coinsToDropElement.innerHTML = '0'
+        if (wasWithdraw) {
+            if (this.bankOpen) {
+                this.bank.coinsEl.style.display = 'block'
+            }
+        } else {
+            this.coinsElement.style.display = 'block'
+        }
+        if (this.bankOpen) {
+            this.bank.coinsEl.style.display = 'block'
+        }
+        this.coinTransferMode = 'drop'
+        this.confirmCoinsDropElement.setAttribute('value', 'drop')
     }
 
     dropCoins() {
-        const amount = this.amountCoinsDropElement.value
-        const isANumber = !isNaN(Number(amount))
-        if (isANumber) {
-            if (Number(amount) > 0) {
-                this.ws!.send(`${Command.GoldDroped},${amount}`)
-            }
-        }
-        this.hideCoinsDropElement()
+        this.confirmCoinsTransfer()
     }
 
     sendExitRequest() {
