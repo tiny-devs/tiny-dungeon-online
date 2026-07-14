@@ -68,7 +68,6 @@ export class GameClient {
     private storeBuyBtn: HTMLElement
     private storeSellBtn: HTMLElement
     private storeItemsElement: HTMLElement
-    private messageElement: HTMLElement
     private chatElement: HTMLElement
     private chatMessageElement: HTMLInputElement
     private chatBtn: HTMLButtonElement
@@ -140,7 +139,6 @@ export class GameClient {
         this.xpBarElement = mainElements.xpBarElement
         this.atkTextElement = mainElements.atkTextElement
         this.defTextElement = mainElements.defTextElement
-        this.messageElement = mainElements.messageElement
         this.chatElement = mainElements.chatElement
         this.chatMessageElement = mainElements.chatMessageElement as HTMLInputElement
         this.exit = mainElements.exitBtn as HTMLInputElement
@@ -750,10 +748,10 @@ export class GameClient {
     displayMessage(message: string) {
         if (!this.isShowingMessage) {
             this.isShowingMessage = true
-            this.messageElement.innerHTML = message
+            this.game.hudLayer.showMessage(message, Color.White)
             setTimeout(() => {
                 this.isShowingMessage = false
-                this.messageElement.innerHTML = ''
+                this.game.hudLayer.hideMessage()
             }, 5000)
         }
     }
@@ -761,18 +759,17 @@ export class GameClient {
     displayDialog(message: string, isQuestStart: boolean, isWarning: boolean) {
         if (!this.isShowingMessage) {
             clearTimeout(this.messageTimeout)
-            
+
+            let color = Color.White
             if (isQuestStart) {
-                this.messageElement.style.color = Color.LightRed
-            } else if (isWarning){
-                this.messageElement.style.color = Color.Yellow
-            } else {
-                this.messageElement.style.color = '#e5e5e5'
+                color = Color.LightRed
+            } else if (isWarning) {
+                color = Color.Yellow
             }
-            this.messageElement.innerHTML = message
+            this.game.hudLayer.showMessage(message, color)
 
             this.messageTimeout = window.setTimeout(() => {
-                this.messageElement.innerHTML = ''
+                this.game.hudLayer.hideMessage()
             }, 5000)
         }
     }

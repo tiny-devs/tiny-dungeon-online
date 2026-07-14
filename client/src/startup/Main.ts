@@ -40,7 +40,6 @@ export class Main {
     public chatMessageElement: HTMLElement
     public chatBtn: HTMLElement
     public exitBtn: HTMLElement
-    public messageElement: HTMLElement
     public showRankBtn: HTMLButtonElement
     public showPlayersBtn: HTMLButtonElement
     public showEntityInfoBtn: HTMLButtonElement
@@ -99,7 +98,6 @@ export class Main {
         this.atkTextElement = document.getElementById('atk-text')!
         this.defTextElement = document.getElementById('def-text')!
         this.layersParentElement = document.getElementById('layers')!
-        this.messageElement = document.getElementById('message')!
         this.chatElement = document.getElementById('chat')!
         this.storeBuyBtn = document.getElementById('buy-btn')! as HTMLButtonElement
         this.storeSellBtn = document.getElementById('sell-btn')! as HTMLButtonElement
@@ -141,7 +139,6 @@ export class Main {
             configs.game.height = configs.game.height / 2
         }
 
-        this.messageElement.style.maxWidth = `${configs.game.width}px`
         this.layersParentElement.style.width = `${configs.game.width}px`
         this.layersParentElement.style.height = `${configs.game.height}px`
 

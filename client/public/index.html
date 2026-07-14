@@ -42,13 +42,8 @@
       .google-btn:hover {
         cursor: pointer;
       }
-      #game-messages {
-        max-width: 512px;
-      }
-      #message {
-        overflow-wrap: break-word;
-        word-wrap: break-word;
-        hyphens: auto;
+      #hud-layer {
+        pointer-events: none;
       }
       #chat-message {
         margin-top: 15px;
@@ -334,6 +329,7 @@
             <canvas id="background-layer" width="512" height="512" class="canvas-layer"></canvas>
             <canvas id="solid-layer" width="512" height="512" class="canvas-layer"></canvas>
             <canvas id="sprites-layer" width="512" height="512" class="canvas-layer"></canvas>
+            <canvas id="hud-layer" width="512" height="512" class="canvas-layer"></canvas>
           </div>
           <div id="mobile-controls">
             <center>
@@ -350,9 +346,6 @@
           <div id="chat">
             <input id="chat-message"></input>
             <input type="button" value="send" id="send-chat"></input>
-          </div>
-          <div id="game-messages">
-            <p id="message"></p>
           </div>
           <input type="button" value="show rank" id="show-rank"></input>
           <input type="button" value="show players" id="show-players"></input>

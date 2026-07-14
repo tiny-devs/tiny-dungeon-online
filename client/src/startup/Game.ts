@@ -3,6 +3,7 @@ import { Main } from './Main'
 import { BackgroundLayer } from '../board/layers/BackgroundLayer'
 import { SolidLayer } from '../board/layers/SolidLayer'
 import { SpritesLayer } from '../board/layers/SpritesLayer'
+import { HudLayer } from '../board/layers/HudLayer'
 import { Map } from '../board/map/Map'
 import { Board } from '../board/Board'
 import { Rooms } from '../../../shared/Enums'
@@ -13,6 +14,7 @@ export class Game {
     public gridConfig: GridConfig
     public map: Map
     public spritesLayer: SpritesLayer
+    public hudLayer: HudLayer
     public board: Board
     public playerId: string = ''
 
@@ -27,6 +29,7 @@ export class Game {
         this.backgroundLayer = new BackgroundLayer(this)
         this.solidLayer = new SolidLayer(this)
         this.spritesLayer = new SpritesLayer(this)
+        this.hudLayer = new HudLayer(this)
 
         this.map = new Map(this)
         this.board = new Board(this, this.backgroundLayer)
