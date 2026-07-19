@@ -303,11 +303,17 @@ export class GameClient {
     }
 
     setupWebSocket() {
-        let socketProtocol = 'wss'
-        if (location.protocol !== 'https:') {
-            socketProtocol = 'ws'
+        // WS_URL is injected at build time (e.g. itch.io deploy points at the Deno server).
+        // Local/self-hosted builds leave it empty and connect to the same host.
+        if (__WS_URL__) {
+            this.ws = new WebSocket(__WS_URL__)
+        } else {
+            let socketProtocol = 'wss'
+            if (location.protocol !== 'https:') {
+                socketProtocol = 'ws'
+            }
+            this.ws = new WebSocket(`${socketProtocol}://${window.location.host}/ws`)
         }
-        this.ws = new WebSocket(`${socketProtocol}://${window.location.host}/ws`)
         this.initWebSocket()
     }
 

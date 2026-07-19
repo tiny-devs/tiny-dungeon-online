@@ -1,0 +1,54 @@
+name: Deploy to itch.io
+
+on:
+  push:
+    branches:
+      - master
+    # Or use tags instead:
+    # tags:
+    #   - "v*"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: client
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: yarn
+          cache-dependency-path: client/yarn.lock
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Install dependencies
+        run: yarn install --immutable
+
+      - name: Build
+        env:
+          # itch.io hosts static files only — connect to the live Deno game server
+          WS_URL: wss://tiny-land.diguifi.deno.net/ws
+        run: yarn build
+
+      - name: Install Butler
+        working-directory: .
+        run: |
+          curl -L https://broth.itch.zone/butler/linux-amd64/LATEST/archive/default -o butler.zip
+          unzip butler.zip
+          chmod +x butler
+          sudo mv butler /usr/local/bin/
+
+      - name: Deploy to itch.io
+        working-directory: .
+        env:
+          BUTLER_API_KEY: ${{ secrets.BUTLER_API_KEY }}
+        run: |
+          butler push client/public diguifi/tiny-land:html5 \
+            --userversion "${{ github.sha }}"

@@ -52,7 +52,7 @@ export class Server {
     }
 
     for (const file of this.publicFiles) {
-      if (req.method === "GET" && cleanedUrl === `/js/${file}`) {
+      if (req.method === "GET" && cleanedUrl === `/${file}`) {
         response = await serveFile(req, `./client/public/${file}`)
       }
     }
