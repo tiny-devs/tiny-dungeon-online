@@ -25,8 +25,14 @@ jobs:
           cache: yarn
           cache-dependency-path: client/yarn.lock
 
-      - name: Enable Corepack
-        run: corepack enable
+      # GitHub runners ship Yarn 1 at /usr/local/bin/yarn, which shadows Corepack.
+      - name: Enable Corepack (Yarn 4)
+        working-directory: .
+        run: |
+          sudo rm -f "$(command -v yarn)" "$(command -v yarnpkg)" || true
+          corepack enable
+          corepack prepare yarn@4.5.1 --activate
+          yarn --version
 
       - name: Install dependencies
         run: yarn install --immutable
