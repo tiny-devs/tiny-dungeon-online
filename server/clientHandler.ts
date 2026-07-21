@@ -858,8 +858,8 @@ export class ClientHandler {
     try {
       const command = cmd.split(' ')[0]
       const args = cmd.split(' ')!
-      const message = args.join(' ')
       args.shift()
+      const message = args.join(' ')
       switch (command) {
         case '/kick':
           this.kickPlayer(args[0], 'you were kicked by admin')
@@ -973,8 +973,17 @@ export class ClientHandler {
       const roomsAny = Rooms as any
       const placeUpperCase = place.charAt(0).toUpperCase() + place.slice(1)
       const roomId = roomsAny[placeUpperCase]
-      if (roomId) {
+      if (roomId !== undefined) {
         adm.teleport(roomId)
+        return true
+      }
+
+      for (const room of this.map.rooms) {
+        const player = room.players.find(player => player.name.toLowerCase() == place.toLowerCase())
+        if (player) {
+          adm.teleport(player.currentRoom.id)
+          return true
+        }
       }
     } catch (e: any) {
       this.handleExceptions(e, adm, 'teleport')
