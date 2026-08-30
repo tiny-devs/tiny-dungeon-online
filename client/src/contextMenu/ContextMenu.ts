@@ -6,8 +6,6 @@ export default class ContextMenu {
     public contextMenuOptionEls: NodeListOf<HTMLElement>
     public menuVisible: boolean
     private client: GameClient
-    private originTop: number = 0
-    private originLeft: number = 0
     private currentItemId: ItemsIds | null
 
     constructor(client: GameClient) {
@@ -33,19 +31,15 @@ export default class ContextMenu {
             return false;
         })
 
-        window.addEventListener("mousemove", e => {
-            this.originTop = e.pageY
-            this.originLeft = e.pageX
-        })
     }
 
-    public openMenu(itemId: ItemsIds) {
+    public openMenu(itemId: ItemsIds, clientX: number, clientY: number) {
         this.currentItemId = itemId
         const storeOption = document.getElementById('store-menu-option')
         if (storeOption) {
             storeOption.style.display = this.client.bankOpen ? 'block' : 'none'
         }
-        this.setPosition(this.originTop, this.originLeft)
+        this.setPosition(clientY, clientX)
     }
 
     private handleOptionSelected(optionSelected: string) {
@@ -66,13 +60,16 @@ export default class ContextMenu {
 
     private toggleMenu(command: string) {
         this.contextMenuEl.style.display = command === "show" ? "block" : "none";
-        this.menuVisible = !this.menuVisible;
+        this.menuVisible = command === "show";
     }
 
     private setPosition(top: number, left: number) {
-        this.contextMenuEl.style.left = `${left}px`;
-        this.contextMenuEl.style.top = `${top}px`;
         this.toggleMenu("show");
+        const bounds = this.contextMenuEl.getBoundingClientRect()
+        const maxLeft = Math.max(0, window.innerWidth - bounds.width)
+        const maxTop = Math.max(0, window.innerHeight - bounds.height)
+        this.contextMenuEl.style.left = `${Math.max(0, Math.min(left, maxLeft))}px`;
+        this.contextMenuEl.style.top = `${Math.max(0, Math.min(top, maxTop))}px`;
     }
 
     private hideMenu() {
